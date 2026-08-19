@@ -1,0 +1,319 @@
+/* ============================================================
+   Homepage v2 — "keep it snappy" direction, from Figma
+   (Portfolio 3 – Simplified, frame "MacBook Pro 16" - 13",
+   node 1629:17200 for the work-samples row — pulled via
+   Figma MCP design context, so colors/sizes/copy below are
+   taken directly from the file, not eyeballed.)
+   Isolated from style.css so the case-study pages are untouched
+   while we iterate on just the homepage.
+   ============================================================ */
+
+:root {
+  --v2-peach: #fbe8cf;
+  --v2-black: #111110;
+  --v2-gray: #8a8a86;
+  --v2-gray-light: #b6b6b2;
+  --v2-border: #ececea;
+
+  /* exact card background colors from Figma */
+  --v2-remitly: #242620;
+  --v2-newsfeed: #cc348d;
+  --v2-paylink-bg: #eee9e5;
+  --v2-streak: #5f7d8b;
+}
+
+body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont, sans-serif; }
+
+/* ---------- NAV ---------- */
+.v2-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 28px 96px;
+  position: sticky; top: 0; background: var(--white); z-index: 100;
+}
+.v2-logo { display: inline-flex; text-decoration: none; }
+.v2-logo-img { height: 20px; width: auto; display: block; }
+.v2-nav-links { display: none; gap: 28px; list-style: none; }
+.v2-nav-links a {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--v2-gray); text-decoration: none; transition: color 0.15s;
+}
+.v2-nav-links a:hover { color: var(--v2-black); }
+
+/* ---------- HERO ---------- */
+.v2-hero { text-align: center; padding: 56px 24px 0; max-width: 900px; margin: 0 auto; }
+.v2-hero h1 {
+  font-family: 'Inclusive Sans', sans-serif; font-weight: 400; font-size: clamp(22px, 2.6vw, 30px);
+  color: var(--v2-black); margin-bottom: 16px; letter-spacing: -0.01em;
+}
+.v2-hero p.v2-sub { font-size: 14px; line-height: 1.55; color: #505050; margin-bottom: 6px; }
+.v2-hero p.v2-detail { font-size: 13px; color: #8c8c8c; margin-top: 10px; }
+
+/* ---------- CALLOUT CIRCLE ---------- */
+.v2-callout {
+  max-width: 900px; margin: 64px auto 0; padding: 0 96px;
+  display: flex; align-items: center; justify-content: center; position: relative;
+  min-height: 260px;
+  /* Dragging the dot circle was catching nearby text as a selection,
+     which shows a blinking text caret/highlight — this area isn't
+     meant to be selectable text anyway. */
+  -webkit-user-select: none; user-select: none; cursor: default;
+}
+.v2-callout-circle {
+  /* No fill/gradient behind it on purpose — just the dots themselves. */
+  width: 260px; height: 260px; border-radius: 50%; overflow: hidden;
+  background: transparent;
+  position: absolute; left: 50%; top: 50%; transform: translate(-38%, -50%);
+  z-index: 1; cursor: pointer;
+  display: block;
+}
+.v2-callout-text { position: relative; z-index: 2; max-width: 260px; text-align: left; margin-right: auto; margin-left: 8%; }
+.v2-callout-label { font-size: 15px; color: var(--v2-gray); margin-bottom: 6px; }
+.v2-callout-title { font-weight: 700; font-size: 20px; color: var(--v2-black); margin-bottom: 6px; }
+.v2-callout-sub { font-size: 15px; color: var(--v2-gray); }
+
+/* ---------- SECTION LABEL ROW ---------- */
+/* .v2-section-head and .v2-scroll-wrap share the identical max-width +
+   centering + padding recipe below, so their left edges always line up —
+   and on screens wider than the max-width, the whole block centers as one
+   unit (whitespace grows symmetrically) instead of either one staying
+   pinned to the raw viewport edge. */
+.v2-section-head { max-width: 1600px; margin: 220px auto 24px; padding: 0 96px; font-size: 17px; box-sizing: border-box; }
+.v2-section-head strong { font-weight: 700; color: var(--v2-black); }
+.v2-section-head span { color: var(--v2-gray); font-weight: 400; }
+
+/* ---------- WORK SAMPLES: horizontal scroll row ---------- */
+.v2-scroll-wrap { max-width: 1600px; margin: 0 auto; padding: 0 0 24px; }
+.v2-card-row {
+  display: flex; gap: 32px; align-items: flex-start;
+  overflow-x: auto;
+  /* No scroll-snap: combined with padding on a scroll container, Chrome's
+     snap-on-load can set the initial scrollLeft to the padding amount,
+     which visually eats the left inset. Dragging works fine without it. */
+  padding: 4px 96px 20px;
+  -webkit-overflow-scrolling: touch;
+  cursor: grab;
+  /* No visible scrollbar, ever — this row scrolls by dragging (see home-v2.js)
+     or touch/trackpad, never a scrollbar the user drags. */
+  scrollbar-width: none;
+}
+.v2-card-row::-webkit-scrollbar { display: none; }
+.v2-card-row.dragging { cursor: grabbing; user-select: none; }
+.v2-card-row.dragging .v2-card { pointer-events: none; }
+
+/* Shared "liquid" easing: fast start, long satisfying settle with a
+   whisper of overshoot at the end — used everywhere something opens,
+   grows, or rises, so the whole card feels like one coherent material. */
+:root {
+  --liquid-ease: cubic-bezier(.22, 1.12, .36, 1);
+  /* Same family, but never exceeds 1 — for the bottom-anchored, masked
+     image reveal specifically. The overshoot above is great for width/
+     panel motion, but on a clipped bottom-anchored image it means the
+     image briefly rises past its resting spot and reveals card
+     background beneath it. This curve settles at exactly translateY(0),
+     never past it. */
+  --liquid-ease-image: cubic-bezier(.16, 1, .3, 1);
+  --liquid-duration: 0.7s;
+}
+
+.v2-card {
+  flex: 0 0 auto; width: 268px; height: 520px;
+  border-radius: 15px; overflow: hidden; position: relative;
+  text-decoration: none; color: inherit; cursor: pointer;
+  display: flex; flex-direction: row; align-items: stretch;
+  transition: width var(--liquid-duration) var(--liquid-ease);
+  /* Clicking to toggle expand was starting a text selection on the title/
+     description, which some browsers render as a blinking text caret.
+     These cards aren't text content to select, so disable it outright. */
+  -webkit-user-select: none; user-select: none;
+}
+.v2-card:focus { outline: none; }
+.v2-card:focus-visible { outline: 2px solid rgba(255,255,255,0.6); outline-offset: -2px; }
+.v2-card.is-open { width: 688px; }
+
+.v2-card-main {
+  flex: 0 0 268px; width: 268px; height: 100%;
+  display: flex; flex-direction: column;
+}
+
+.v2-card-title {
+  font-weight: 700; font-size: 17px; color: #fff;
+  padding: 28px 21px 0;
+}
+.v2-card-desc {
+  /* Fixed line-height, not animated — line-height transitions reflow text
+     every frame and read as choppy rather than smooth, unlike opacity
+     which the compositor can animate cleanly. 1.85 stays airy in both
+     states. */
+  font-weight: 400; font-size: 13px; line-height: 1.85; color: #fff;
+  padding: 10px 21px 0;
+  opacity: 0;
+  transition: opacity 0.9s var(--liquid-ease);
+}
+.v2-card.on-light .v2-card-title,
+.v2-card.on-light .v2-card-desc { color: var(--v2-black); }
+
+/* Default state: description dimmed. The shot area is a short bottom-
+   anchored window so only a sliver of the image's top peeks up over the
+   card's bottom edge. On hover/open, the window grows taller — since
+   it's still bottom-anchored, the extra height opens up *above* that
+   peek, so the image visibly rises into view rather than statically
+   unmasking. */
+.v2-card:hover .v2-card-desc,
+.v2-card.is-open .v2-card-desc {
+  opacity: 1;
+}
+
+.v2-card-shot {
+  flex: 1; min-height: 0; overflow: hidden;
+  display: flex; align-items: flex-end; justify-content: center;
+  padding: 22px 12px 0;
+}
+.v2-card-shot img {
+  /* max-height matters here as much as max-width: without it, a taller-
+     aspect-ratio image (duocon's badge photo) scales to fill the width
+     and ends up taller than the shot area, spilling up past it and
+     getting clipped by whatever's above instead of scaling down to fit
+     like every other card's image does. */
+  max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; display: block;
+  -webkit-user-drag: none; user-select: none;
+  /* Uniform rounded top on every card's image — some source screenshots
+     (remitly, pay with a link) already have a phone bezel baked in, but
+     others (news feed, duocon) don't, which reads as misaligned even
+     when the Y position is identical. This makes all five consistent
+     regardless of what's in the source file. */
+  border-radius: 14px 14px 0 0; overflow: hidden;
+  /* Default: pushed down so only the image's own top ~78px peeks above
+     the card's bottom edge, and very slightly scaled down + softened.
+     "100%" here is the image's own rendered height, so this scales
+     correctly per image regardless of its aspect ratio. Hover/open:
+     settles into its natural bottom-aligned resting position, full size
+     and sharp — a slow, deliberate rise rather than a quick snap. */
+  transform: translateY(calc(100% - 78px)) scale(0.96);
+  filter: saturate(0.85);
+  transform-origin: center bottom;
+  transition: transform 1.3s var(--liquid-ease-image), filter 1.3s var(--liquid-ease-image);
+}
+.v2-card:hover .v2-card-shot img,
+.v2-card.is-open .v2-card-shot img {
+  transform: translateY(0) scale(1);
+  filter: saturate(1);
+}
+
+/* ---------- EXPAND PANEL ---------- */
+.v2-card-expand {
+  flex: 0 0 0; width: 0; overflow: hidden; position: relative;
+  border-left: 1px solid rgba(255,255,255,0.18);
+  transition: width var(--liquid-duration) var(--liquid-ease), opacity 0.5s ease;
+  opacity: 0; padding: 0; color: #fff;
+  display: flex; flex-direction: column; gap: 18px; justify-content: center;
+}
+.v2-card.is-open .v2-card-expand {
+  flex-basis: 420px; width: 420px; opacity: 1; padding: 32px 32px;
+}
+.v2-card.on-light .v2-card-expand { border-left-color: rgba(0,0,0,0.12); color: var(--v2-black); }
+.v2-card.duocon .v2-card-expand { color: var(--v2-black); }
+
+.v2-card-close {
+  position: absolute; top: 24px; left: 28px;
+  background: none; border: none; padding: 4px; margin: 0;
+  font-size: 18px; color: inherit; opacity: 0.6; cursor: pointer; line-height: 1;
+  transition: opacity 0.2s ease, transform 0.2s var(--liquid-ease);
+}
+.v2-card-close:hover { opacity: 1; transform: translateX(-3px); }
+
+/* Number + label sit on one row, like the reference — the label given
+   generous room (420px panel) and white-space:nowrap so it never wraps
+   to a second line. Each stat cascades in with a short stagger once the
+   card is open, rather than appearing all at once. */
+.v2-stat {
+  color: #fff; display: flex; align-items: baseline; gap: 10px; white-space: nowrap;
+  opacity: 0; transform: translateY(10px);
+  transition: opacity 0.5s ease, transform 0.5s var(--liquid-ease);
+  transition-delay: 0s;
+}
+.v2-card.is-open .v2-stat { opacity: 1; transform: translateY(0); }
+.v2-card.is-open .v2-stat:nth-child(2) { transition-delay: 0.06s; }
+.v2-card.is-open .v2-stat:nth-child(3) { transition-delay: 0.12s; }
+.v2-card.is-open .v2-stat:nth-child(4) { transition-delay: 0.18s; }
+.v2-card.is-open .v2-stat:nth-child(5) { transition-delay: 0.24s; }
+.v2-card.on-light .v2-stat { color: var(--v2-black); }
+.v2-stat-num {
+  /* Inclusive Sans throughout — this used to be set to Karla by mistake. */
+  font-weight: 700; font-size: 32px; line-height: 1.1;
+  flex: 0 0 auto;
+}
+.v2-stat-label { font-size: 13px; opacity: 0.75; line-height: 1.4; flex: 0 0 auto; }
+
+.v2-card-soon { color: #fff; font-size: 15px; opacity: 0.8; }
+.v2-card.on-light .v2-card-soon { color: var(--v2-black); }
+
+/* card 1 — remitly business */
+.v2-card.remitly { background: var(--v2-remitly); }
+
+/* card 2 — duolingo news feed */
+.v2-card.newsfeed { background: var(--v2-newsfeed); }
+
+/* card 3 — pay with a link */
+.v2-card.paylink { background: var(--v2-paylink-bg); }
+
+/* card 4 — duocon: frosted dragon (Daenerys/High Valyrian nod) as a
+   full-card background — scoping it to just the shot rectangle made it
+   crop in too tight and stop reading as a background image, so it spans
+   the whole card again. The sharp badge photo sits on top of it inside
+   .v2-card-shot, using the exact same alignment/rounding treatment as
+   every other card's peek image. */
+.v2-card.duocon { background: #f4f2ee; }
+.v2-card.duocon::before {
+  content: ''; position: absolute; inset: -12px; z-index: 0;
+  background-image: url('/assets/images/duocon/07-danydraca.png');
+  background-size: cover; background-position: center 48%;
+  filter: blur(4px) saturate(0.9) brightness(1.25);
+}
+.v2-card.duocon::after {
+  content: ''; position: absolute; inset: 0; z-index: 0;
+  /* #EAEAEA wash, not white — gives it a touch of contrast against the
+     page background instead of washing out to pure white. */
+  background: rgba(234,234,234,0.55);
+  backdrop-filter: blur(1px);
+}
+.v2-card.duocon .v2-card-title,
+.v2-card.duocon .v2-card-desc,
+.v2-card.duocon .v2-stat { color: var(--v2-black); }
+.v2-card.duocon .v2-card-expand { border-left-color: rgba(0,0,0,0.12); }
+.v2-card.duocon .v2-card-title,
+.v2-card.duocon .v2-card-desc,
+.v2-card.duocon .v2-card-shot,
+.v2-card.duocon .v2-card-expand { position: relative; z-index: 1; }
+/* No shadow on the badge photo itself (the source PNG's own baked-in
+   border/shadow was cropped off separately); rounded top matches every
+   other card's peek image via the shared .v2-card-shot img rule. */
+.v2-card.duocon .v2-card-shot img { box-shadow: none; }
+
+/* card 5 — duolingo streak society */
+.v2-card.streak { background: var(--v2-streak); }
+
+/* ---------- NUGGETS (placeholder) ---------- */
+/* Same max-width + centering + padding recipe as .v2-section-head /
+   .v2-scroll-wrap above, so this row's left edge always lines up with the
+   "Random nuggets" label. The tiles themselves stay a fixed compact size
+   (not stretched full-width) via minmax + justify-content: start. */
+.v2-nugget-row {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 160px)); justify-content: start; gap: 16px;
+  max-width: 1600px; margin: 0 auto; padding: 0 96px; box-sizing: border-box;
+}
+.v2-nugget { aspect-ratio: 3/4; border-radius: 10px; background: #ececea; }
+.v2-nugget.dark { background: #d8d8d4; }
+
+.v2-footer-spacer { height: 40px; }
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 640px) {
+  .v2-nav, .v2-section-head { padding-left: 24px; padding-right: 24px; }
+  .v2-callout { padding: 0 24px; flex-direction: column; min-height: auto; }
+  .v2-callout-circle { position: static; transform: none; margin-bottom: -100px; }
+  .v2-callout-text { margin: 0 auto; text-align: center; padding-top: 60px; }
+  .v2-card-row { padding-left: 24px; padding-right: 24px; }
+  .v2-nugget-row { grid-template-columns: repeat(2, 1fr); padding: 0 24px; }
+  .v2-card.is-open { width: 460px; }
+  .v2-card.is-open .v2-card-expand { flex-basis: 192px; width: 192px; padding: 28px 18px; }
+}

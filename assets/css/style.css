@@ -65,7 +65,9 @@ nav.site-nav {
 }
 nav.site-nav.scrolled { border-bottom-color: #e8e8e4; }
 
-.nav-logo {
+.nav-logo { display: inline-flex; text-decoration: none; }
+.nav-logo img { height: 18px; width: auto; display: block; }
+.nav-logo.text-fallback {
   font-family: 'Karla', sans-serif;
   font-weight: 700;
   font-size: 15px;

@@ -5,69 +5,129 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Vivian Reidler — Product Designer</title>
 <meta name="description" content="Vivian Reidler — Product Designer. Growth systems for global, high-friction products. Duolingo and Remitly.">
-<link rel="icon" href="data:,">
-<link href="https://fonts.googleapis.com/css2?family=Karla:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="/assets/favicon-32.png">
+<link href="https://fonts.googleapis.com/css2?family=Inclusive+Sans:wght@400;700&family=Karla:wght@700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/css/style.css">
+<link rel="stylesheet" href="/assets/css/home-v2.css">
 </head>
-<body>
+<body class="home-v2">
 
-<nav class="site-nav" id="nav">
-  <a href="/" class="nav-logo">Vivian Reidler</a>
-  <ul class="nav-links">
-    <li><a href="#work">More</a></li>
+<nav class="v2-nav" id="nav">
+  <a href="/" class="v2-logo"><img src="/assets/images/site/vivian-wordmark.png" alt="Vivian" class="v2-logo-img"></a>
+  <ul class="v2-nav-links">
+    <li><a href="/">Home</a></li>
     <li><a href="/about">About</a></li>
+    <li><a href="mailto:vivianreidler@gmail.com">Etc</a></li>
   </ul>
 </nav>
 
-<section class="hero">
+<section class="v2-hero">
   <h1>hey, Vivian here</h1>
-  <p class="hero-sub">Product Designer currently at Remitly · Previously at Duolingo (7+ years, from small startup through IPO). I design growth systems for global, high-friction products.</p>
-  <p class="hero-detail">Pennsylvania, USA | English · Português (BR) · Svenska</p>
+  <p class="v2-sub">Product Designer currently at Remitly · Previously at Duolingo (7+ years, from small startup through IPO).</p>
+  <p class="v2-sub">I design growth systems for global, high-friction products.</p>
+  <p class="v2-detail">Pennsylvania, USA | English · Português (BR) · Svenska</p>
 </section>
 
-<section class="work-section" id="work">
-  <p class="section-label">Selected Work</p>
-  <div class="grid">
+<div class="v2-callout">
+  <canvas class="v2-callout-circle" id="liquidCircle" width="260" height="260" aria-hidden="true"></canvas>
+  <div class="v2-callout-text">
+    <p class="v2-callout-label">Portfolio version:</p>
+    <p class="v2-callout-title">Keep it snappy</p>
+    <p class="v2-callout-sub">nobody has time for this anymore</p>
+  </div>
+</div>
 
-    <a href="/work/streak-society" class="card featured on-dark">
-      <div class="card-img" style="background-image:url('/assets/images/site/home-streak-card-alt.png')"></div>
-      <p class="card-tag">Mobile App · Habit Design</p>
-      <h2>streak society</h2>
-      <p>An exclusive loyalty tier for Duolingo's most dedicated learners; 3.15% lift in paid subscriber DAUs</p>
-    </a>
+<p class="v2-section-head"><strong>Work samples</strong> <span>as if they were quickly shown in an elevator</span></p>
 
-    <a href="/work/newsfeed-details" class="card on-dark">
-      <div class="card-img" style="background-image:url('/assets/images/site/home-newsfeed-card.png')"></div>
-      <p class="card-tag">Mobile App · 0→1</p>
-      <h2>news feed</h2>
-      <p>An in-app tab connecting 500M+ learners to the Duolingo brand and each other</p>
-    </a>
+<div class="v2-scroll-wrap">
+  <div class="v2-card-row">
 
-    <a href="/work/duocon" class="card on-dark">
-      <div class="card-img" style="background-image:url('/assets/images/site/home-duocon-card.png')"></div>
-      <p class="card-tag">Event Branding · Community</p>
-      <h2>duocon</h2>
-      <p>A global event celebrating language, communication, and technology that grew into 100K+ attendees</p>
-    </a>
-
-    <div class="card on-dark">
-      <div class="card-img" style="background-image:url('/assets/images/site/home-streak-card.png')"></div>
-      <span class="card-soon">Case study soon</span>
-      <p class="card-tag">Fintech · 0→1 · Conversion Systems</p>
-      <h2>remitly business</h2>
-      <p>From hidden experiment to $408M — designing a business product inside a consumer app</p>
+    <div class="v2-card remitly" tabindex="0" role="button" aria-expanded="false">
+      <div class="v2-card-main">
+        <p class="v2-card-title">remitly business</p>
+        <p class="v2-card-desc">I designed an entire &ldquo;scrappy&rdquo; business product inside a consumer app; it went from hidden experiment to a $408M part of the business in 1 year &gt;</p>
+        <div class="v2-card-shot"><img src="/assets/images/home-v2/remitly-shot.png" alt="Remitly business account type screen"></div>
+      </div>
+      <div class="v2-card-expand">
+        <button class="v2-card-close" aria-label="Collapse">&larr;</button>
+        <div class="v2-stat"><span class="v2-stat-num">100M</span><span class="v2-stat-label">DAUs</span></div>
+        <div class="v2-stat"><span class="v2-stat-num">$480M</span><span class="v2-stat-label">profits</span></div>
+        <div class="v2-stat"><span class="v2-stat-num">3</span><span class="v2-stat-label">new design system patterns</span></div>
+        <div class="v2-stat"><span class="v2-stat-num">1</span><span class="v2-stat-label">component library created for expansion</span></div>
+      </div>
     </div>
 
-    <div class="card on-dark">
-      <div class="card-img" style="background-image:url('/assets/images/site/home-paywithlink-card.png')"></div>
-      <span class="card-soon">Case study soon</span>
-      <p class="card-tag">Fintech · Product Innovation</p>
-      <h2>pay with a link</h2>
-      <p>Reinventing how small entrepreneurs pay contractors abroad without asking for banking details</p>
+    <div class="v2-card newsfeed" tabindex="0" role="button" aria-expanded="false">
+      <div class="v2-card-main">
+        <p class="v2-card-title">duolingo news feed</p>
+        <p class="v2-card-desc">I pitched and created an in-app tab connecting 500M+ learners to the Duolingo brand and each other, which today is a major part of the app &gt;</p>
+        <div class="v2-card-shot"><img src="/assets/images/home-v2/newsfeed-shot.png" alt="Duolingo News Feed screen"></div>
+      </div>
+      <div class="v2-card-expand">
+        <button class="v2-card-close" aria-label="Collapse">&larr;</button>
+        <div class="v2-stat"><span class="v2-stat-num">+88%</span><span class="v2-stat-label">UPVs to the Duolingo Blog</span></div>
+        <div class="v2-stat"><span class="v2-stat-num">+4,500</span><span class="v2-stat-label">beta tester sign-ups (+800%)</span></div>
+        <div class="v2-stat"><span class="v2-stat-num">+0.42%</span><span class="v2-stat-label">total time spent learning</span></div>
+        <div class="v2-stat"><span class="v2-stat-num">&gt;500</span><span class="v2-stat-label">Event Host applications in 10 days</span></div>
+      </div>
+    </div>
+
+    <div class="v2-card paylink on-light" tabindex="0" role="button" aria-expanded="false">
+      <div class="v2-card-main">
+        <p class="v2-card-title">pay with a link</p>
+        <p class="v2-card-desc">I reinvented how small entrepreneurs pay contractors abroad without asking for banking details, a major switch for a product previously built for families &gt;</p>
+        <div class="v2-card-shot"><img src="/assets/images/home-v2/paylink-shot.png" alt="Pay with a link payment screen"></div>
+      </div>
+      <div class="v2-card-expand">
+        <button class="v2-card-close" aria-label="Collapse">&larr;</button>
+        <p class="v2-card-soon">Case study coming soon.</p>
+      </div>
+    </div>
+
+    <div class="v2-card duocon" tabindex="0" role="button" aria-expanded="false">
+      <div class="v2-card-main">
+        <p class="v2-card-title">duocon</p>
+        <p class="v2-card-desc">I co-created, co-produced, and branded duolingo&rsquo;s first community event in London; and this is how I ended up adding a word to High Valyrian &gt;</p>
+        <div class="v2-card-shot"><img src="/assets/images/home-v2/duocon-shot.png" alt="Duocon badge detail"></div>
+      </div>
+      <div class="v2-card-expand">
+        <button class="v2-card-close" aria-label="Collapse">&larr;</button>
+        <div class="v2-stat"><span class="v2-stat-num">~105%</span><span class="v2-stat-label">attendance, events "sold out"</span></div>
+        <div class="v2-stat"><span class="v2-stat-num">90%</span><span class="v2-stat-label">rated the event 8/10+</span></div>
+        <div class="v2-stat"><span class="v2-stat-num">+160K</span><span class="v2-stat-label">estimated viewers</span></div>
+      </div>
+    </div>
+
+    <div class="v2-card streak" tabindex="0" role="button" aria-expanded="false">
+      <div class="v2-card-main">
+        <p class="v2-card-title">duolingo streak society</p>
+        <p class="v2-card-desc">I created an exclusive loyalty tier for Duolingo&rsquo;s most dedicated learners; 3.15% lift in paid subscriber DAUs just in its first experiment &gt;</p>
+        <div class="v2-card-shot"><img src="/assets/images/home-v2/streak-shot.png" alt="Streak Society welcome screen"></div>
+      </div>
+      <div class="v2-card-expand">
+        <button class="v2-card-close" aria-label="Collapse">&larr;</button>
+        <div class="v2-stat"><span class="v2-stat-num">+3.15%</span><span class="v2-stat-label">lift in Plus subscriber DAUs</span></div>
+        <div class="v2-stat"><span class="v2-stat-num">+7.2%</span><span class="v2-stat-label">DAUs with 15+ minutes use</span></div>
+        <div class="v2-stat"><span class="v2-stat-num">+146%</span><span class="v2-stat-label">lift in Plus purchases, New Year's</span></div>
+        <div class="v2-stat"><span class="v2-stat-num">~60K</span><span class="v2-stat-label">daily taps on the home CTA</span></div>
+      </div>
     </div>
 
   </div>
-</section>
+</div>
+
+<!-- Random nuggets — hidden for now, coming back later.
+<p class="v2-section-head"><strong>Random nuggets</strong> <span>as if you were a friend walking by when I was experimenting</span></p>
+<div class="v2-nugget-row">
+  <div class="v2-nugget"></div>
+  <div class="v2-nugget"></div>
+  <div class="v2-nugget dark"></div>
+  <div class="v2-nugget"></div>
+</div>
+-->
+
+
+<div class="v2-footer-spacer"></div>
 
 <footer class="site-footer">
   <div class="footer-bottom">
@@ -76,6 +136,6 @@
   </div>
 </footer>
 
-<script src="/assets/js/main.js"></script>
+<script src="/assets/js/home-v2.js"></script>
 </body>
 </html>
