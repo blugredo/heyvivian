@@ -116,7 +116,7 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
 }
 
 .v2-card {
-  flex: 0 0 auto; width: 268px; height: 520px;
+  flex: 0 0 auto; width: 268px; height: 380px;
   border-radius: 15px; overflow: hidden; position: relative;
   text-decoration: none; color: inherit; cursor: pointer;
   display: flex; flex-direction: row; align-items: stretch;
@@ -146,21 +146,21 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
      states. */
   font-weight: 400; font-size: 13px; line-height: 1.85; color: #fff;
   padding: 10px 21px 0;
-  opacity: 0;
-  transition: opacity 0.9s var(--liquid-ease);
+  /* Resting: the teaser is already legible, just dimmed and tucked a touch
+     closer to the title. Hover/open: it eases down into its natural
+     reading position as it brightens to full opacity — a small, satisfying
+     "settle" rather than a hard reveal from nothing. */
+  opacity: 0.4;
+  transform: translateY(-6px);
+  transition: opacity 0.6s var(--liquid-ease), transform 0.6s var(--liquid-ease);
 }
 .v2-card.on-light .v2-card-title,
 .v2-card.on-light .v2-card-desc { color: var(--v2-black); }
 
-/* Default state: description dimmed. The shot area is a short bottom-
-   anchored window so only a sliver of the image's top peeks up over the
-   card's bottom edge. On hover/open, the window grows taller — since
-   it's still bottom-anchored, the extra height opens up *above* that
-   peek, so the image visibly rises into view rather than statically
-   unmasking. */
 .v2-card:hover .v2-card-desc,
 .v2-card.is-open .v2-card-desc {
   opacity: 1;
+  transform: translateY(0);
 }
 
 .v2-card-shot {
