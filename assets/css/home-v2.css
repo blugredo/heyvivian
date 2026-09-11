@@ -14,9 +14,11 @@
   --v2-gray: #8a8a86;
   --v2-gray-light: #b6b6b2;
   --v2-border: #ececea;
-  /* New accent — replaces the warm peach as the site's one signal color
-     (wordmark, dividers, ring graphic, dot field). */
-  --v2-accent: #4abbbb;
+  /* The site's one accent color (wordmark, dividers, ring graphic, dot
+     field, footer) — aliases --accent from style.css (loaded on every
+     page) rather than redefining the hex here, so there's one source
+     of truth for it. */
+  --v2-accent: var(--accent);
 
   /* exact card background colors from Figma */
   --v2-remitly: #242620;
@@ -30,25 +32,19 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
 /* ---------- NAV ---------- */
 .v2-nav {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 28px 96px;
+  /* Same max-width + centering + padding recipe as .v2-hero /
+     .v2-section-head / .v2-scroll-wrap below — without it, on any
+     viewport wider than 1600px + padding, the nav's flat 96px padding
+     sits left of where those max-width:1600px boxes actually start
+     (they center with extra margin beyond their own padding), so the
+     logo reads as misaligned against everything below it. */
+  max-width: 1600px; margin: 0 auto; padding: 28px 96px; box-sizing: border-box;
   position: sticky; top: 0; background: var(--white); z-index: 100;
 }
-.v2-logo { display: inline-flex; text-decoration: none; }
-/* The wordmark PNG is solid black on transparent, so it's used as a mask
-   and painted with the accent color via background — recolors cleanly
-   without needing a re-exported asset. */
-.v2-logo-img {
-  /* Source PNG is 519x157 — matching that aspect ratio exactly (instead
-     of a guessed fixed width) is what was making this look stretched
-     and fuzzy. */
-  height: 20px; width: auto; aspect-ratio: 519 / 157; display: block;
-  background-color: var(--v2-accent);
-  -webkit-mask-image: url('/assets/images/site/vivian-wordmark.png');
-  mask-image: url('/assets/images/site/vivian-wordmark.png');
-  -webkit-mask-size: contain; mask-size: contain;
-  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
-  -webkit-mask-position: left center; mask-position: left center;
-}
+/* Logo is an inline SVG (fill="currentColor" on its paths) so it always
+   tracks the one accent color via this element's own `color`. */
+.v2-logo { display: inline-flex; text-decoration: none; color: var(--v2-accent); }
+.v2-logo-img { height: 20px; width: auto; display: block; }
 .v2-nav-links { display: flex; gap: 28px; list-style: none; }
 .v2-nav-links a { text-decoration: none; }
 /* The Zen/Snappy circle-style toggle lives here now, in the nav's old

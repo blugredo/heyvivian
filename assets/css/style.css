@@ -11,6 +11,10 @@
   --navy: #013048;
   --navy-deep: #01202f;
   --navy-line: rgba(255,255,255,0.14);
+  /* The site's one accent color — logo, footer, dividers, the homepage
+     circle graphic. home-v2.css's --v2-accent aliases this rather than
+     redefining it, so there's a single source of truth. */
+  --accent: #4abbbb;
 
   /* neutrals */
   --black: #111110;
@@ -65,8 +69,11 @@ nav.site-nav {
 }
 nav.site-nav.scrolled { border-bottom-color: #e8e8e4; }
 
-.nav-logo { display: inline-flex; text-decoration: none; }
-.nav-logo img { height: 18px; width: auto; display: block; }
+/* Logo is an inline SVG (fill="currentColor" on its paths) so it always
+   tracks the one accent color via this element's own `color`, instead of
+   a separately-recolored raster asset going out of sync with it. */
+.nav-logo { display: inline-flex; text-decoration: none; color: var(--accent); }
+.nav-logo svg { height: 18px; width: auto; display: block; }
 .nav-logo.text-fallback {
   font-family: 'Karla', sans-serif;
   font-weight: 700;
@@ -94,24 +101,26 @@ footer.site-footer {
   border-top: 1px solid #e8e8e4;
   padding: 0;
 }
-/* "Let's chat" band — dark, centered, sits above the plain copyright
-   row. Reuses --navy (already the site's dark brand color, from the
-   case-study hero/results sections) rather than introducing a new one. */
+/* "Let's chat" band — the one accent color as a bold fill, same pattern
+   as the homepage work-sample cards. Dark text/icons on it rather than
+   white — the accent is light-medium, so white reads too low-contrast
+   here (this is the same "on-light" treatment the pay-with-a-link card
+   already uses). */
 .footer-chat {
-  background: var(--navy); color: #fff; text-align: center;
+  background: var(--accent); color: var(--navy); text-align: center;
   padding: 56px 24px;
 }
 .footer-chat-title { font-size: 17px; font-weight: 700; margin-bottom: 10px; }
-.footer-chat-sub { font-size: 15px; color: rgba(255,255,255,0.75); margin-bottom: 4px; }
-.footer-chat-cta { font-size: 15px; color: #fff; margin-bottom: 20px; }
+.footer-chat-sub { font-size: 15px; color: rgba(1,48,72,0.75); margin-bottom: 4px; }
+.footer-chat-cta { font-size: 15px; color: var(--navy); margin-bottom: 20px; }
 .footer-icons { display: flex; justify-content: center; gap: 16px; }
 .footer-icons a {
   display: inline-flex; align-items: center; justify-content: center;
   width: 36px; height: 36px; border-radius: 50%;
-  background: rgba(255,255,255,0.1); color: #fff;
+  background: rgba(1,48,72,0.1); color: var(--navy);
   transition: background 0.15s ease, transform 0.15s ease;
 }
-.footer-icons a:hover { background: rgba(255,255,255,0.2); transform: translateY(-2px); }
+.footer-icons a:hover { background: rgba(1,48,72,0.18); transform: translateY(-2px); }
 .footer-icons svg { width: 17px; height: 17px; display: block; }
 .footer-bottom-row {
   display: flex; align-items: center; justify-content: center;
