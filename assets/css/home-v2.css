@@ -76,7 +76,11 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
 
 /* ---------- CALLOUT CIRCLE(S) ---------- */
 .v2-callout {
-  max-width: 1600px; margin: 64px auto 0; padding: 0 96px;
+  /* 142px top/bottom — this and .v2-section-head's margin-top are set to
+     the same value so the circle sits centered in the whitespace between
+     the hero text and "Some project samples", instead of hugging the
+     hero (64px above it, 220px below it, before this fix). */
+  max-width: 1600px; margin: 142px auto 0; padding: 0 96px;
   display: flex; justify-content: center; position: relative;
   box-sizing: border-box;
   /* Dragging the dot circle was catching nearby text as a selection,
@@ -138,7 +142,7 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
    and on screens wider than the max-width, the whole block centers as one
    unit (whitespace grows symmetrically) instead of either one staying
    pinned to the raw viewport edge. */
-.v2-section-head { max-width: 1600px; margin: 220px auto 24px; padding: 0 96px; font-size: 17px; box-sizing: border-box; }
+.v2-section-head { max-width: 1600px; margin: 142px auto 24px; padding: 0 96px; font-size: 17px; box-sizing: border-box; }
 .v2-section-head strong { font-weight: 700; color: var(--v2-black); }
 .v2-section-head span { color: var(--v2-gray); font-weight: 400; }
 /* Prev/next controls for the row — static (no animation), same quiet
