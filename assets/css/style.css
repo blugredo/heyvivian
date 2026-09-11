@@ -92,8 +92,32 @@ nav.site-nav.scrolled { border-bottom-color: #e8e8e4; }
 /* ---------------- FOOTER ---------------- */
 footer.site-footer {
   border-top: 1px solid #e8e8e4;
-  padding: 28px 48px;
+  padding: 0;
 }
+/* "Let's chat" band — dark, centered, sits above the plain copyright
+   row. Reuses --navy (already the site's dark brand color, from the
+   case-study hero/results sections) rather than introducing a new one. */
+.footer-chat {
+  background: var(--navy); color: #fff; text-align: center;
+  padding: 56px 24px;
+}
+.footer-chat-title { font-size: 17px; font-weight: 700; margin-bottom: 10px; }
+.footer-chat-sub { font-size: 15px; color: rgba(255,255,255,0.75); margin-bottom: 4px; }
+.footer-chat-cta { font-size: 15px; color: #fff; margin-bottom: 20px; }
+.footer-icons { display: flex; justify-content: center; gap: 16px; }
+.footer-icons a {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(255,255,255,0.1); color: #fff;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+.footer-icons a:hover { background: rgba(255,255,255,0.2); transform: translateY(-2px); }
+.footer-icons svg { width: 17px; height: 17px; display: block; }
+.footer-bottom-row {
+  display: flex; align-items: center; justify-content: center;
+  padding: 16px 48px;
+}
+.footer-bottom-row span { font-size: 12px; color: var(--gray-light); }
 .footer-links {
   display: flex; justify-content: center; gap: 28px;
   padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px solid #eeeeea;

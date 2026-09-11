@@ -78,6 +78,20 @@ document.addEventListener('DOMContentLoaded', () => {
     requestAnimationFrame(step);
   }
 
+  // Prev/next buttons — step by one card-width + gap in either direction,
+  // clamped to the row's actual scroll range, using the same eased scroll
+  // as the click-to-expand auto-scroll above.
+  const STEP = 268 + 32; // card width + row gap
+  const prevBtn = document.getElementById('scrollPrev');
+  const nextBtn = document.getElementById('scrollNext');
+  function stepScroll(dir) {
+    const maxScroll = row.scrollWidth - row.clientWidth;
+    const target = Math.min(Math.max(0, row.scrollLeft + dir * STEP), Math.max(0, maxScroll));
+    animateScrollLeft(row, target, LIQUID_MS);
+  }
+  if (prevBtn) prevBtn.addEventListener('click', () => stepScroll(-1));
+  if (nextBtn) nextBtn.addEventListener('click', () => stepScroll(1));
+
   function closeCard(card) {
     card.classList.remove('is-open');
     card.setAttribute('aria-expanded', 'false');
@@ -141,6 +155,74 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ---------------------------------------------------------------------
+// Circle style toggle — "Zen" (3D tilt rings) vs "Snappy" (dot field).
+// Both graphics live stacked in the same spot; the tabs just swap which
+// one is visible via .is-active, so switching is instant.
+// ---------------------------------------------------------------------
+document.addEventListener('DOMContentLoaded', () => {
+  const tabs = document.querySelectorAll('.v2-circle-tab');
+  const graphics = document.querySelectorAll('.v2-circle-stage [data-circle]');
+  if (!tabs.length || !graphics.length) return;
+
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      const target = tab.dataset.circle;
+      tabs.forEach((t) => {
+        const active = t === tab;
+        t.classList.toggle('is-active', active);
+        t.setAttribute('aria-selected', String(active));
+      });
+      graphics.forEach((g) => {
+        g.classList.toggle('is-active', g.dataset.circle === target);
+      });
+    });
+  });
+});
+
+// ---------------------------------------------------------------------
+// 3D tilt ring graphic — a cluster of rings that spins slowly on its own
+// (pure CSS keyframe) and tilts toward the cursor in 3D (rotateX/rotateY
+// set here) whenever the pointer is over it, easing back to flat when it
+// leaves. The tilt is capped and eased so it reads as a gentle parallax,
+// not a jarring snap.
+// ---------------------------------------------------------------------
+document.addEventListener('DOMContentLoaded', () => {
+  const stage = document.getElementById('ring3dStage');
+  const wrap = document.getElementById('ring3d');
+  if (!stage || !wrap) return;
+
+  const MAX_TILT = 18; // degrees
+
+  wrap.addEventListener('mousemove', (e) => {
+    const rect = wrap.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width;  // 0..1
+    const y = (e.clientY - rect.top) / rect.height;  // 0..1
+    const rotateY = (x - 0.5) * 2 * MAX_TILT;
+    const rotateX = (0.5 - y) * 2 * MAX_TILT;
+    stage.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+  });
+  wrap.addEventListener('mouseleave', () => {
+    stage.style.transform = 'rotateX(0deg) rotateY(0deg)';
+  });
+
+  // Touch: a light one-shot tilt toward the touch point, easing back on
+  // release — there's no hover to sustain it, so keep it brief.
+  wrap.addEventListener('touchmove', (e) => {
+    const t = e.touches[0];
+    if (!t) return;
+    const rect = wrap.getBoundingClientRect();
+    const x = (t.clientX - rect.left) / rect.width;
+    const y = (t.clientY - rect.top) / rect.height;
+    const rotateY = (x - 0.5) * 2 * MAX_TILT;
+    const rotateX = (0.5 - y) * 2 * MAX_TILT;
+    stage.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+  }, { passive: true });
+  wrap.addEventListener('touchend', () => {
+    stage.style.transform = 'rotateX(0deg) rotateY(0deg)';
+  });
+});
+
+// ---------------------------------------------------------------------
 // Liquid dot circle — an interactive field of soft dots inside the
 // callout circle. Each dot idles with a gentle sinusoidal bob, and drifts
 // toward the cursor with spring physics when it's nearby, then eases
@@ -160,13 +242,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const R = cssSize / 2;
   const center = { x: R, y: R };
 
-  // Build a hex-ish grid of dots clipped to the circle.
+  // Build a hex-ish grid of dots clipped to the circle. Both loops run a
+  // symmetric -half..half range (not "-rows/2 to <rows/2", which is one
+  // row/col heavier on the negative side than the positive) so the dot
+  // cluster is actually centered in its box rather than reading as
+  // shifted up-and-left.
   const dots = [];
   const spacing = 21;
   const rows = Math.ceil((cssSize) / spacing) + 2;
-  for (let row = -rows / 2; row < rows / 2; row++) {
+  const half = Math.floor(rows / 2);
+  for (let row = -half; row <= half; row++) {
     const rowOffset = (Math.round(row) % 2 === 0) ? 0 : spacing / 2;
-    for (let col = -rows / 2; col < rows / 2; col++) {
+    for (let col = -half; col <= half; col++) {
       const x = center.x + col * spacing + rowOffset;
       const y = center.y + row * spacing * 0.87;
       const dist = Math.hypot(x - center.x, y - center.y);
@@ -275,11 +362,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const r = d.radius * (1 + glow * 0.9);
       const centerMix = 1 - d.distFromCenter;
-      // Warm peach at the center, cooler cream at the edge, brightening
+      // Accent teal at the center, slightly deeper at the edge, brightening
       // toward white right under the cursor.
-      const red = 253 - centerMix * 6 + glow * 2;
-      const green = 231 - centerMix * 10 + glow * 14;
-      const blue = 199 + centerMix * 15 + glow * 40;
+      const red = 60 + centerMix * 20 + glow * 130;
+      const green = 175 + centerMix * 18 + glow * 70;
+      const blue = 175 + centerMix * 18 + glow * 70;
       const alpha = 0.55 + centerMix * 0.35 + glow * 0.25;
 
       ctx.beginPath();

@@ -6,7 +6,7 @@
 <title>Vivian Reidler — Product Designer</title>
 <meta name="description" content="Vivian Reidler — Product Designer. Growth systems for global, high-friction products. Duolingo and Remitly.">
 <link rel="icon" type="image/png" href="/assets/favicon-32.png">
-<link href="https://fonts.googleapis.com/css2?family=Inclusive+Sans:wght@400;700&family=Karla:wght@700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inclusive+Sans:wght@400;600;700&family=Karla:wght@700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/css/style.css">
 <link rel="stylesheet" href="/assets/css/home-v2.css">
 </head>
@@ -14,30 +14,37 @@
 
 <nav class="v2-nav" id="nav">
   <a href="/" class="v2-logo"><img src="/assets/images/site/vivian-wordmark.png" alt="Vivian" class="v2-logo-img"></a>
-  <ul class="v2-nav-links">
-    <li><a href="/">Home</a></li>
-    <li><a href="/about">About</a></li>
-    <li><a href="mailto:vivianreidler@gmail.com">Etc</a></li>
-  </ul>
+  <div class="v2-nav-links" role="tablist" aria-label="Circle graphic style">
+    <button class="v2-circle-tab" type="button" data-circle="zen" role="tab" aria-selected="false">Zen</button>
+    <button class="v2-circle-tab is-active" type="button" data-circle="snappy" role="tab" aria-selected="true">Snappy</button>
+  </div>
 </nav>
 
 <section class="v2-hero">
-  <h1>hey, Vivian here</h1>
-  <p class="v2-sub">Product Designer currently at Remitly · Previously at Duolingo (7+ years, from small startup through IPO).</p>
-  <p class="v2-sub">I design growth systems for global, high-friction products.</p>
-  <p class="v2-detail">Pennsylvania, USA | English · Português (BR) · Svenska</p>
+  <h1>Hey, Vivian here</h1>
+  <p class="v2-sub">Product Designer currently at Remitly working on a global 0&ndash;1 fintech bet &middot; Previously at Duolingo for ~8 years, from small startup through IPO. I design growth systems for global, high-friction products.</p>
+  <p class="v2-detail">Pennsylvania, USA <span class="v2-accent-divider">|</span> English &middot; Português (BR) &middot; Svenska</p>
 </section>
 
+<!-- Two circle graphics, toggled from the "Zen"/"Snappy" buttons up in the
+     nav — "Zen" is the 3D tilt rings, "Snappy" is the existing interactive
+     dot field (recolored to the new accent). Only one is shown at a time. -->
 <div class="v2-callout">
-  <canvas class="v2-callout-circle" id="liquidCircle" width="260" height="260" aria-hidden="true"></canvas>
-  <div class="v2-callout-text">
-    <p class="v2-callout-label">Portfolio version:</p>
-    <p class="v2-callout-title">Keep it snappy</p>
-    <p class="v2-callout-sub">nobody has time for this anymore</p>
+  <div class="v2-circle-stage">
+    <div class="v2-ring3d" id="ring3d" data-circle="zen" aria-hidden="true">
+      <div class="v2-ring3d-stage" id="ring3dStage">
+        <div class="v2-ring3d-spin">
+          <span class="v2-ring v2-ring-a"></span>
+          <span class="v2-ring v2-ring-b"></span>
+          <span class="v2-ring v2-ring-c"></span>
+        </div>
+      </div>
+    </div>
+    <canvas class="v2-callout-circle is-active" id="liquidCircle" data-circle="snappy" width="260" height="260" aria-hidden="true"></canvas>
   </div>
 </div>
 
-<p class="v2-section-head"><strong>Work samples</strong> <span>as if they were quickly shown in an elevator</span></p>
+<p class="v2-section-head"><strong>Some project samples</strong> <span class="v2-accent-divider">|</span> <span>Designed for fans of brevity, the gift brought to us by the elevator</span> <button class="v2-scroll-nav-btn" id="scrollPrev" type="button" aria-label="Scroll work samples left">&lsaquo;</button><button class="v2-scroll-nav-btn" id="scrollNext" type="button" aria-label="Scroll work samples right">&rsaquo;</button></p>
 
 <div class="v2-scroll-wrap">
   <div class="v2-card-row">
@@ -49,7 +56,7 @@
         <div class="v2-card-shot"><img src="/assets/images/home-v2/remitly-shot.png" alt="Remitly business account type screen"></div>
       </div>
       <div class="v2-card-expand">
-        <button class="v2-card-close" aria-label="Collapse">&larr;</button>
+        <button class="v2-card-close" aria-label="Collapse">&times;</button>
         <div class="v2-stat"><span class="v2-stat-num">100M</span><span class="v2-stat-label">DAUs</span></div>
         <div class="v2-stat"><span class="v2-stat-num">$480M</span><span class="v2-stat-label">profits</span></div>
         <div class="v2-stat"><span class="v2-stat-num">3</span><span class="v2-stat-label">new design system patterns</span></div>
@@ -64,7 +71,7 @@
         <div class="v2-card-shot"><img src="/assets/images/home-v2/newsfeed-shot.png" alt="Duolingo News Feed screen"></div>
       </div>
       <div class="v2-card-expand">
-        <button class="v2-card-close" aria-label="Collapse">&larr;</button>
+        <button class="v2-card-close" aria-label="Collapse">&times;</button>
         <div class="v2-stat"><span class="v2-stat-num">+88%</span><span class="v2-stat-label">UPVs to the Duolingo Blog</span></div>
         <div class="v2-stat"><span class="v2-stat-num">+4,500</span><span class="v2-stat-label">beta tester sign-ups (+800%)</span></div>
         <div class="v2-stat"><span class="v2-stat-num">+0.42%</span><span class="v2-stat-label">total time spent learning</span></div>
@@ -79,7 +86,7 @@
         <div class="v2-card-shot"><img src="/assets/images/home-v2/paylink-shot.png" alt="Pay with a link payment screen"></div>
       </div>
       <div class="v2-card-expand">
-        <button class="v2-card-close" aria-label="Collapse">&larr;</button>
+        <button class="v2-card-close" aria-label="Collapse">&times;</button>
         <p class="v2-card-soon">Case study coming soon.</p>
       </div>
     </div>
@@ -91,7 +98,7 @@
         <div class="v2-card-shot"><img src="/assets/images/home-v2/duocon-shot.png" alt="Duocon badge detail"></div>
       </div>
       <div class="v2-card-expand">
-        <button class="v2-card-close" aria-label="Collapse">&larr;</button>
+        <button class="v2-card-close" aria-label="Collapse">&times;</button>
         <div class="v2-stat"><span class="v2-stat-num">~105%</span><span class="v2-stat-label">attendance, events "sold out"</span></div>
         <div class="v2-stat"><span class="v2-stat-num">90%</span><span class="v2-stat-label">rated the event 8/10+</span></div>
         <div class="v2-stat"><span class="v2-stat-num">+160K</span><span class="v2-stat-label">estimated viewers</span></div>
@@ -105,7 +112,7 @@
         <div class="v2-card-shot"><img src="/assets/images/home-v2/streak-shot.png" alt="Streak Society welcome screen"></div>
       </div>
       <div class="v2-card-expand">
-        <button class="v2-card-close" aria-label="Collapse">&larr;</button>
+        <button class="v2-card-close" aria-label="Collapse">&times;</button>
         <div class="v2-stat"><span class="v2-stat-num">+3.15%</span><span class="v2-stat-label">lift in Plus subscriber DAUs</span></div>
         <div class="v2-stat"><span class="v2-stat-num">+7.2%</span><span class="v2-stat-label">DAUs with 15+ minutes use</span></div>
         <div class="v2-stat"><span class="v2-stat-num">+146%</span><span class="v2-stat-label">lift in Plus purchases, New Year's</span></div>
@@ -130,9 +137,22 @@
 <div class="v2-footer-spacer"></div>
 
 <footer class="site-footer">
-  <div class="footer-bottom">
+    <div class="footer-chat">
+    <p class="footer-chat-title">Let&rsquo;s chat</p>
+    <p class="footer-chat-sub">Interested in working together or coffee?</p>
+    <p class="footer-chat-cta">Reach out!</p>
+    <div class="footer-icons">
+      <!-- TODO: swap "#" for the real LinkedIn profile URL -->
+      <a href="#" aria-label="LinkedIn" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 1 1 .001-4.124 2.062 2.062 0 0 1-.001 4.124zM7.119 20.452H3.554V9h3.565v11.452z"/></svg>
+      </a>
+      <a href="mailto:vivianreidler@gmail.com" aria-label="Email">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+      </a>
+    </div>
+  </div>
+  <div class="footer-bottom-row">
     <span>© Vivian Reidler, 2026</span>
-    <a href="mailto:vivianreidler@gmail.com">vivianreidler@gmail.com</a>
   </div>
 </footer>
 

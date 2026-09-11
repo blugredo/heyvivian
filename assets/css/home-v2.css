@@ -14,6 +14,9 @@
   --v2-gray: #8a8a86;
   --v2-gray-light: #b6b6b2;
   --v2-border: #ececea;
+  /* New accent — replaces the warm peach as the site's one signal color
+     (wordmark, dividers, ring graphic, dot field). */
+  --v2-accent: #4abbbb;
 
   /* exact card background colors from Figma */
   --v2-remitly: #242620;
@@ -31,45 +34,103 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
   position: sticky; top: 0; background: var(--white); z-index: 100;
 }
 .v2-logo { display: inline-flex; text-decoration: none; }
-.v2-logo-img { height: 20px; width: auto; display: block; }
-.v2-nav-links { display: none; gap: 28px; list-style: none; }
-.v2-nav-links a {
-  font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
-  color: var(--v2-gray); text-decoration: none; transition: color 0.15s;
+/* The wordmark PNG is solid black on transparent, so it's used as a mask
+   and painted with the accent color via background — recolors cleanly
+   without needing a re-exported asset. */
+.v2-logo-img {
+  /* Source PNG is 519x157 — matching that aspect ratio exactly (instead
+     of a guessed fixed width) is what was making this look stretched
+     and fuzzy. */
+  height: 20px; width: auto; aspect-ratio: 519 / 157; display: block;
+  background-color: var(--v2-accent);
+  -webkit-mask-image: url('/assets/images/site/vivian-wordmark.png');
+  mask-image: url('/assets/images/site/vivian-wordmark.png');
+  -webkit-mask-size: contain; mask-size: contain;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-position: left center; mask-position: left center;
 }
-.v2-nav-links a:hover { color: var(--v2-black); }
+.v2-nav-links { display: flex; gap: 28px; list-style: none; }
+.v2-nav-links a { text-decoration: none; }
+/* The Zen/Snappy circle-style toggle lives here now, in the nav's old
+   Home/About slot — same look (small, bold, letter-spaced, uppercase),
+   just buttons instead of links, with the accent marking the active one. */
+.v2-nav-links a,
+.v2-nav-links .v2-circle-tab {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--v2-black); transition: color 0.15s;
+  background: none; border: none; padding: 0; cursor: pointer; font-family: inherit;
+}
+.v2-nav-links a:hover,
+.v2-nav-links .v2-circle-tab:hover { color: var(--v2-accent); }
+.v2-nav-links .v2-circle-tab.is-active { color: var(--v2-accent); }
 
 /* ---------- HERO ---------- */
-.v2-hero { text-align: center; padding: 56px 24px 0; max-width: 900px; margin: 0 auto; }
+.v2-hero { text-align: left; padding: 56px 96px 0; max-width: 1600px; margin: 0 auto; box-sizing: border-box; }
 .v2-hero h1 {
   font-family: 'Inclusive Sans', sans-serif; font-weight: 400; font-size: clamp(22px, 2.6vw, 30px);
   color: var(--v2-black); margin-bottom: 16px; letter-spacing: -0.01em;
 }
-.v2-hero p.v2-sub { font-size: 14px; line-height: 1.55; color: #505050; margin-bottom: 6px; }
+.v2-hero p.v2-sub { font-size: 14px; line-height: 1.55; color: #505050; margin-bottom: 6px; max-width: 800px; }
 .v2-hero p.v2-detail { font-size: 13px; color: #8c8c8c; margin-top: 10px; }
+.v2-accent-divider { color: var(--v2-accent); font-weight: 700; }
 
-/* ---------- CALLOUT CIRCLE ---------- */
+/* ---------- CALLOUT CIRCLE(S) ---------- */
 .v2-callout {
-  max-width: 900px; margin: 64px auto 0; padding: 0 96px;
-  display: flex; align-items: center; justify-content: center; position: relative;
-  min-height: 260px;
+  max-width: 1600px; margin: 64px auto 0; padding: 0 96px;
+  display: flex; justify-content: center; position: relative;
+  box-sizing: border-box;
   /* Dragging the dot circle was catching nearby text as a selection,
      which shows a blinking text caret/highlight — this area isn't
      meant to be selectable text anyway. */
   -webkit-user-select: none; user-select: none; cursor: default;
 }
+/* Both graphics stack in the same spot; only the active one is visible —
+   toggled from the Zen/Snappy buttons up in the nav. */
+.v2-circle-stage { position: relative; width: 260px; height: 260px; }
+.v2-circle-stage .v2-ring3d,
+.v2-circle-stage .v2-callout-circle {
+  position: absolute; top: 0; left: 0;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+.v2-circle-stage .v2-ring3d.is-active,
+.v2-circle-stage .v2-callout-circle.is-active {
+  opacity: 1; pointer-events: auto;
+}
 .v2-callout-circle {
   /* No fill/gradient behind it on purpose — just the dots themselves. */
   width: 260px; height: 260px; border-radius: 50%; overflow: hidden;
   background: transparent;
-  position: absolute; left: 50%; top: 50%; transform: translate(-38%, -50%);
-  z-index: 1; cursor: pointer;
-  display: block;
+  display: block; cursor: pointer;
 }
-.v2-callout-text { position: relative; z-index: 2; max-width: 260px; text-align: left; margin-right: auto; margin-left: 8%; }
-.v2-callout-label { font-size: 15px; color: var(--v2-gray); margin-bottom: 6px; }
-.v2-callout-title { font-weight: 700; font-size: 20px; color: var(--v2-black); margin-bottom: 6px; }
-.v2-callout-sub { font-size: 15px; color: var(--v2-gray); }
+
+/* --- 3D tilt ring graphic. A cluster of thin circles that spins slowly
+   on its own (CSS keyframe on the inner .v2-ring3d-spin layer) while the
+   outer .v2-ring3d-stage tilts in 3D toward the cursor (JS-set
+   rotateX/rotateY) — two independent transforms on two different
+   elements, so they compose instead of fighting each other. */
+.v2-ring3d { width: 260px; height: 260px; perspective: 700px; }
+.v2-ring3d-stage {
+  width: 100%; height: 100%; position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.5s var(--liquid-ease, cubic-bezier(.22,1.12,.36,1));
+}
+.v2-ring3d-spin {
+  position: absolute; inset: 0;
+  transform-style: preserve-3d;
+  animation: v2-ring-spin 16s linear infinite;
+}
+@keyframes v2-ring-spin {
+  from { transform: rotateZ(0deg); }
+  to { transform: rotateZ(360deg); }
+}
+.v2-ring {
+  position: absolute; inset: 0; border-radius: 50%;
+  border: 1.5px solid var(--v2-accent);
+}
+.v2-ring-a { transform: translate3d(-4%, -3%, 30px) scale(0.9); opacity: 0.9; }
+.v2-ring-b { transform: translate3d(3%, 5%, 0) scale(1); opacity: 0.65; }
+.v2-ring-c { transform: translate3d(7%, -6%, -30px) scale(0.78); opacity: 0.45; }
 
 /* ---------- SECTION LABEL ROW ---------- */
 /* .v2-section-head and .v2-scroll-wrap share the identical max-width +
@@ -80,6 +141,17 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
 .v2-section-head { max-width: 1600px; margin: 220px auto 24px; padding: 0 96px; font-size: 17px; box-sizing: border-box; }
 .v2-section-head strong { font-weight: 700; color: var(--v2-black); }
 .v2-section-head span { color: var(--v2-gray); font-weight: 400; }
+/* Prev/next controls for the row — static (no animation), same quiet
+   glyph-button treatment as .v2-card-close: no fill/border, just the
+   character itself, dimmed until hover. */
+.v2-scroll-nav-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 22px; height: 22px; margin-left: 4px;
+  background: none; border: none; padding: 0;
+  font-size: 20px; line-height: 1; color: var(--v2-black); opacity: 0.5; cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+.v2-scroll-nav-btn:hover { opacity: 1; color: var(--v2-accent); }
 
 /* ---------- WORK SAMPLES: horizontal scroll row ---------- */
 .v2-scroll-wrap { max-width: 1600px; margin: 0 auto; padding: 0 0 24px; }
@@ -116,8 +188,8 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
 }
 
 .v2-card {
-  flex: 0 0 auto; width: 268px; height: 380px;
-  border-radius: 15px; overflow: hidden; position: relative;
+  flex: 0 0 auto; width: 268px; height: 383px;
+  border-radius: 15px 15px 0 0; overflow: hidden; position: relative;
   text-decoration: none; color: inherit; cursor: pointer;
   display: flex; flex-direction: row; align-items: stretch;
   transition: width var(--liquid-duration) var(--liquid-ease);
@@ -133,26 +205,28 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
 .v2-card-main {
   flex: 0 0 268px; width: 268px; height: 100%;
   display: flex; flex-direction: column;
+  position: relative;
 }
 
 .v2-card-title {
   font-weight: 700; font-size: 17px; color: #fff;
-  padding: 28px 21px 0;
+  padding: 18px 21px 0;
+  position: relative; z-index: 3;
 }
 .v2-card-desc {
-  /* Fixed line-height, not animated — line-height transitions reflow text
-     every frame and read as choppy rather than smooth, unlike opacity
-     which the compositor can animate cleanly. 1.85 stays airy in both
-     states. */
-  font-weight: 400; font-size: 13px; line-height: 1.85; color: #fff;
-  padding: 10px 21px 0;
-  /* Resting: the teaser is already legible, just dimmed and tucked a touch
-     closer to the title. Hover/open: it eases down into its natural
-     reading position as it brightens to full opacity — a small, satisfying
-     "settle" rather than a hard reveal from nothing. */
+  /* The screenshot sits on top of this at rest and fully hides it — not
+     dimmed-through, actually covered — so it doesn't need its own
+     position in the flex column; it's overlaid absolutely, starting
+     right under the title. On hover the image slides down (see
+     .v2-card-shot below) and this simply brightens to full opacity in
+     the gap it leaves, rather than moving itself. */
+  /* Weight 600, not 400 — plain regular white-on-color was hard to read;
+     this needs Inclusive Sans' 600 weight loaded in index.html. */
+  font-weight: 600; font-size: 13px; line-height: 1.85; color: #fff;
+  position: absolute; top: 60px; left: 0; right: 0; z-index: 1;
+  padding: 0 23px;
   opacity: 0.4;
-  transform: translateY(-6px);
-  transition: opacity 0.6s var(--liquid-ease), transform 0.6s var(--liquid-ease);
+  transition: opacity 1s var(--liquid-ease-image);
 }
 .v2-card.on-light .v2-card-title,
 .v2-card.on-light .v2-card-desc { color: var(--v2-black); }
@@ -160,43 +234,34 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
 .v2-card:hover .v2-card-desc,
 .v2-card.is-open .v2-card-desc {
   opacity: 1;
-  transform: translateY(0);
 }
 
 .v2-card-shot {
-  flex: 1; min-height: 0; overflow: hidden;
-  display: flex; align-items: flex-end; justify-content: center;
-  padding: 22px 12px 0;
+  /* Full width (auto height, true aspect ratio, never cropped) rather
+     than object-fit'd into a box — letterboxing an image to fit a fixed
+     box left gaps on the sides that the dimmed text behind it peeked
+     through. The reveal is done purely by sliding this whole block down
+     on hover, so the image itself never grows or shrinks. */
+  position: absolute; left: 8px; right: 8px; top: 58px; z-index: 2;
+  padding: 0;
+  transform: translateY(0);
+  transition: transform 1s var(--liquid-ease-image);
+}
+.v2-card:hover .v2-card-shot,
+.v2-card.is-open .v2-card-shot {
+  transform: translateY(150px);
 }
 .v2-card-shot img {
-  /* max-height matters here as much as max-width: without it, a taller-
-     aspect-ratio image (duocon's badge photo) scales to fill the width
-     and ends up taller than the shot area, spilling up past it and
-     getting clipped by whatever's above instead of scaling down to fit
-     like every other card's image does. */
-  max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; display: block;
+  width: 100%; height: auto; max-width: none; max-height: none;
+  display: block;
   -webkit-user-drag: none; user-select: none;
   /* Uniform rounded top on every card's image — some source screenshots
      (remitly, pay with a link) already have a phone bezel baked in, but
      others (news feed, duocon) don't, which reads as misaligned even
      when the Y position is identical. This makes all five consistent
      regardless of what's in the source file. */
-  border-radius: 14px 14px 0 0; overflow: hidden;
-  /* Default: pushed down so only the image's own top ~78px peeks above
-     the card's bottom edge, and very slightly scaled down + softened.
-     "100%" here is the image's own rendered height, so this scales
-     correctly per image regardless of its aspect ratio. Hover/open:
-     settles into its natural bottom-aligned resting position, full size
-     and sharp — a slow, deliberate rise rather than a quick snap. */
-  transform: translateY(calc(100% - 78px)) scale(0.96);
-  filter: saturate(0.85);
-  transform-origin: center bottom;
-  transition: transform 1.3s var(--liquid-ease-image), filter 1.3s var(--liquid-ease-image);
-}
-.v2-card:hover .v2-card-shot img,
-.v2-card.is-open .v2-card-shot img {
-  transform: translateY(0) scale(1);
-  filter: saturate(1);
+  border-radius: 14px 14px 0 0;
+  transform: none; filter: none; transition: none;
 }
 
 /* ---------- EXPAND PANEL ---------- */
@@ -214,12 +279,12 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
 .v2-card.duocon .v2-card-expand { color: var(--v2-black); }
 
 .v2-card-close {
-  position: absolute; top: 24px; left: 28px;
+  position: absolute; top: 24px; right: 28px;
   background: none; border: none; padding: 4px; margin: 0;
-  font-size: 18px; color: inherit; opacity: 0.6; cursor: pointer; line-height: 1;
+  font-size: 24px; color: inherit; opacity: 0.6; cursor: pointer; line-height: 1;
   transition: opacity 0.2s ease, transform 0.2s var(--liquid-ease);
 }
-.v2-card-close:hover { opacity: 1; transform: translateX(-3px); }
+.v2-card-close:hover { opacity: 1; transform: scale(1.1); }
 
 /* Number + label sit on one row, like the reference — the label given
    generous room (420px panel) and white-space:nowrap so it never wraps
@@ -250,8 +315,18 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
 /* card 1 — remitly business */
 .v2-card.remitly { background: var(--v2-remitly); }
 
+/* Per-card side-inset tuning only — every card shares the same 383px
+   height (the base .v2-card rule) so the row stays a clean, even-topped
+   line. Each source screenshot still has its own drop-shadow quirks
+   (some sit dead-center in their canvas, some are shifted a few px one
+   way), so the horizontal inset is nudged per card to keep the phone
+   graphic itself visually centered — the taller images just get a
+   little more of themselves clipped off the bottom, never a gap. */
+.v2-card.remitly .v2-card-shot { left: 6px; right: 10px; }
+
 /* card 2 — duolingo news feed */
 .v2-card.newsfeed { background: var(--v2-newsfeed); }
+.v2-card.newsfeed .v2-card-shot { left: 2px; right: 14px; }
 
 /* card 3 — pay with a link */
 .v2-card.paylink { background: var(--v2-paylink-bg); }
@@ -280,17 +355,21 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
 .v2-card.duocon .v2-card-desc,
 .v2-card.duocon .v2-stat { color: var(--v2-black); }
 .v2-card.duocon .v2-card-expand { border-left-color: rgba(0,0,0,0.12); }
-.v2-card.duocon .v2-card-title,
-.v2-card.duocon .v2-card-desc,
-.v2-card.duocon .v2-card-shot,
+/* .v2-card-title/-desc/-shot already carry their own z-index (3/1/2) from
+   the shared rules above, which is enough to sit above this card's own
+   ::before/::after background layers (z-index 0) — only .v2-card-expand
+   needs the explicit bump, since it's otherwise unpositioned. */
 .v2-card.duocon .v2-card-expand { position: relative; z-index: 1; }
 /* No shadow on the badge photo itself (the source PNG's own baked-in
    border/shadow was cropped off separately); rounded top matches every
    other card's peek image via the shared .v2-card-shot img rule. */
 .v2-card.duocon .v2-card-shot img { box-shadow: none; }
+/* This photo has no baked-in shadow at all — it's edge to edge already,
+   so the side insets stay symmetric (the shared default). */
 
 /* card 5 — duolingo streak society */
 .v2-card.streak { background: var(--v2-streak); }
+.v2-card.streak .v2-card-shot { left: 1px; right: 15px; }
 
 /* ---------- NUGGETS (placeholder) ---------- */
 /* Same max-width + centering + padding recipe as .v2-section-head /
@@ -308,10 +387,8 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
 
 /* ---------- RESPONSIVE ---------- */
 @media (max-width: 640px) {
-  .v2-nav, .v2-section-head { padding-left: 24px; padding-right: 24px; }
-  .v2-callout { padding: 0 24px; flex-direction: column; min-height: auto; }
-  .v2-callout-circle { position: static; transform: none; margin-bottom: -100px; }
-  .v2-callout-text { margin: 0 auto; text-align: center; padding-top: 60px; }
+  .v2-nav, .v2-section-head, .v2-hero { padding-left: 24px; padding-right: 24px; }
+  .v2-callout { padding: 0 24px; }
   .v2-card-row { padding-left: 24px; padding-right: 24px; }
   .v2-nugget-row { grid-template-columns: repeat(2, 1fr); padding: 0 24px; }
   .v2-card.is-open { width: 460px; }
