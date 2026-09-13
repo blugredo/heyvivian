@@ -14,11 +14,11 @@
   --v2-gray: #8a8a86;
   --v2-gray-light: #b6b6b2;
   --v2-border: #ececea;
-  /* The site's one accent color (wordmark, dividers, ring graphic, dot
-     field, footer) — aliases --accent from style.css (loaded on every
-     page) rather than redefining the hex here, so there's one source
-     of truth for it. */
-  --v2-accent: var(--accent);
+  /* The site's one accent color lives in style.css as --accent (loaded
+     on every page) and is used directly here, not re-aliased — an
+     alias declared on :root would freeze at :root's own --accent and
+     never see the body[data-mood="zen"] override in style.css, since
+     custom-property resolution happens per declaring element. */
 
   /* exact card background colors from Figma */
   --v2-remitly: #242620;
@@ -43,7 +43,7 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
 }
 /* Logo is an inline SVG (fill="currentColor" on its paths) so it always
    tracks the one accent color via this element's own `color`. */
-.v2-logo { display: inline-flex; text-decoration: none; color: var(--v2-accent); }
+.v2-logo { display: inline-flex; text-decoration: none; color: var(--accent); }
 .v2-logo-img { height: 20px; width: auto; display: block; }
 .v2-nav-links { display: flex; gap: 28px; list-style: none; }
 .v2-nav-links a { text-decoration: none; }
@@ -57,8 +57,14 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
   background: none; border: none; padding: 0; cursor: pointer; font-family: inherit;
 }
 .v2-nav-links a:hover,
-.v2-nav-links .v2-circle-tab:hover { color: var(--v2-accent); }
-.v2-nav-links .v2-circle-tab.is-active { color: var(--v2-accent); }
+.v2-nav-links .v2-circle-tab:hover { color: var(--accent); }
+.v2-nav-links .v2-circle-tab.is-active { color: var(--accent); }
+/* Labels the Zen/Snappy pair as a control (a setting to pick), not a
+   pair of page destinations like the nav links they replaced. */
+.v2-mood-label {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--v2-gray-light); margin-right: 4px;
+}
 
 /* ---------- HERO ---------- */
 .v2-hero { text-align: left; padding: 56px 96px 0; max-width: 1600px; margin: 0 auto; box-sizing: border-box; }
@@ -68,7 +74,7 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
 }
 .v2-hero p.v2-sub { font-size: 14px; line-height: 1.55; color: #505050; margin-bottom: 6px; max-width: 800px; }
 .v2-hero p.v2-detail { font-size: 13px; color: #8c8c8c; margin-top: 10px; }
-.v2-accent-divider { color: var(--v2-accent); font-weight: 700; }
+.v2-accent-divider { color: var(--accent); font-weight: 700; }
 
 /* ---------- CALLOUT CIRCLE(S) ---------- */
 .v2-callout {
@@ -98,9 +104,12 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
   opacity: 1; pointer-events: auto;
 }
 .v2-callout-circle {
-  /* No fill/gradient behind it on purpose — just the dots themselves. */
+  /* No fill/gradient behind it on purpose — just the dots themselves.
+     `color` isn't used for rendering here — the zen canvas reads it back
+     via getComputedStyle so its grains always track --accent, even
+     though canvas fillStyle can't reference a CSS variable directly. */
   width: 260px; height: 260px; border-radius: 50%; overflow: hidden;
-  background: transparent;
+  background: transparent; color: var(--accent);
   display: block; cursor: pointer;
 }
 
@@ -126,7 +135,7 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
 }
 .v2-ring {
   position: absolute; inset: 0; border-radius: 50%;
-  border: 1.5px solid var(--v2-accent);
+  border: 1.5px solid var(--accent);
 }
 .v2-ring-a { transform: translate3d(-4%, -3%, 30px) scale(0.9); opacity: 0.9; }
 .v2-ring-b { transform: translate3d(3%, 5%, 0) scale(1); opacity: 0.65; }
@@ -151,7 +160,7 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
   font-size: 20px; line-height: 1; color: var(--v2-black); opacity: 0.5; cursor: pointer;
   transition: opacity 0.2s ease;
 }
-.v2-scroll-nav-btn:hover { opacity: 1; color: var(--v2-accent); }
+.v2-scroll-nav-btn:hover { opacity: 1; color: var(--accent); }
 
 /* ---------- WORK SAMPLES: horizontal scroll row ---------- */
 .v2-scroll-wrap { max-width: 1600px; margin: 0 auto; padding: 0 0 24px; }
@@ -220,9 +229,10 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
      right under the title. On hover the image slides down (see
      .v2-card-shot below) and this simply brightens to full opacity in
      the gap it leaves, rather than moving itself. */
-  /* Weight 600, not 400 — plain regular white-on-color was hard to read;
-     this needs Inclusive Sans' 600 weight loaded in index.html. */
-  font-weight: 600; font-size: 13px; line-height: 1.85; color: #fff;
+  /* Weight 500, not 400 — plain regular white-on-color was hard to read;
+     600 turned out too heavy, especially on the on-light (dark-text)
+     cards. 500 needs Inclusive Sans' medium weight loaded in index.html. */
+  font-weight: 500; font-size: 13px; line-height: 1.85; color: #fff;
   position: absolute; top: 60px; left: 0; right: 0; z-index: 1;
   padding: 0 23px;
   opacity: 0.4;

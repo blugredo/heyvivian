@@ -15,6 +15,7 @@
      circle graphic. home-v2.css's --v2-accent aliases this rather than
      redefining it, so there's a single source of truth. */
   --accent: #4abbbb;
+  --accent-zen: #e08a3c;
 
   /* neutrals */
   --black: #111110;
@@ -28,6 +29,12 @@
 
   --radius: 6px;
 }
+
+/* Mood system: picking Zen re-points the one accent variable at the zen
+   color, so everything built on var(--accent) — logo, footer, dividers,
+   nav — follows automatically. Homepage-only today (data-mood is only
+   ever set on body.home-v2), so every other page stays teal. */
+body[data-mood="zen"] { --accent: var(--accent-zen); }
 
 html { scroll-behavior: smooth; overflow-x: hidden; }
 

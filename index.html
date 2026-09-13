@@ -6,11 +6,11 @@
 <title>Vivian Reidler — Product Designer</title>
 <meta name="description" content="Vivian Reidler — Product Designer. Growth systems for global, high-friction products. Duolingo and Remitly.">
 <link rel="icon" type="image/png" href="/assets/favicon-32.png">
-<link href="https://fonts.googleapis.com/css2?family=Inclusive+Sans:wght@400;600;700&family=Karla:wght@700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inclusive+Sans:wght@400;500;700&family=Karla:wght@700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/css/style.css">
 <link rel="stylesheet" href="/assets/css/home-v2.css">
 </head>
-<body class="home-v2">
+<body class="home-v2" data-mood="snappy">
 
 <nav class="v2-nav" id="nav">
   <a href="/" class="v2-logo" aria-label="Vivian — home">
@@ -24,6 +24,7 @@
   </svg>
   </a>
   <div class="v2-nav-links" role="tablist" aria-label="Circle graphic style">
+    <span class="v2-mood-label" aria-hidden="true">mood</span>
     <button class="v2-circle-tab" type="button" data-circle="zen" role="tab" aria-selected="false">Zen</button>
     <button class="v2-circle-tab is-active" type="button" data-circle="snappy" role="tab" aria-selected="true">Snappy</button>
   </div>
@@ -36,24 +37,17 @@
 </section>
 
 <!-- Two circle graphics, toggled from the "Zen"/"Snappy" buttons up in the
-     nav — "Zen" is the 3D tilt rings, "Snappy" is the existing interactive
-     dot field (recolored to the new accent). Only one is shown at a time. -->
+     nav — "Zen" is a single sand-like ring that ripples when the cursor
+     passes through it and slowly settles back, "Snappy" is the
+     interactive dot field. Only one is shown at a time. -->
 <div class="v2-callout">
   <div class="v2-circle-stage">
-    <div class="v2-ring3d" id="ring3d" data-circle="zen" aria-hidden="true">
-      <div class="v2-ring3d-stage" id="ring3dStage">
-        <div class="v2-ring3d-spin">
-          <span class="v2-ring v2-ring-a"></span>
-          <span class="v2-ring v2-ring-b"></span>
-          <span class="v2-ring v2-ring-c"></span>
-        </div>
-      </div>
-    </div>
+    <canvas class="v2-callout-circle" id="zenCircle" data-circle="zen" width="260" height="260" aria-hidden="true"></canvas>
     <canvas class="v2-callout-circle is-active" id="liquidCircle" data-circle="snappy" width="260" height="260" aria-hidden="true"></canvas>
   </div>
 </div>
 
-<p class="v2-section-head"><strong>Some project samples</strong> <span class="v2-accent-divider">|</span> <span>Designed for fans of brevity, the gift brought to us by the elevator</span> <button class="v2-scroll-nav-btn" id="scrollPrev" type="button" aria-label="Scroll work samples left">&lsaquo;</button><button class="v2-scroll-nav-btn" id="scrollNext" type="button" aria-label="Scroll work samples right">&rsaquo;</button></p>
+<p class="v2-section-head"><strong>Some project samples</strong> <span class="v2-accent-divider">|</span> <span id="moodTagline">I&rsquo;ll be quick.</span> <button class="v2-scroll-nav-btn" id="scrollPrev" type="button" aria-label="Scroll work samples left">&lsaquo;</button><button class="v2-scroll-nav-btn" id="scrollNext" type="button" aria-label="Scroll work samples right">&rsaquo;</button></p>
 
 <div class="v2-scroll-wrap">
   <div class="v2-card-row">
@@ -61,13 +55,13 @@
     <div class="v2-card remitly" tabindex="0" role="button" aria-expanded="false">
       <div class="v2-card-main">
         <p class="v2-card-title">remitly business</p>
-        <p class="v2-card-desc">I designed an entire &ldquo;scrappy&rdquo; business product inside a consumer app; it went from hidden experiment to a $408M part of the business in 1 year &gt;</p>
+        <p class="v2-card-desc" id="desc-remitly-business">Hidden experiment to $408M business in one year. Zero to one, three countries. &gt;</p>
         <div class="v2-card-shot"><img src="/assets/images/home-v2/remitly-shot.png" alt="Remitly business account type screen"></div>
       </div>
       <div class="v2-card-expand">
         <button class="v2-card-close" aria-label="Collapse">&times;</button>
         <div class="v2-stat"><span class="v2-stat-num">100M</span><span class="v2-stat-label">DAUs</span></div>
-        <div class="v2-stat"><span class="v2-stat-num">$408M</span><span class="v2-stat-label">profits</span></div>
+        <div class="v2-stat"><span class="v2-stat-num">$408M</span><span class="v2-stat-label">processed volume</span></div>
         <div class="v2-stat"><span class="v2-stat-num">3</span><span class="v2-stat-label">new design system patterns</span></div>
         <div class="v2-stat"><span class="v2-stat-num">1</span><span class="v2-stat-label">component library created for expansion</span></div>
       </div>
@@ -76,7 +70,7 @@
     <div class="v2-card newsfeed" tabindex="0" role="button" aria-expanded="false">
       <div class="v2-card-main">
         <p class="v2-card-title">duolingo news feed</p>
-        <p class="v2-card-desc">I pitched and created an in-app tab connecting 500M+ learners to the Duolingo brand and each other, which today is a major part of the app &gt;</p>
+        <p class="v2-card-desc" id="desc-duolingo-news-feed">Pitched a new tab connecting 500M learners to each other. It&rsquo;s still there. &gt;</p>
         <div class="v2-card-shot"><img src="/assets/images/home-v2/newsfeed-shot.png" alt="Duolingo News Feed screen"></div>
       </div>
       <div class="v2-card-expand">
@@ -91,7 +85,7 @@
     <div class="v2-card paylink on-light" tabindex="0" role="button" aria-expanded="false">
       <div class="v2-card-main">
         <p class="v2-card-title">pay with a link</p>
-        <p class="v2-card-desc">I reinvented how small entrepreneurs pay contractors abroad without asking for banking details, a major switch for a product previously built for families &gt;</p>
+        <p class="v2-card-desc" id="desc-pay-with-a-link">Pay contractors abroad without asking for bank details. A family product, rebuilt for business. &gt;</p>
         <div class="v2-card-shot"><img src="/assets/images/home-v2/paylink-shot.png" alt="Pay with a link payment screen"></div>
       </div>
       <div class="v2-card-expand">
@@ -103,7 +97,7 @@
     <div class="v2-card duocon" tabindex="0" role="button" aria-expanded="false">
       <div class="v2-card-main">
         <p class="v2-card-title">duocon</p>
-        <p class="v2-card-desc">I co-created, co-produced, and branded duolingo&rsquo;s first community event in London; and this is how I ended up adding a word to High Valyrian &gt;</p>
+        <p class="v2-card-desc" id="desc-duocon">Co-created and branded Duolingo&rsquo;s first live event. Also added a word to High Valyrian. &gt;</p>
         <div class="v2-card-shot"><img src="/assets/images/home-v2/duocon-shot.png" alt="Duocon badge detail"></div>
       </div>
       <div class="v2-card-expand">
@@ -117,14 +111,14 @@
     <div class="v2-card streak" tabindex="0" role="button" aria-expanded="false">
       <div class="v2-card-main">
         <p class="v2-card-title">duolingo streak society</p>
-        <p class="v2-card-desc">I created an exclusive loyalty tier for Duolingo&rsquo;s most dedicated learners; 3.15% lift in paid subscriber DAUs just in its first experiment &gt;</p>
+        <p class="v2-card-desc" id="desc-duolingo-streak-society">An exclusive club for Duolingo&rsquo;s most obsessive learners. &gt;</p>
         <div class="v2-card-shot"><img src="/assets/images/home-v2/streak-shot.png" alt="Streak Society welcome screen"></div>
       </div>
       <div class="v2-card-expand">
         <button class="v2-card-close" aria-label="Collapse">&times;</button>
+        <div class="v2-stat"><span class="v2-stat-num">+146%</span><span class="v2-stat-label">lift in Plus purchases, New Year's</span></div>
         <div class="v2-stat"><span class="v2-stat-num">+3.15%</span><span class="v2-stat-label">lift in Plus subscriber DAUs</span></div>
         <div class="v2-stat"><span class="v2-stat-num">+7.2%</span><span class="v2-stat-label">DAUs with 15+ minutes use</span></div>
-        <div class="v2-stat"><span class="v2-stat-num">+146%</span><span class="v2-stat-label">lift in Plus purchases, New Year's</span></div>
         <div class="v2-stat"><span class="v2-stat-num">~60K</span><span class="v2-stat-label">daily taps on the home CTA</span></div>
       </div>
     </div>

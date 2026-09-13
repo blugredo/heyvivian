@@ -155,71 +155,158 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ---------------------------------------------------------------------
-// Circle style toggle — "Zen" (3D tilt rings) vs "Snappy" (dot field).
-// Both graphics live stacked in the same spot; the tabs just swap which
-// one is visible via .is-active, so switching is instant.
+// Mood system — SNAPPY (default) vs ZEN. A mood switch changes tone, not
+// facts: the section tagline, the sphere graphic, the card teasers, and
+// (via body[data-mood] in style.css) the one accent color everything
+// else on the page reads from. Stat panels never change with mood.
+// Card copy is keyed per-mood with a snappy fallback so unwritten zen
+// teasers just show the snappy one, per the copy doc.
 // ---------------------------------------------------------------------
+const CARDS = [
+  { id: 'remitly-business', teasers: { snappy: 'Hidden experiment to $408M business in one year. Zero to one, three countries.', zen: null } },
+  { id: 'duolingo-news-feed', teasers: { snappy: "Pitched a new tab connecting 500M learners to each other. It’s still there.", zen: null } },
+  { id: 'pay-with-a-link', teasers: { snappy: 'Pay contractors abroad without asking for bank details. A family product, rebuilt for business.', zen: null } },
+  { id: 'duocon', teasers: { snappy: "Co-created and branded Duolingo’s first live event. Also added a word to High Valyrian.", zen: null } },
+  { id: 'duolingo-streak-society', teasers: { snappy: 'An exclusive club for Duolingo’s most obsessive learners.', zen: null } },
+];
+const MOODS = {
+  snappy: { label: 'SNAPPY', tagline: 'I’ll be quick.' },
+  zen: { label: 'ZEN', tagline: 'Take your time.' },
+};
+
 document.addEventListener('DOMContentLoaded', () => {
   const tabs = document.querySelectorAll('.v2-circle-tab');
   const graphics = document.querySelectorAll('.v2-circle-stage [data-circle]');
+  const tagline = document.getElementById('moodTagline');
+  const body = document.body;
   if (!tabs.length || !graphics.length) return;
 
-  tabs.forEach((tab) => {
-    tab.addEventListener('click', () => {
-      const target = tab.dataset.circle;
-      tabs.forEach((t) => {
-        const active = t === tab;
-        t.classList.toggle('is-active', active);
-        t.setAttribute('aria-selected', String(active));
-      });
-      graphics.forEach((g) => {
-        g.classList.toggle('is-active', g.dataset.circle === target);
-      });
+  function applyMood(mood) {
+    if (!MOODS[mood]) return;
+    body.dataset.mood = mood;
+    tabs.forEach((t) => {
+      const active = t.dataset.circle === mood;
+      t.classList.toggle('is-active', active);
+      t.setAttribute('aria-selected', String(active));
     });
+    graphics.forEach((g) => {
+      g.classList.toggle('is-active', g.dataset.circle === mood);
+    });
+    if (tagline) tagline.textContent = MOODS[mood].tagline;
+    CARDS.forEach((card) => {
+      const el = document.getElementById(`desc-${card.id}`);
+      if (!el) return;
+      el.textContent = (card.teasers[mood] || card.teasers.snappy) + ' >';
+    });
+    try { localStorage.setItem('v2-mood', mood); } catch (e) { /* private mode etc — just skip persisting */ }
+  }
+
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', () => applyMood(tab.dataset.circle));
   });
+
+  let saved = null;
+  try { saved = localStorage.getItem('v2-mood'); } catch (e) { /* ignore */ }
+  applyMood(saved && MOODS[saved] ? saved : 'snappy');
 });
 
 // ---------------------------------------------------------------------
-// 3D tilt ring graphic — a cluster of rings that spins slowly on its own
-// (pure CSS keyframe) and tilts toward the cursor in 3D (rotateX/rotateY
-// set here) whenever the pointer is over it, easing back to flat when it
-// leaves. The tilt is capped and eased so it reads as a gentle parallax,
-// not a jarring snap.
+// Zen circle — a thin ring made of individual grains (not a single
+// stroked path). Where the cursor passes, grains near it scatter like
+// dandelion seeds caught by a puff of breath: a fast initial burst
+// (impulse + heavy drag) that decays quickly, then a long, slow drift
+// back home (a much weaker spring, so the return takes its time) —
+// "disturbed, then eventually undisturbed," never a rigid bounce.
 // ---------------------------------------------------------------------
 document.addEventListener('DOMContentLoaded', () => {
-  const stage = document.getElementById('ring3dStage');
-  const wrap = document.getElementById('ring3d');
-  if (!stage || !wrap) return;
+  const canvas = document.getElementById('zenCircle');
+  if (!canvas || !canvas.getContext) return;
 
-  const MAX_TILT = 18; // degrees
+  const cssSize = 260;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  canvas.width = cssSize * dpr;
+  canvas.height = cssSize * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
 
-  wrap.addEventListener('mousemove', (e) => {
-    const rect = wrap.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width;  // 0..1
-    const y = (e.clientY - rect.top) / rect.height;  // 0..1
-    const rotateY = (x - 0.5) * 2 * MAX_TILT;
-    const rotateX = (0.5 - y) * 2 * MAX_TILT;
-    stage.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-  });
-  wrap.addEventListener('mouseleave', () => {
-    stage.style.transform = 'rotateX(0deg) rotateY(0deg)';
-  });
+  const center = { x: cssSize / 2, y: cssSize / 2 };
+  const REST_RADIUS = 100;
+  const POINT_COUNT = 160;
 
-  // Touch: a light one-shot tilt toward the touch point, easing back on
-  // release — there's no hover to sustain it, so keep it brief.
-  wrap.addEventListener('touchmove', (e) => {
+  const points = [];
+  for (let i = 0; i < POINT_COUNT; i++) {
+    const angle = (i / POINT_COUNT) * Math.PI * 2;
+    const baseX = center.x + Math.cos(angle) * REST_RADIUS;
+    const baseY = center.y + Math.sin(angle) * REST_RADIUS;
+    points.push({ baseX, baseY, x: baseX, y: baseY, vx: 0, vy: 0 });
+  }
+
+  let pointer = null;
+  function localPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+  }
+  canvas.addEventListener('mousemove', (e) => { pointer = localPos(e); });
+  canvas.addEventListener('mouseleave', () => { pointer = null; });
+  canvas.addEventListener('touchmove', (e) => {
     const t = e.touches[0];
     if (!t) return;
-    const rect = wrap.getBoundingClientRect();
-    const x = (t.clientX - rect.left) / rect.width;
-    const y = (t.clientY - rect.top) / rect.height;
-    const rotateY = (x - 0.5) * 2 * MAX_TILT;
-    const rotateX = (0.5 - y) * 2 * MAX_TILT;
-    stage.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    const rect = canvas.getBoundingClientRect();
+    pointer = { x: t.clientX - rect.left, y: t.clientY - rect.top };
   }, { passive: true });
-  wrap.addEventListener('touchend', () => {
-    stage.style.transform = 'rotateX(0deg) rotateY(0deg)';
-  });
+  canvas.addEventListener('touchend', () => { pointer = null; });
+
+  const DISTURB_R = 50;      // reach of the "puff" around the cursor
+  const BURST = 1.1;         // per-frame kick while under the cursor
+  const DRAG = 0.9;          // fast decay right after the kick
+  const RETURN_K = 0.0035;   // very weak — a long, unhurried drift home
+  const FADE_DIST = 34;      // px of drift at which a grain is fully faded
+
+  function frame() {
+    ctx.clearRect(0, 0, cssSize, cssSize);
+
+    for (const p of points) {
+      if (pointer) {
+        const dx = p.x - pointer.x;
+        const dy = p.y - pointer.y;
+        const dist = Math.hypot(dx, dy);
+        if (dist < DISTURB_R) {
+          const strength = (1 - dist / DISTURB_R) * BURST;
+          // Mostly radially outward from the cursor, with a little
+          // random jitter so a whole arc doesn't scatter in lockstep —
+          // reads as loose grains, not a single rigid piece.
+          const away = dist || 1;
+          const jitter = (Math.random() - 0.5) * 0.8;
+          const nx = dx / away + Math.cos(jitter);
+          const ny = dy / away + Math.sin(jitter);
+          p.vx += nx * strength;
+          p.vy += ny * strength;
+        }
+      }
+      p.vx *= DRAG;
+      p.vy *= DRAG;
+      // Slow spring back toward this grain's resting spot on the ring.
+      p.vx += (p.baseX - p.x) * RETURN_K;
+      p.vy += (p.baseY - p.y) * RETURN_K;
+      p.x += p.vx;
+      p.y += p.vy;
+    }
+
+    const accent = getComputedStyle(canvas).color; // tracks --v2-accent live
+    for (const p of points) {
+      const drift = Math.hypot(p.x - p.baseX, p.y - p.baseY);
+      const alpha = Math.max(0.12, 1 - drift / FADE_DIST);
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 1.4, 0, Math.PI * 2);
+      ctx.fillStyle = accent;
+      ctx.globalAlpha = alpha;
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
 });
 
 // ---------------------------------------------------------------------
