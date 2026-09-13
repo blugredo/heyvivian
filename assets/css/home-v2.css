@@ -259,7 +259,7 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
 }
 .v2-card:hover .v2-card-shot,
 .v2-card.is-open .v2-card-shot {
-  transform: translateY(150px);
+  transform: translateY(120px);
 }
 .v2-card-shot img {
   width: 100%; height: auto; max-width: none; max-height: none;
