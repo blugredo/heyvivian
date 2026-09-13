@@ -102,25 +102,23 @@ footer.site-footer {
   padding: 0;
 }
 /* "Let's chat" band — the one accent color as a bold fill, same pattern
-   as the homepage work-sample cards. Dark text/icons on it rather than
-   white — the accent is light-medium, so white reads too low-contrast
-   here (this is the same "on-light" treatment the pay-with-a-link card
-   already uses). */
+   as the homepage work-sample cards. White text/icons, since the accent
+   here reads as dark enough for it. */
 .footer-chat {
-  background: var(--accent); color: var(--navy); text-align: center;
+  background: var(--accent); color: #fff; text-align: center;
   padding: 56px 24px;
 }
 .footer-chat-title { font-size: 17px; font-weight: 700; margin-bottom: 10px; }
-.footer-chat-sub { font-size: 15px; color: rgba(1,48,72,0.75); margin-bottom: 4px; }
-.footer-chat-cta { font-size: 15px; color: var(--navy); margin-bottom: 20px; }
+.footer-chat-sub { font-size: 15px; color: rgba(255,255,255,0.85); margin-bottom: 4px; }
+.footer-chat-cta { font-size: 15px; color: #fff; margin-bottom: 20px; }
 .footer-icons { display: flex; justify-content: center; gap: 16px; }
 .footer-icons a {
   display: inline-flex; align-items: center; justify-content: center;
   width: 36px; height: 36px; border-radius: 50%;
-  background: rgba(1,48,72,0.1); color: var(--navy);
+  background: rgba(255,255,255,0.18); color: #fff;
   transition: background 0.15s ease, transform 0.15s ease;
 }
-.footer-icons a:hover { background: rgba(1,48,72,0.18); transform: translateY(-2px); }
+.footer-icons a:hover { background: rgba(255,255,255,0.3); transform: translateY(-2px); }
 .footer-icons svg { width: 17px; height: 17px; display: block; }
 .footer-bottom-row {
   display: flex; align-items: center; justify-content: center;
