@@ -173,22 +173,23 @@ const MOODS = {
   snappy: { label: 'SNAPPY', tagline: 'I’ll be quick.' },
   zen: { label: 'ZEN', tagline: 'Take your time.' },
 };
+// Cycle order for the single mood button — click steps to the next one
+// and wraps around. Adding a third mood later is just another entry
+// here plus a MOODS record; nothing else needs to change.
+const MOOD_ORDER = ['snappy', 'zen'];
 
 document.addEventListener('DOMContentLoaded', () => {
-  const tabs = document.querySelectorAll('.v2-circle-tab');
+  const cycleBtn = document.getElementById('moodCycle');
   const graphics = document.querySelectorAll('.v2-circle-stage [data-circle]');
   const tagline = document.getElementById('moodTagline');
   const body = document.body;
-  if (!tabs.length || !graphics.length) return;
+  if (!cycleBtn || !graphics.length) return;
 
   function applyMood(mood) {
     if (!MOODS[mood]) return;
     body.dataset.mood = mood;
-    tabs.forEach((t) => {
-      const active = t.dataset.circle === mood;
-      t.classList.toggle('is-active', active);
-      t.setAttribute('aria-selected', String(active));
-    });
+    cycleBtn.textContent = `[${mood}]`;
+    cycleBtn.setAttribute('aria-label', `Cycle mood, currently ${mood}`);
     graphics.forEach((g) => {
       g.classList.toggle('is-active', g.dataset.circle === mood);
     });
@@ -201,8 +202,10 @@ document.addEventListener('DOMContentLoaded', () => {
     try { localStorage.setItem('v2-mood', mood); } catch (e) { /* private mode etc — just skip persisting */ }
   }
 
-  tabs.forEach((tab) => {
-    tab.addEventListener('click', () => applyMood(tab.dataset.circle));
+  cycleBtn.addEventListener('click', () => {
+    const current = body.dataset.mood || 'snappy';
+    const next = MOOD_ORDER[(MOOD_ORDER.indexOf(current) + 1) % MOOD_ORDER.length];
+    applyMood(next);
   });
 
   let saved = null;
@@ -292,17 +295,36 @@ document.addEventListener('DOMContentLoaded', () => {
       p.y += p.vy;
     }
 
-    const accent = getComputedStyle(canvas).color; // tracks --v2-accent live
-    for (const p of points) {
+    // At rest this reads as one continuous ring; only the disturbed
+    // stretch breaks into individual grains. A point counts as
+    // "disturbed" once it's drifted a couple px from home — below that
+    // it rejoins the solid line so the line/dots handoff isn't jittery.
+    const accent = getComputedStyle(canvas).color; // tracks --accent live
+    const DOT_THRESHOLD = 2.5;
+    ctx.strokeStyle = accent;
+    ctx.lineWidth = 1.5;
+    ctx.fillStyle = accent;
+
+    let pathOpen = false;
+    for (let i = 0; i <= points.length; i++) {
+      const p = points[i % points.length];
       const drift = Math.hypot(p.x - p.baseX, p.y - p.baseY);
-      const alpha = Math.max(0.12, 1 - drift / FADE_DIST);
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, 1.4, 0, Math.PI * 2);
-      ctx.fillStyle = accent;
-      ctx.globalAlpha = alpha;
-      ctx.fill();
+      const disturbed = drift > DOT_THRESHOLD;
+
+      if (disturbed) {
+        if (pathOpen) { ctx.stroke(); pathOpen = false; }
+        const alpha = Math.max(0.15, 1 - drift / FADE_DIST);
+        ctx.globalAlpha = alpha;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 1.4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      } else {
+        if (!pathOpen) { ctx.beginPath(); ctx.moveTo(p.x, p.y); pathOpen = true; }
+        else ctx.lineTo(p.x, p.y);
+      }
     }
-    ctx.globalAlpha = 1;
+    if (pathOpen) ctx.stroke();
 
     requestAnimationFrame(frame);
   }

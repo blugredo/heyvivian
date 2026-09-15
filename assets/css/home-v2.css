@@ -47,24 +47,15 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
 .v2-logo-img { height: 20px; width: auto; display: block; }
 .v2-nav-links { display: flex; gap: 28px; list-style: none; }
 .v2-nav-links a { text-decoration: none; }
-/* The Zen/Snappy circle-style toggle lives here now, in the nav's old
-   Home/About slot — same look (small, bold, letter-spaced, uppercase),
-   just buttons instead of links, with the accent marking the active one. */
-.v2-nav-links a,
-.v2-nav-links .v2-circle-tab {
-  font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+/* Single mood control now — lowercase, in brackets like a live variable
+   value, rather than a two-button tablist. Click cycles to the next
+   mood (see the JS MOOD_ORDER list). */
+.v2-mood-cycle {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.04em;
   color: var(--v2-black); transition: color 0.15s;
   background: none; border: none; padding: 0; cursor: pointer; font-family: inherit;
 }
-.v2-nav-links a:hover,
-.v2-nav-links .v2-circle-tab:hover { color: var(--accent); }
-.v2-nav-links .v2-circle-tab.is-active { color: var(--accent); }
-/* Labels the Zen/Snappy pair as a control (a setting to pick), not a
-   pair of page destinations like the nav links they replaced. */
-.v2-mood-label {
-  font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
-  color: var(--v2-gray-light); margin-right: 4px;
-}
+.v2-mood-cycle:hover { color: var(--accent); }
 
 /* ---------- HERO ---------- */
 .v2-hero { text-align: left; padding: 56px 96px 0; max-width: 1600px; margin: 0 auto; box-sizing: border-box; }
@@ -72,7 +63,7 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
   font-family: 'Inclusive Sans', sans-serif; font-weight: 400; font-size: clamp(22px, 2.6vw, 30px);
   color: var(--v2-black); margin-bottom: 16px; letter-spacing: -0.01em;
 }
-.v2-hero p.v2-sub { font-size: 14px; line-height: 1.55; color: #505050; margin-bottom: 6px; max-width: 800px; }
+.v2-hero p.v2-sub { font-size: 14px; line-height: 1.55; color: #505050; margin-bottom: 6px; width: 30%; min-width: 280px; }
 .v2-hero p.v2-detail { font-size: 13px; color: #8c8c8c; margin-top: 10px; }
 .v2-accent-divider { color: var(--accent); font-weight: 700; }
 
@@ -147,12 +138,18 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
    and on screens wider than the max-width, the whole block centers as one
    unit (whitespace grows symmetrically) instead of either one staying
    pinned to the raw viewport edge. */
-.v2-section-head { max-width: 1600px; margin: 142px auto 24px; padding: 0 96px; font-size: 17px; box-sizing: border-box; }
+.v2-section-head {
+  max-width: 1600px; margin: 142px auto 24px; padding: 0 96px; font-size: 17px; box-sizing: border-box;
+  display: flex; align-items: baseline; justify-content: space-between; gap: 16px;
+}
+.v2-section-head p { margin: 0; }
 .v2-section-head strong { font-weight: 700; color: var(--v2-black); }
 .v2-section-head span { color: var(--v2-gray); font-weight: 400; }
-/* Prev/next controls for the row — static (no animation), same quiet
-   glyph-button treatment as .v2-card-close: no fill/border, just the
-   character itself, dimmed until hover. */
+/* Prev/next controls for the row, pushed to the row's right edge by the
+   space-between above — static (no animation), same quiet glyph-button
+   treatment as .v2-card-close: no fill/border, just the character
+   itself, dimmed until hover. */
+.v2-scroll-nav { display: flex; flex: 0 0 auto; }
 .v2-scroll-nav-btn {
   display: inline-flex; align-items: center; justify-content: center;
   width: 22px; height: 22px; margin-left: 4px;
@@ -398,6 +395,7 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
 /* ---------- RESPONSIVE ---------- */
 @media (max-width: 640px) {
   .v2-nav, .v2-section-head, .v2-hero { padding-left: 24px; padding-right: 24px; }
+  .v2-hero p.v2-sub { width: 100%; min-width: 0; }
   .v2-callout { padding: 0 24px; }
   .v2-card-row { padding-left: 24px; padding-right: 24px; }
   .v2-nugget-row { grid-template-columns: repeat(2, 1fr); padding: 0 24px; }
