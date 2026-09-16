@@ -122,11 +122,10 @@ body.draft-hero {
 }
 .d-hero-circle .v2-callout-circle.is-active { opacity: 1; pointer-events: auto; }
 
-/* Applied to the band wrapper (not .v2-section-head's own base
-   margin-top, which is meant for the live homepage's shorter hero) —
-   matches .d-hero's own margin-bottom so the two don't fight over which
-   one wins the collapsed-margin gap between them. */
-.d-hero + .d-snapshots-band { margin-top: 100px; }
+/* Desktop/normal-width: pushed down further, more clearly under the
+   fold. Overridden smaller on tablet/mobile below, where there's much
+   less vertical room to spare. */
+.d-hero + .d-snapshots-band { margin-top: 340px; }
 
 /* ---------- SNAPSHOTS BAND ---------- */
 /* Light gray backdrop behind the section head + card row. Top padding
@@ -215,7 +214,14 @@ body.draft-hero {
      circle plus a 4-5 line headline alone can already exceed 100vh. */
   .d-hero-circle, .d-hero-circle .v2-callout-circle { width: 180px; height: 180px; }
   .d-hero-circle { align-self: center; margin-top: auto; }
-  .d-sub { margin-top: auto; }
+  /* margin-bottom (not just the margin-top:auto share) so the row
+     doesn't sit flush against the very bottom of the hero's min-height
+     — a little breathing room before the snapshots band starts. */
+  .d-sub { margin-top: auto; margin-bottom: 40px; }
+  /* Restores the tighter, tablet/mobile-appropriate gap — the 340px
+     "further under the fold" spacing above is for wider desktop
+     viewports, where there's room to spare. */
+  .d-hero + .d-snapshots-band { margin-top: 100px; }
 }
 @media (max-width: 640px) {
   .d-hero { padding: 0 20px; }
