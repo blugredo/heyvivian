@@ -208,6 +208,11 @@ body.draft-hero {
      what's actually left and the auto-margins find no free space to
      split. */
   .d-hero { margin-top: 40px; }
+  /* "Project snapshots | I'll be quick." stacks into two lines instead of
+     staying on one — the divider pipe only made sense inline, so it's
+     hidden once the tagline drops to its own line below the title. */
+  .d-snapshots-band .v2-section-head p { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
+  .d-snapshots-band .v2-section-head .v2-accent-divider { display: none; }
   /* 100vh on mobile is the "largest" viewport height, as if the browser's
      own address bar weren't there — it stretches this column past what's
      actually visible once that bar is on screen, shoving .d-sub ("Based

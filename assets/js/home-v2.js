@@ -190,8 +190,19 @@ document.addEventListener('DOMContentLoaded', () => {
     card.setAttribute('aria-expanded', 'false');
   }
   function openCard(card) {
-    syncShotOpenOffset(card); // covers keyboard activation, which skips mouseenter
     cards.forEach((c) => { if (c !== card) closeCard(c); });
+
+    // Accordion cards (mobile test: .v-accordion) grow downward in place
+    // instead of widening — no horizontal scroll math applies, and they
+    // don't use the --shot-open-y slide (the image just sits in normal
+    // flow at the bottom of the expanded column), so both are skipped.
+    if (card.classList.contains('v-accordion') && window.innerWidth <= 640) {
+      card.classList.add('is-open');
+      card.setAttribute('aria-expanded', 'true');
+      return;
+    }
+
+    syncShotOpenOffset(card); // covers keyboard activation, which skips mouseenter
 
     // Compute the scroll target BEFORE the width changes, using the known
     // final open width — then kick off the card's grow (CSS transition)
@@ -264,7 +275,11 @@ document.addEventListener('DOMContentLoaded', () => {
 // teasers just show the snappy one, per the copy doc.
 // ---------------------------------------------------------------------
 const CARDS = [
-  { id: 'remitly-business', teasers: { snappy: 'Hidden experiment to $408M business in one year. Zero to one, three countries.', zen: null } },
+  // hasOwnArrow: true — this card's markup has a dedicated .v2-card-arrow
+  // element after the teaser text (for the mobile accordion test), so the
+  // JS-appended " >" below is skipped for it specifically; every other
+  // card still gets that suffix appended as plain text, unchanged.
+  { id: 'remitly-business', hasOwnArrow: true, teasers: { snappy: 'Hidden experiment to $408M business in one year. Zero to one, three countries.', zen: null } },
   { id: 'duolingo-news-feed', teasers: { snappy: "Pitched a new tab connecting 500M learners to each other. It’s still there.", zen: null } },
   { id: 'pay-with-a-link', teasers: { snappy: 'Pay contractors abroad without asking for bank details. A family product, rebuilt for business.', zen: null } },
   { id: 'duocon', teasers: { snappy: "Co-created and branded Duolingo’s first live event. Also added a word to High Valyrian.", zen: null } },
@@ -313,7 +328,8 @@ document.addEventListener('DOMContentLoaded', () => {
     CARDS.forEach((card) => {
       const el = document.getElementById(`desc-${card.id}`);
       if (!el) return;
-      setTextSmooth(el, (card.teasers[mood] || card.teasers.snappy) + ' >', animate);
+      const suffix = card.hasOwnArrow ? '' : ' >';
+      setTextSmooth(el, (card.teasers[mood] || card.teasers.snappy) + suffix, animate);
     });
   }
 

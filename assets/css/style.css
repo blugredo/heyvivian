@@ -381,6 +381,12 @@ blockquote.cs-quote cite {
 @media (max-width: 640px) {
   nav.site-nav, .hero, .work-section, .about-hero, .about-body, .about-meta,
   .cs-hero-inner, footer.site-footer, .more-work { padding-left: 24px; padding-right: 24px; }
+  /* footer.site-footer's own side padding above (for .footer-bottom-row's
+     text) would otherwise inset .footer-chat too, since it's a plain
+     block filling its parent's content box — pull it back out to the
+     true edges so the accent-color fill bleeds fully, while its own
+     56px/24px padding keeps the text/icons inset same as before. */
+  .footer-chat { margin-left: -24px; margin-right: -24px; }
   .grid { grid-template-columns: 1fr; }
   .cs-hero { padding: 56px 24px; }
   .cs-hero-inner { flex-direction: column; text-align: left; gap: 28px; }
