@@ -6,8 +6,24 @@
 <title>About — Vivian Reidler</title>
 <meta name="description" content="Product Designer with over a decade of experience — Duolingo, Remitly, and a decade of designing for global, high-friction products.">
 <link rel="icon" type="image/png" href="/assets/favicon-32.png">
-<link href="https://fonts.googleapis.com/css2?family=Karla:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&family=Karla:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/css/style.css">
+<!-- Matches the home/serif-hero draft's nav treatment (logo size, 24px
+   inset, max-width + centering, normal-case muted links) and its
+   Crimson Text hero headline, so this page reads consistent with home
+   instead of the old Karla/uppercase-nav-link styling. -->
+<style>
+  nav.site-nav { max-width: 1200px; margin: 0 auto; padding-left: 24px; padding-right: 24px; }
+  .nav-logo svg { height: 30px; }
+  .nav-links a {
+    font-size: 14px; font-weight: 400; letter-spacing: normal; text-transform: none;
+    color: var(--gray-mid); padding-bottom: 2px; border-bottom: 1px solid transparent;
+  }
+  .nav-links a.active { color: var(--black); border-bottom-color: var(--black); }
+  .nav-links a:hover { color: var(--black); }
+  .about-hero-title { font-family: 'Crimson Text', Georgia, serif; font-weight: 400; }
+  .about-meta h4 { font-family: 'Inter', sans-serif; font-weight: 600; letter-spacing: normal; }
+</style>
 </head>
 <body>
 
@@ -23,14 +39,15 @@
   </svg>
   </a>
   <ul class="nav-links">
-    <li><a href="/#work">Work</a></li>
+    <li><a href="/">Home</a></li>
     <li><a href="/about" class="active">About</a></li>
+    <li><a href="https://www.linkedin.com/in/reidler/" target="_blank" rel="noopener">LinkedIn</a></li>
   </ul>
 </nav>
 
 <section class="about-hero">
   <p class="section-label">About</p>
-  <h1 style="font-size:clamp(30px,4vw,42px); margin-bottom:8px;">Hey, Vivian here!</h1>
+  <h1 class="about-hero-title" style="font-size:clamp(30px,4vw,42px); margin-bottom:8px;">Hey, Vivian here</h1>
 </section>
 
 <section class="about-body">
@@ -50,23 +67,8 @@
 <section class="about-meta">
   <div class="about-meta-row">
     <div class="about-meta-col">
-      <h4>Contact</h4>
-      <a class="email-link" href="mailto:vivianreidler@gmail.com">vivianreidler@gmail.com</a>
-    </div>
-    <div class="about-meta-col">
       <h4>Resume</h4>
-      <a class="resume-link" href="/assets/files/Vivian_R_2026_Resume.pdf" target="_blank" rel="noopener">Download PDF</a>
-    </div>
-  </div>
-  <div class="about-meta-row">
-    <div class="about-meta-col">
-      <h4>Languages I speak</h4>
-      <ul class="lang-list">
-        <li><img src="/assets/images/about/us-icon.png" alt="USA flag"> English</li>
-        <li><img src="/assets/images/about/bra-icon.png" alt="Brazilian flag"> Portuguese</li>
-        <li><img src="/assets/images/about/swed-icon.png" alt="Swedish flag"> Swedish</li>
-        <li><img src="/assets/images/about/spa-icon.png" alt="Spanish flag"> Conversational Spanish</li>
-      </ul>
+      <a class="resume-link" href="/assets/files/Vivian_R_2026_Resume.pdf" target="_blank" rel="noopener">Get Resume</a>
     </div>
   </div>
 </section>

@@ -5,10 +5,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const row = document.querySelector('.v2-card-row');
   if (!row) return;
 
-  // Defensive: force the row to start unscrolled so its left padding is
-  // always visible on load, regardless of any browser scroll-restoration
-  // quirks.
-  row.scrollLeft = 0;
+  // Ease the row to its left-aligned resting position on load rather
+  // than snapping there — invisible when it's already at 0, but smooths
+  // over any browser scroll-restoration that left it elsewhere, and
+  // reads as a small intentional settle instead of a jump-cut.
+  requestAnimationFrame(() => animateScrollLeft(row, 0, 700));
 
   const DRAG_THRESHOLD = 8; // px of real movement before we treat it as a drag
 
@@ -92,11 +93,34 @@ document.addEventListener('DOMContentLoaded', () => {
   if (prevBtn) prevBtn.addEventListener('click', () => stepScroll(-1));
   if (nextBtn) nextBtn.addEventListener('click', () => stepScroll(1));
 
+  // Keeps the gap below the teaser text (before the screenshot) equal to
+  // the gap above it (title-to-teaser) — teaser length varies per card
+  // (2-4 lines), so a single fixed reveal distance in CSS left some
+  // cards with a much bigger gap under the text than above it. Measured
+  // fresh on every hover/open since it depends on the rendered text.
+  const SHOT_REST_TOP = 58; // matches .v2-card-shot's CSS top
+  function syncShotOpenOffset(card) {
+    const title = card.querySelector('.v2-card-title');
+    const desc = card.querySelector('.v2-card-desc');
+    if (!title || !desc) return;
+    const cardTop = card.getBoundingClientRect().top;
+    const titleRect = title.getBoundingClientRect();
+    const descRect = desc.getBoundingClientRect();
+    const gapAbove = descRect.top - titleRect.bottom;
+    const descBottom = descRect.bottom - cardTop;
+    const desiredShotTop = descBottom + gapAbove;
+    card.style.setProperty('--shot-open-y', `${desiredShotTop - SHOT_REST_TOP}px`);
+  }
+  cards.forEach((card) => {
+    card.addEventListener('mouseenter', () => syncShotOpenOffset(card));
+  });
+
   function closeCard(card) {
     card.classList.remove('is-open');
     card.setAttribute('aria-expanded', 'false');
   }
   function openCard(card) {
+    syncShotOpenOffset(card); // covers keyboard activation, which skips mouseenter
     cards.forEach((c) => { if (c !== card) closeCard(c); });
 
     // Compute the scroll target BEFORE the width changes, using the known
@@ -136,10 +160,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (closeBtn) {
       closeCard(card);
+      animateScrollLeft(row, 0, LIQUID_MS);
       return;
     }
     if (card.classList.contains('is-open')) {
       closeCard(card);
+      animateScrollLeft(row, 0, LIQUID_MS);
     } else {
       openCard(card);
     }
@@ -150,7 +176,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const card = e.target.closest('.v2-card');
     if (!card) return;
     e.preventDefault();
-    card.classList.contains('is-open') ? closeCard(card) : openCard(card);
+    if (card.classList.contains('is-open')) {
+      closeCard(card);
+      animateScrollLeft(row, 0, LIQUID_MS);
+    } else {
+      openCard(card);
+    }
   });
 });
 
@@ -185,19 +216,34 @@ document.addEventListener('DOMContentLoaded', () => {
   const body = document.body;
   if (!cycleBtn || !graphics.length) return;
 
-  function applyMood(mood) {
+  // Cross-fades a text swap instead of snapping it in, for the cycle
+  // button, tagline, and card teasers. Skipped on the very first
+  // (page-load) call — nothing to transition from yet.
+  const FADE_MS = 160;
+  function setTextSmooth(el, text, animate) {
+    if (!el) return;
+    if (!animate) { el.textContent = text; return; }
+    el.style.transition = `opacity ${FADE_MS}ms ease`;
+    el.style.opacity = '0';
+    setTimeout(() => {
+      el.textContent = text;
+      el.style.opacity = '1';
+    }, FADE_MS);
+  }
+
+  function applyMood(mood, animate) {
     if (!MOODS[mood]) return;
     body.dataset.mood = mood;
-    cycleBtn.textContent = `[${mood}]`;
+    setTextSmooth(cycleBtn, `[${mood}]`, animate);
     cycleBtn.setAttribute('aria-label', `Cycle mood, currently ${mood}`);
     graphics.forEach((g) => {
       g.classList.toggle('is-active', g.dataset.circle === mood);
     });
-    if (tagline) tagline.textContent = MOODS[mood].tagline;
+    if (tagline) setTextSmooth(tagline, MOODS[mood].tagline, animate);
     CARDS.forEach((card) => {
       const el = document.getElementById(`desc-${card.id}`);
       if (!el) return;
-      el.textContent = (card.teasers[mood] || card.teasers.snappy) + ' >';
+      setTextSmooth(el, (card.teasers[mood] || card.teasers.snappy) + ' >', animate);
     });
     try { localStorage.setItem('v2-mood', mood); } catch (e) { /* private mode etc — just skip persisting */ }
   }
@@ -205,12 +251,12 @@ document.addEventListener('DOMContentLoaded', () => {
   cycleBtn.addEventListener('click', () => {
     const current = body.dataset.mood || 'snappy';
     const next = MOOD_ORDER[(MOOD_ORDER.indexOf(current) + 1) % MOOD_ORDER.length];
-    applyMood(next);
+    applyMood(next, true);
   });
 
   let saved = null;
   try { saved = localStorage.getItem('v2-mood'); } catch (e) { /* ignore */ }
-  applyMood(saved && MOODS[saved] ? saved : 'snappy');
+  applyMood(saved && MOODS[saved] ? saved : 'snappy', false);
 });
 
 // ---------------------------------------------------------------------
@@ -236,12 +282,47 @@ document.addEventListener('DOMContentLoaded', () => {
   const REST_RADIUS = 100;
   const POINT_COUNT = 160;
 
+  // Each point tracks a disturbance offset from its "home" position, not
+  // a fixed one — home itself breathes slowly in and out (see
+  // getBreathRadius below), and the offset is what the cursor disturbs
+  // and what decays back to (0,0). Keeping these separate means idle
+  // breathing never gets mistaken for a disturbance (the dot/line
+  // threshold only ever looks at the offset).
   const points = [];
   for (let i = 0; i < POINT_COUNT; i++) {
     const angle = (i / POINT_COUNT) * Math.PI * 2;
-    const baseX = center.x + Math.cos(angle) * REST_RADIUS;
-    const baseY = center.y + Math.sin(angle) * REST_RADIUS;
-    points.push({ baseX, baseY, x: baseX, y: baseY, vx: 0, vy: 0 });
+    points.push({ angle, offX: 0, offY: 0, vx: 0, vy: 0, x: 0, y: 0 });
+  }
+
+  // A slow, deliberate breath cycle for the resting radius: inhale
+  // (expand), hold, exhale (shrink slightly below rest), hold, repeat —
+  // "in the most zen way possible," so eased sine curves and no part of
+  // it snaps. Amplitude is small (a few px) since this needs to read as
+  // barely-there, not a pulsing animation.
+  const BREATH_IN = 4200;    // ms to expand
+  const BREATH_HOLD_HIGH = 3000;
+  const BREATH_OUT = 4200;   // ms to shrink
+  const BREATH_HOLD_LOW = 3000;
+  const BREATH_CYCLE = BREATH_IN + BREATH_HOLD_HIGH + BREATH_OUT + BREATH_HOLD_LOW;
+  const BREATH_HIGH = 5;     // px above rest at the fullest inhale
+  const BREATH_LOW = -2;     // px below rest at the emptiest exhale
+  function easeInOutSine(t) { return -(Math.cos(Math.PI * t) - 1) / 2; }
+  function getBreathRadius(t) {
+    const phase = t % BREATH_CYCLE;
+    if (phase < BREATH_IN) {
+      // Starts from BREATH_LOW, not 0 — the cycle wraps from hold-low
+      // straight into inhale, so this has to pick up where exhale left
+      // off or the loop seam would show a small snap.
+      return BREATH_LOW + (BREATH_HIGH - BREATH_LOW) * easeInOutSine(phase / BREATH_IN);
+    }
+    if (phase < BREATH_IN + BREATH_HOLD_HIGH) {
+      return BREATH_HIGH;
+    }
+    if (phase < BREATH_IN + BREATH_HOLD_HIGH + BREATH_OUT) {
+      const p = (phase - BREATH_IN - BREATH_HOLD_HIGH) / BREATH_OUT;
+      return BREATH_HIGH - (BREATH_HIGH - BREATH_LOW) * easeInOutSine(p);
+    }
+    return BREATH_LOW;
   }
 
   let pointer = null;
@@ -265,10 +346,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const RETURN_K = 0.0035;   // very weak — a long, unhurried drift home
   const FADE_DIST = 34;      // px of drift at which a grain is fully faded
 
-  function frame() {
+  function frame(now) {
     ctx.clearRect(0, 0, cssSize, cssSize);
 
+    // Home breathes slowly in and out; the disturbance offset is layered
+    // on top of it and is what the cursor actually pushes around.
+    const breathR = REST_RADIUS + getBreathRadius(now);
+
     for (const p of points) {
+      const homeX = center.x + Math.cos(p.angle) * breathR;
+      const homeY = center.y + Math.sin(p.angle) * breathR;
+      p.x = homeX + p.offX;
+      p.y = homeY + p.offY;
+
       if (pointer) {
         const dx = p.x - pointer.x;
         const dy = p.y - pointer.y;
@@ -288,17 +378,21 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       p.vx *= DRAG;
       p.vy *= DRAG;
-      // Slow spring back toward this grain's resting spot on the ring.
-      p.vx += (p.baseX - p.x) * RETURN_K;
-      p.vy += (p.baseY - p.y) * RETURN_K;
-      p.x += p.vx;
-      p.y += p.vy;
+      // Slow spring back toward this grain's (breathing) home — offset
+      // decays to (0,0), never a fixed point, so idle breathing is never
+      // mistaken for a disturbance.
+      p.vx += (0 - p.offX) * RETURN_K;
+      p.vy += (0 - p.offY) * RETURN_K;
+      p.offX += p.vx;
+      p.offY += p.vy;
     }
 
-    // At rest this reads as one continuous ring; only the disturbed
-    // stretch breaks into individual grains. A point counts as
-    // "disturbed" once it's drifted a couple px from home — below that
-    // it rejoins the solid line so the line/dots handoff isn't jittery.
+    // At rest this reads as one continuous ring (breathing included);
+    // only the disturbed stretch breaks into individual grains. A point
+    // counts as "disturbed" once its offset exceeds a couple px — below
+    // that it rejoins the solid line so the line/dots handoff isn't
+    // jittery, and idle breathing (which only moves `home`, not `off`)
+    // never trips this.
     const accent = getComputedStyle(canvas).color; // tracks --accent live
     const DOT_THRESHOLD = 2.5;
     ctx.strokeStyle = accent;
@@ -308,7 +402,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let pathOpen = false;
     for (let i = 0; i <= points.length; i++) {
       const p = points[i % points.length];
-      const drift = Math.hypot(p.x - p.baseX, p.y - p.baseY);
+      const drift = Math.hypot(p.offX, p.offY);
       const disturbed = drift > DOT_THRESHOLD;
 
       if (disturbed) {

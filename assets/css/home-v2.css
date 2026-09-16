@@ -256,7 +256,11 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
 }
 .v2-card:hover .v2-card-shot,
 .v2-card.is-open .v2-card-shot {
-  transform: translateY(120px);
+  /* Set per-card by JS (measured from the actual rendered teaser height,
+     so the gap below the text matches the gap above it regardless of
+     how many lines that card's teaser wraps to) — 120px is just the
+     fallback before the first measurement runs. */
+  transform: translateY(var(--shot-open-y, 120px));
 }
 .v2-card-shot img {
   width: 100%; height: auto; max-width: none; max-height: none;

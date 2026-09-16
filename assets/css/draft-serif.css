@@ -1,0 +1,198 @@
+/* ============================================================
+   Draft: serif hero, mimicking rahuljain.framer.website's layout
+   (small mark + text nav, mixed serif/italic headline, thin
+   divider) while keeping this site's own mood system (circle
+   graphic + Zen/Snappy cycle) and work-sample cards intact.
+   home-v2.css is loaded alongside this file for the nav logo, the
+   card row, and the callout-circle base rules; only the hero/nav
+   layout itself is custom here (d-* classes), so nothing in
+   home-v2.css's own .v2-nav/.v2-hero rules is actually triggered by
+   this page's markup.
+   Not linked from the live site — preview only.
+   ============================================================ */
+
+body.draft-hero {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* ---------- NAV ---------- */
+/* .v2-nav (from home-v2.css) supplies the sticky bar and space-between
+   layout, but its own max-width/padding (1600px / 96px, tuned for the
+   live homepage) doesn't match this draft's narrower hero (1200px /
+   24px) — overridden here so the logo lines up with the hero text
+   below it instead of sitting further in. */
+.d-nav { max-width: 1200px; padding-left: 24px; padding-right: 24px; }
+.d-nav .v2-logo-img { height: 30px; }
+.d-nav-links { display: flex; align-items: center; gap: 28px; }
+/* Normal-case labels (not the all-caps site-wide nav style) in the
+   site's muted gray-mid, same as everywhere else — just without the
+   uppercase/letter-spacing treatment. Selected page gets an underline. */
+.d-nav-links a {
+  font-size: 14px; font-weight: 400; color: var(--gray-mid); text-decoration: none;
+  padding-bottom: 2px; border-bottom: 1px solid transparent;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+.d-nav-links a.is-active { color: var(--black); border-bottom-color: var(--black); }
+.d-nav-links a:hover { color: var(--black); }
+/* Resting color already matches the circle graphic's live accent color
+   (teal/orange with mood), not just on hover — and lighter weight than
+   the plain nav links since it's a value being displayed, not a label. */
+.d-mood-cycle {
+  /* Fixed width (sized to the longest label, "[snappy]") and left-aligned
+     text — so cycling to a shorter label like "[zen]" never changes this
+     button's own footprint, which would otherwise shift Home/About/
+     LinkedIn to its left (this whole group is flush against the nav's
+     right edge via .v2-nav's space-between). */
+  display: inline-block; min-width: 62px; text-align: left;
+  font-size: 13px; font-weight: 400; color: var(--accent);
+  background: none; border: none; padding: 0; cursor: pointer; font-family: inherit;
+  transition: opacity 0.15s ease;
+  -webkit-user-select: none; user-select: none;
+}
+.d-mood-cycle:hover { opacity: 0.7; }
+
+/* No default browser focus ring (blue box) or text-select cursor on any
+   of this draft's clickable bits — mouse clicks shouldn't leave a
+   lingering outline, and text-swap buttons shouldn't look editable. */
+.d-mood-cycle:focus,
+.d-nav-links a:focus,
+.v2-scroll-nav-btn:focus,
+.v2-logo:focus { outline: none; }
+.d-mood-cycle:focus-visible,
+.d-nav-links a:focus-visible,
+.v2-scroll-nav-btn:focus-visible,
+.v2-logo:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.d-nav-links a, .v2-scroll-nav-btn, .v2-logo {
+  -webkit-user-select: none; user-select: none;
+}
+
+/* ---------- HERO ---------- */
+/* The circle sits beside the headline specifically (not the avatar or
+   the "Based in..." line below) — .d-headline-row is its own flex row
+   with align-items: center, so the circle centers against just the
+   paragraph's own height, regardless of what sits above/below it. */
+.d-hero { max-width: 1200px; margin: 110px auto 120px; padding: 0 24px; }
+.d-hero-text { max-width: none; }
+.d-headline-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 48px;
+  flex-wrap: wrap;
+}
+.d-headline { flex: 1 1 480px; max-width: 700px; }
+
+.d-avatar-wrap { width: 64px; height: 64px; margin-top: 56px; margin-bottom: 24px; }
+.d-avatar {
+  width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block;
+}
+
+.d-headline {
+  font-family: 'Crimson Text', Georgia, serif; font-weight: 400;
+  font-size: clamp(26px, 3.2vw, 40px); line-height: 1.3;
+  color: var(--black); letter-spacing: -0.01em;
+}
+.d-headline em { font-style: italic; font-weight: 400; }
+.d-glyph {
+  display: inline-block; color: var(--accent); font-size: 0.72em;
+  transform: translateY(-0.12em);
+}
+
+.d-sub { margin-top: 24px; font-size: 15px; color: var(--gray-mid); }
+.d-more {
+  color: var(--gray-mid); text-decoration: underline; text-underline-offset: 3px;
+  transition: color 0.15s ease;
+}
+.d-more:hover { color: var(--black); }
+.d-arrow { display: inline-block; }
+
+/* Circle graphic, moved into the hero row itself (right side, bottom
+   aligned) instead of a separate section below. */
+.d-hero-circle {
+  position: relative; flex: 0 0 auto;
+  width: 260px; height: 260px;
+  -webkit-user-select: none; user-select: none;
+}
+.d-hero-circle .v2-callout-circle {
+  position: absolute; top: 0; left: 0; width: 260px; height: 260px;
+  opacity: 0; pointer-events: none; transition: opacity 0.4s ease; cursor: pointer;
+}
+.d-hero-circle .v2-callout-circle.is-active { opacity: 1; pointer-events: auto; }
+
+/* Extra room below the hero (beyond .v2-section-head's own base
+   margin-top, meant for the live homepage's shorter hero) so the cards
+   land further below the fold here — applied to the band wrapper now
+   that the section head lives inside it. */
+.d-hero + .d-snapshots-band { margin-top: 340px; }
+
+/* ---------- SNAPSHOTS BAND ---------- */
+/* Light gray backdrop behind the section head + card row. Top padding
+   matches the 24px gap .v2-section-head already keeps above the card
+   row (its own margin-bottom), so the whitespace reads even on both
+   sides of the heading; bottom padding is 0 so the band hugs the
+   cards' own bottom edge exactly, with no added gray beneath them. */
+.d-snapshots-band {
+  background: var(--gray-band);
+  padding: 24px 0 0;
+  /* Same left/right inset the nav/hero's max-width:1200px + auto-margin
+     centering produces — computed directly instead of copying that
+     recipe, so it stays correct on every element regardless of that
+     element's own width. Used below on both the section head (so the
+     heading/arrows still line up with the nav) and the scroll-wrap
+     (so the row starts at the same spot but stays uncapped on the
+     right, rather than being boxed into the same narrow 1200px column
+     and cutting cards short). */
+  /* 100% here (not 100vw) resolves against each consumer's own
+     containing-block width once substituted in — which excludes the
+     scrollbar, same as the nav's max-width:1200px + auto-margin
+     centering does. 100vw includes the scrollbar and was landing ~8px
+     off from the nav on typical desktop widths. */
+  --band-inset: max(24px, calc((100% - 1200px) / 2 + 24px));
+}
+/* Heading text stays matched to the card row's left edge (--band-inset);
+   the prev/next arrows sit on the opposite end of this same flex row,
+   so their own edge is independent — pinned to the page's flat 24px
+   margin instead, flush with the true right edge of the page rather
+   than lining up with the (narrower) 1200px text column. */
+.d-snapshots-band .v2-section-head {
+  margin-top: 0; max-width: none; padding-left: var(--band-inset); padding-right: 24px;
+}
+.d-snapshots-band .v2-scroll-wrap { max-width: none; padding-bottom: 0; }
+/* Row's own base 96px left padding (home-v2.css) is tuned for the live
+   homepage's wider page margin — matched to the same computed inset as
+   the section head above it, so the first card's left edge always
+   lines up with the heading regardless of viewport width. */
+.d-snapshots-band .v2-card-row { padding-bottom: 0; padding-left: var(--band-inset); }
+
+/* ---------- ENTRANCE ---------- */
+/* Sequenced in two beats: the circle fades in on its own first
+   (.d-fade-in, no delay), then once that's mostly settled the rest of
+   the hero (avatar, headline, subtext) slides up and fades in together
+   — same delay across all three so they move as one group, slower than
+   before (1.1s, was 0.8s) so it reads as a deliberate settle. */
+@keyframes d-fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: none; }
+}
+.d-fade-up {
+  opacity: 0;
+  animation: d-fade-up 1.6s cubic-bezier(.16, 1, .3, 1) forwards;
+  animation-delay: var(--fade-delay, 0s);
+}
+@keyframes d-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.d-fade-in {
+  opacity: 0;
+  animation: d-fade-in 0.6s ease forwards;
+  animation-delay: var(--fade-delay, 0s);
+}
+@media (prefers-reduced-motion: reduce) {
+  .d-fade-up, .d-fade-in { animation: none; opacity: 1; }
+}
+
+@media (max-width: 780px) {
+  .d-hero { flex-direction: column; align-items: flex-start; gap: 32px; margin-top: 40px; }
+  .d-hero-circle { align-self: center; }
+}
+@media (max-width: 640px) {
+  .d-hero { padding: 0 20px; }
+}
