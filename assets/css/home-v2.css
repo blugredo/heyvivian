@@ -239,7 +239,8 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
 .v2-card.on-light .v2-card-desc { color: var(--v2-black); }
 
 .v2-card:hover .v2-card-desc,
-.v2-card.is-open .v2-card-desc {
+.v2-card.is-open .v2-card-desc,
+.v2-card.is-touched .v2-card-desc {
   opacity: 1;
 }
 
@@ -255,7 +256,8 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
   transition: transform 1s var(--liquid-ease-image);
 }
 .v2-card:hover .v2-card-shot,
-.v2-card.is-open .v2-card-shot {
+.v2-card.is-open .v2-card-shot,
+.v2-card.is-touched .v2-card-shot {
   /* Set per-card by JS (measured from the actual rendered teaser height,
      so the gap below the text matches the gap above it regardless of
      how many lines that card's teaser wraps to) — 120px is just the

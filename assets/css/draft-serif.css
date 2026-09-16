@@ -213,7 +213,10 @@ body.draft-hero {
      even-spacing below on a phone-height viewport, where a full-size
      circle plus a 4-5 line headline alone can already exceed 100vh. */
   .d-hero-circle, .d-hero-circle .v2-callout-circle { width: 180px; height: 180px; }
-  .d-hero-circle { align-self: center; margin-top: auto; }
+  /* margin-bottom nudges the circle up a bit off center (was splitting the
+     leftover space with .d-sub dead-even) — a little more breathing room
+     above the "Based in..." line reads better than perfectly even. */
+  .d-hero-circle { align-self: center; margin-top: auto; margin-bottom: 24px; }
   /* margin-bottom (not just the margin-top:auto share) so the row
      doesn't sit flush against the very bottom of the hero's min-height
      — a little breathing room before the snapshots band starts. */

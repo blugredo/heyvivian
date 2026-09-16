@@ -115,6 +115,38 @@ document.addEventListener('DOMContentLoaded', () => {
     card.addEventListener('mouseenter', () => syncShotOpenOffset(card));
   });
 
+  // Dragging a finger across the row reveals each card in turn the same
+  // way :hover does on desktop — touch never fires :hover, so without
+  // this a finger-drag would just scroll past every card at rest.
+  function setTouched(card) {
+    if (card && !card.classList.contains('is-touched')) {
+      syncShotOpenOffset(card); // fresh measurement, mirrors mouseenter above
+    }
+    cards.forEach((c) => c.classList.toggle('is-touched', c === card));
+  }
+  function clearTouched() {
+    cards.forEach((c) => c.classList.remove('is-touched'));
+  }
+
+  // Touch: track which card is under the finger as it moves, so dragging
+  // across the row reveals each card in turn the way a mouse hover-sweep
+  // would. Passive listeners — this only toggles a class, never calls
+  // preventDefault, so native horizontal scroll/tap behavior is untouched.
+  function cardAtTouch(touch) {
+    const el = document.elementFromPoint(touch.clientX, touch.clientY);
+    return el ? el.closest('.v2-card') : null;
+  }
+  row.addEventListener('touchstart', (e) => {
+    const t = e.touches[0];
+    if (t) setTouched(cardAtTouch(t));
+  }, { passive: true });
+  row.addEventListener('touchmove', (e) => {
+    const t = e.touches[0];
+    if (t) setTouched(cardAtTouch(t));
+  }, { passive: true });
+  row.addEventListener('touchend', clearTouched);
+  row.addEventListener('touchcancel', clearTouched);
+
   function closeCard(card) {
     card.classList.remove('is-open');
     card.setAttribute('aria-expanded', 'false');
