@@ -245,7 +245,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!el) return;
       setTextSmooth(el, (card.teasers[mood] || card.teasers.snappy) + ' >', animate);
     });
-    try { localStorage.setItem('v2-mood', mood); } catch (e) { /* private mode etc — just skip persisting */ }
   }
 
   cycleBtn.addEventListener('click', () => {
@@ -254,9 +253,9 @@ document.addEventListener('DOMContentLoaded', () => {
     applyMood(next, true);
   });
 
-  let saved = null;
-  try { saved = localStorage.getItem('v2-mood'); } catch (e) { /* ignore */ }
-  applyMood(saved && MOODS[saved] ? saved : 'snappy', false);
+  // Always starts on Snappy — every page load, not just first-time
+  // visitors (no localStorage read here on purpose).
+  applyMood('snappy', false);
 });
 
 // ---------------------------------------------------------------------

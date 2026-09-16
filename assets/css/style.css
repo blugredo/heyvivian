@@ -116,8 +116,9 @@ footer.site-footer {
   padding: 56px 24px;
 }
 .footer-chat-title { font-size: 17px; font-weight: 700; margin-bottom: 10px; }
-.footer-chat-sub { font-size: 15px; color: rgba(255,255,255,0.85); margin-bottom: 4px; }
-.footer-chat-cta { font-size: 15px; color: #fff; margin-bottom: 20px; }
+.footer-chat-sub, .footer-chat-cta { font-size: 15px; font-weight: 400; color: #fff; }
+.footer-chat-sub { margin-bottom: 4px; }
+.footer-chat-cta { margin-bottom: 20px; }
 .footer-icons { display: flex; justify-content: center; gap: 16px; }
 .footer-icons a {
   display: inline-flex; align-items: center; justify-content: center;

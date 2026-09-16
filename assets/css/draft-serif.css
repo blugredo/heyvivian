@@ -67,19 +67,27 @@ body.draft-hero {
 }
 
 /* ---------- HERO ---------- */
-/* The circle sits beside the headline specifically (not the avatar or
-   the "Based in..." line below) — .d-headline-row is its own flex row
-   with align-items: center, so the circle centers against just the
-   paragraph's own height, regardless of what sits above/below it. */
-.d-hero { max-width: 1200px; margin: 110px auto 120px; padding: 0 24px; }
-.d-hero-text { max-width: none; }
-.d-headline-row {
-  display: flex; align-items: center; justify-content: space-between; gap: 48px;
-  flex-wrap: wrap;
+/* A CSS grid rather than a nested flex row — avatar and the "Based
+   in..." line each span the full width on their own row, while the
+   headline and circle share a row and stay vertically centered against
+   each other (align-items: center). Doing it this way keeps all four
+   pieces genuine siblings of .d-hero-text, which matters on mobile: an
+   auto-margin only distributes space among an element's real siblings,
+   and browsers don't reliably promote a nested child to sibling status
+   just because its wrapper is display:contents. */
+.d-hero { max-width: 1200px; margin: 110px auto 100px; padding: 0 24px; }
+.d-hero-text {
+  max-width: none;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas: "avatar avatar" "headline circle" "sub sub";
+  align-items: center; column-gap: 48px;
 }
-.d-headline { flex: 1 1 480px; max-width: 700px; }
+.d-headline { grid-area: headline; max-width: 700px; }
+.d-hero-circle { grid-area: circle; }
+.d-sub { grid-area: sub; }
 
-.d-avatar-wrap { width: 64px; height: 64px; margin-top: 56px; margin-bottom: 24px; }
+.d-avatar-wrap { grid-area: avatar; width: 64px; height: 64px; margin-top: 56px; margin-bottom: 24px; align-self: start; }
 .d-avatar {
   width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block;
 }
@@ -103,10 +111,8 @@ body.draft-hero {
 .d-more:hover { color: var(--black); }
 .d-arrow { display: inline-block; }
 
-/* Circle graphic, moved into the hero row itself (right side, bottom
-   aligned) instead of a separate section below. */
 .d-hero-circle {
-  position: relative; flex: 0 0 auto;
+  position: relative;
   width: 260px; height: 260px;
   -webkit-user-select: none; user-select: none;
 }
@@ -116,11 +122,11 @@ body.draft-hero {
 }
 .d-hero-circle .v2-callout-circle.is-active { opacity: 1; pointer-events: auto; }
 
-/* Extra room below the hero (beyond .v2-section-head's own base
-   margin-top, meant for the live homepage's shorter hero) so the cards
-   land further below the fold here — applied to the band wrapper now
-   that the section head lives inside it. */
-.d-hero + .d-snapshots-band { margin-top: 340px; }
+/* Applied to the band wrapper (not .v2-section-head's own base
+   margin-top, which is meant for the live homepage's shorter hero) —
+   matches .d-hero's own margin-bottom so the two don't fight over which
+   one wins the collapsed-margin gap between them. */
+.d-hero + .d-snapshots-band { margin-top: 100px; }
 
 /* ---------- SNAPSHOTS BAND ---------- */
 /* Light gray backdrop behind the section head + card row. Top padding
@@ -190,8 +196,26 @@ body.draft-hero {
 }
 
 @media (max-width: 780px) {
-  .d-hero { flex-direction: column; align-items: flex-start; gap: 32px; margin-top: 40px; }
-  .d-hero-circle { align-self: center; }
+  /* Single column now (avatar, headline, circle, sub are genuine
+     siblings, so this just falls back to a plain flex stack). Avatar +
+     headline stay put at the top (unmoved, no auto-margin); the circle
+     and the "Based in..." row share whatever vertical space is left,
+     evenly — two flex items with margin-top:auto in the same column
+     split the leftover space equally between their gaps, so this needs
+     no fixed px guess that would break at different screen heights.
+     Nav (~86px) + this section's own 40px margin-top both eat into the
+     viewport before .d-hero-text starts, so both are subtracted from
+     the min-height budget below — otherwise it reads bigger than
+     what's actually left and the auto-margins find no free space to
+     split. */
+  .d-hero { margin-top: 40px; }
+  .d-hero-text { display: flex; flex-direction: column; min-height: calc(100vh - 126px); }
+  /* Smaller than the desktop 260px — frees up real room for the
+     even-spacing below on a phone-height viewport, where a full-size
+     circle plus a 4-5 line headline alone can already exceed 100vh. */
+  .d-hero-circle, .d-hero-circle .v2-callout-circle { width: 180px; height: 180px; }
+  .d-hero-circle { align-self: center; margin-top: auto; }
+  .d-sub { margin-top: auto; }
 }
 @media (max-width: 640px) {
   .d-hero { padding: 0 20px; }

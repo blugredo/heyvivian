@@ -23,7 +23,7 @@
   /* exact card background colors from Figma */
   --v2-remitly: #242620;
   --v2-newsfeed: #cc348d;
-  --v2-paylink-bg: #eee9e5;
+  --v2-paylink-bg: #d8d3cb;
   --v2-streak: #5f7d8b;
 }
 
@@ -394,7 +394,7 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
 .v2-nugget { aspect-ratio: 3/4; border-radius: 10px; background: #ececea; }
 .v2-nugget.dark { background: #d8d8d4; }
 
-.v2-footer-spacer { height: 40px; }
+.v2-footer-spacer { height: 120px; }
 
 /* ---------- RESPONSIVE ---------- */
 @media (max-width: 640px) {

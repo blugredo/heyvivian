@@ -48,17 +48,21 @@
       <img class="d-avatar" src="/assets/images/about/vivianr100.png" alt="Vivian Reidler">
     </div>
 
-    <div class="d-headline-row">
-      <h1 class="d-headline d-fade-up" style="--fade-delay: 0.4s">
-        Hey, Vivian here. I&rsquo;m a <em>Product Design Lead</em> on a new global 0&ndash;1 fintech bet at Remitly <span class="d-glyph" aria-hidden="true">&#10006;&#xFE0E;</span> Previously working on community-centric design at Duolingo for ~8 years, from small startup through IPO.
-      </h1>
+    <h1 class="d-headline d-fade-up" style="--fade-delay: 0.4s">
+      Hey, Vivian here. I&rsquo;m a <em>Product Design Lead</em> on a new global 0&ndash;1 fintech bet at Remitly <span class="d-glyph" aria-hidden="true">&#10006;&#xFE0E;</span> Previously working on community-centric design at Duolingo for ~8 years, from small startup through IPO.
+    </h1>
 
-      <!-- Circle fades in first, on its own, before the rest of the hero
-           starts its slide-up. -->
-      <div class="v2-circle-stage d-hero-circle d-fade-in" style="--fade-delay: 0s">
-        <canvas class="v2-callout-circle" id="zenCircle" data-circle="zen" width="260" height="260" aria-hidden="true"></canvas>
-        <canvas class="v2-callout-circle is-active" id="liquidCircle" data-circle="snappy" width="260" height="260" aria-hidden="true"></canvas>
-      </div>
+    <!-- A genuine sibling of the headline/avatar/sub now (not nested in
+         a row wrapper) — a CSS grid places it beside the headline on
+         desktop; on mobile it's just the next item in a single column,
+         which is what lets the even-spacing further down actually work
+         (a flex/grid auto-margin only distributes space among an
+         element's real siblings, not a nested child reached via
+         display:contents, which browsers don't reliably support). Fades
+         in first, on its own, before the rest of the hero slides up. -->
+    <div class="v2-circle-stage d-hero-circle d-fade-in" style="--fade-delay: 0s">
+      <canvas class="v2-callout-circle" id="zenCircle" data-circle="zen" width="260" height="260" aria-hidden="true"></canvas>
+      <canvas class="v2-callout-circle is-active" id="liquidCircle" data-circle="snappy" width="260" height="260" aria-hidden="true"></canvas>
     </div>
 
     <p class="d-sub d-fade-up" style="--fade-delay: 0.4s">Pennsylvania, USA&ensp;<span class="v2-accent-divider">|</span>&ensp;English, Portuguese (BR), Swedish&ensp;<span class="v2-accent-divider">|</span>&ensp;<a href="/about" class="d-more">More about me <span class="d-arrow" aria-hidden="true">&#8599;</span></a></p>
