@@ -231,39 +231,6 @@ document.addEventListener('DOMContentLoaded', () => {
     card.classList.remove('is-peeked');
   }
 
-  // Dragging a finger down on the (already-peeked) screenshot is a
-  // second way into the full stats reveal, alongside tapping the arrow.
-  // Only the vertical distance matters — this never touches
-  // horizontal scroll, so it can't fight the row's own drag-to-scroll.
-  const SHOT_DRAG_THRESHOLD = 24;
-  let shotDragCard = null;
-  let shotDragStartY = 0;
-  let shotDragTriggered = false;
-  row.addEventListener('touchstart', (e) => {
-    const t = e.touches[0];
-    const shotEl = t && t.target.closest ? t.target.closest('.v2-card-shot') : null;
-    const card = shotEl ? shotEl.closest('.v2-card') : null;
-    if (t && card && isMobileAccordionCard(card) && !card.classList.contains('is-open')) {
-      shotDragCard = card;
-      shotDragStartY = t.clientY;
-      shotDragTriggered = false;
-    } else {
-      shotDragCard = null;
-    }
-  }, { passive: true });
-  row.addEventListener('touchmove', (e) => {
-    if (!shotDragCard || shotDragTriggered) return;
-    const t = e.touches[0];
-    if (!t) return;
-    if (t.clientY - shotDragStartY > SHOT_DRAG_THRESHOLD) {
-      shotDragTriggered = true;
-      peekCard(shotDragCard);
-      openCard(shotDragCard);
-    }
-  }, { passive: true });
-  row.addEventListener('touchend', () => { shotDragCard = null; });
-  row.addEventListener('touchcancel', () => { shotDragCard = null; });
-
   // Accordion cards grow/shrink their own height (width stays fixed), and
   // CSS alone can't transition to/from "auto" — this measures the real
   // pixel heights and animates between them by hand.
@@ -409,12 +376,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!card) return;
 
     if (isMobileAccordionCard(card)) {
-      // touchend still fires this click regardless of how far the finger
-      // moved (the touchmove listeners are passive, so nothing calls
-      // preventDefault) — without this check, a drag that already opened
-      // the card via SHOT_DRAG_THRESHOLD above would immediately get a
-      // second, conflicting tap-toggle right behind it.
-      if (shotDragTriggered) { shotDragTriggered = false; return; }
       // A plain three-tap cycle now — rest -> peeked -> open -> rest —
       // and any tap on the card advances it, arrow included; nothing
       // about *where* on the card was tapped matters anymore.
