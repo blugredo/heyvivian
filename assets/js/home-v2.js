@@ -197,12 +197,67 @@ document.addEventListener('DOMContentLoaded', () => {
   row.addEventListener('touchend', clearTouched);
   row.addEventListener('touchcancel', clearTouched);
 
+  function isMobileAccordionCard(card) {
+    return card.classList.contains('v-accordion') && window.innerWidth <= 640;
+  }
+  // The accordion card's "first level" — same text/image reveal every
+  // other card gets from :hover, just reached by a tap here since touch
+  // has no hover to fall back on. Doesn't touch height at all; that's
+  // reserved for the full stats reveal (see peekCard's call sites below).
+  function peekCard(card) {
+    syncShotOpenOffset(card);
+    card.classList.add('is-peeked');
+  }
+  function unpeekCard(card) {
+    card.classList.remove('is-peeked');
+  }
+
+  // Dragging a finger down on the (already-peeked) screenshot is a
+  // second way into the full stats reveal, alongside tapping the arrow.
+  // Only the vertical distance matters — this never touches
+  // horizontal scroll, so it can't fight the row's own drag-to-scroll.
+  const SHOT_DRAG_THRESHOLD = 24;
+  let shotDragCard = null;
+  let shotDragStartY = 0;
+  let shotDragTriggered = false;
+  row.addEventListener('touchstart', (e) => {
+    const t = e.touches[0];
+    const shotEl = t && t.target.closest ? t.target.closest('.v2-card-shot') : null;
+    const card = shotEl ? shotEl.closest('.v2-card') : null;
+    if (t && card && isMobileAccordionCard(card) && !card.classList.contains('is-open')) {
+      shotDragCard = card;
+      shotDragStartY = t.clientY;
+      shotDragTriggered = false;
+    } else {
+      shotDragCard = null;
+    }
+  }, { passive: true });
+  row.addEventListener('touchmove', (e) => {
+    if (!shotDragCard || shotDragTriggered) return;
+    const t = e.touches[0];
+    if (!t) return;
+    if (t.clientY - shotDragStartY > SHOT_DRAG_THRESHOLD) {
+      shotDragTriggered = true;
+      peekCard(shotDragCard);
+      openCard(shotDragCard);
+    }
+  }, { passive: true });
+  row.addEventListener('touchend', () => { shotDragCard = null; });
+  row.addEventListener('touchcancel', () => { shotDragCard = null; });
+
   // Accordion cards grow/shrink their own height (width stays fixed), and
   // CSS alone can't transition to/from "auto" — this measures the real
-  // pixel heights and animates between them by hand, same liquid ease as
-  // everything else on the row so it reads as one family of motion
-  // rather than a plain/instant mobile-only exception.
-  const ACCORDION_MS = 550;
+  // pixel heights and animates between them by hand.
+  const ACCORDION_MS = 600;
+  // --liquid-ease (used for the side-panel width reveal elsewhere on this
+  // row) front-loads almost all of its motion into roughly the first
+  // fifth of the duration, then spends the rest settling — fine for a
+  // width change read all at once, but for a tall height reveal it meant
+  // the screenshot's clip window shot most of the way open within the
+  // first ~150ms and just sat there, reading as a snap/jump rather than
+  // a reveal. This curve spreads the motion evenly across the full
+  // duration instead (a standard, symmetric ease-in-out, no overshoot).
+  const ACCORDION_EASE = 'cubic-bezier(0.65, 0, 0.35, 1)';
   // Animates the card's own box from its current rendered height to
   // toHeight — everything about *why* lives on the two call sites below,
   // since what "start"/"target"/"then what" mean differs for open vs.
@@ -211,7 +266,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const startHeight = card.getBoundingClientRect().height;
     card.style.height = `${startHeight}px`;
     card.offsetHeight; // force a reflow so the start height commits before the target below is set — same-frame changes to both would leave nothing to transition from
-    card.style.transition = `height ${ACCORDION_MS}ms var(--liquid-ease)`;
+    card.style.transition = `height ${ACCORDION_MS}ms ${ACCORDION_EASE}`;
     requestAnimationFrame(() => { card.style.height = `${toHeight}px`; });
     function cleanup(e) {
       if (e && (e.target !== card || e.propertyName !== 'height')) return;
@@ -329,6 +384,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeBtn = e.target.closest('.v2-card-close');
     const card = e.target.closest('.v2-card');
     if (!card) return;
+
+    if (isMobileAccordionCard(card)) {
+      // touchend still fires this click regardless of how far the finger
+      // moved (the touchmove listeners are passive, so nothing calls
+      // preventDefault) — without this check, a drag that already opened
+      // the card via SHOT_DRAG_THRESHOLD above would immediately get a
+      // second, conflicting tap-toggle right behind it.
+      if (shotDragTriggered) { shotDragTriggered = false; return; }
+      const arrow = e.target.closest('.v2-card-arrow');
+      if (arrow) {
+        if (card.classList.contains('is-open')) closeAccordionCard(card); // stats close, but stays peeked — the arrow only ever toggles this one layer
+        else { peekCard(card); openCard(card); }
+        return;
+      }
+      // Tapping the card body itself steps back down a full level each
+      // time (stats -> peeked -> rest) rather than the arrow's
+      // stats-layer-only toggle, since a tap anywhere that isn't a
+      // specific control reads more like "dismiss" than "step back".
+      if (card.classList.contains('is-open')) { closeAccordionCard(card); unpeekCard(card); }
+      else if (card.classList.contains('is-peeked')) unpeekCard(card);
+      else peekCard(card);
+      return;
+    }
 
     if (closeBtn) {
       closeCardAndSettle(card);
