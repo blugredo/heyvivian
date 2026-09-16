@@ -221,7 +221,16 @@ document.addEventListener('DOMContentLoaded', () => {
   // the shrinking box — a "rolled up" motion — rather than snapping to
   // the collapsed layout first and just shrinking an empty box after.
   function closeAccordionCard(card) {
-    animateAccordionHeight(card, CARD_COLLAPSED_HEIGHT, () => closeCard(card));
+    // Fades the screenshot out (see .v-accordion.is-closing in
+    // home-v2.css) well before the shrink finishes, so it's already
+    // invisible by the time closeCard() below swaps it from its in-flow
+    // position back to the collapsed layout's absolute one — a position
+    // change can't be animated, so without this it'd visibly jump.
+    card.classList.add('is-closing');
+    animateAccordionHeight(card, CARD_COLLAPSED_HEIGHT, () => {
+      closeCard(card);
+      card.classList.remove('is-closing');
+    });
     card.setAttribute('aria-expanded', 'false');
   }
 

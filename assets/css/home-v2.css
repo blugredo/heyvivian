@@ -535,5 +535,13 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
   .v2-card.v-accordion.is-open .v2-card-shot {
     order: 5; position: static; transform: none;
     width: calc(100% - 16px); margin: 20px auto 0;
+    opacity: 1; transition: opacity 0.28s ease;
   }
+  /* On close, home-v2.js fades the screenshot out before it swaps back to
+     the collapsed layout's absolute-positioned slide-reveal — without
+     this, whatever sliver of it hadn't yet been clipped away by the
+     shrinking card would visibly jump from its in-flow spot near the
+     bottom up to its collapsed spot near the top, since a position
+     change (static -> absolute) can't itself be smoothly animated. */
+  .v2-card.v-accordion.is-closing .v2-card-shot { opacity: 0; }
 }
