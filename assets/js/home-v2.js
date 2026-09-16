@@ -165,7 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const stats = card.querySelectorAll('.v2-stat');
     const bottomEl = stats.length
       ? stats[stats.length - 1]
-      : (card.querySelector('.v2-card-divider') || card.querySelector('.v2-card-desc'));
+      : (card.querySelector('.v2-card-soon') || card.querySelector('.v2-card-divider') || card.querySelector('.v2-card-desc'));
     if (!bottomEl) return SHOT_REST_TOP;
     const bottomRect = bottomEl.getBoundingClientRect();
     const desiredShotTop = (bottomRect.bottom - cardTop) + 20; // 20px breathing room before the image, matching the gap the side-panel reveal keeps

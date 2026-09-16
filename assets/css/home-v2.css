@@ -529,7 +529,7 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
     background: rgba(255,255,255,0.18);
   }
   .v2-card.on-light.v-accordion.is-open .v2-card-divider,
-  .v2-card.paylink.v-accordion.is-open .v2-card-divider { background: rgba(0,0,0,0.12); }
+  .v2-card.duocon.v-accordion.is-open .v2-card-divider { background: rgba(0,0,0,0.12); }
   .v2-card.v-accordion.is-open .v2-stat {
     /* margin-top (not gap) for the space between rows — .v2-card-expand's
        own flex gap stopped applying once display:contents took it out of
@@ -539,6 +539,9 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
   }
   .v2-card.v-accordion.is-open .v2-stat:first-of-type { margin-top: 18px; }
   .v2-card.v-accordion.is-open .v2-stat-num { font-size: 26px; }
+  /* Cards with no shareable stats yet (pay with a link) show this
+     instead — same order/spacing slot a first stat would take. */
+  .v2-card.v-accordion.is-open .v2-card-soon { order: 4; padding: 0 23px; margin-top: 18px; }
   /* flex:0 0 auto (the base rule, for the side-panel's own fixed-width
      column) never shrinks, so a long label like "component library
      created for expansion" just ran off the card's right edge instead of
