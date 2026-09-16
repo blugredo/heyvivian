@@ -208,7 +208,20 @@ body.draft-hero {
      what's actually left and the auto-margins find no free space to
      split. */
   .d-hero { margin-top: 40px; }
-  .d-hero-text { display: flex; flex-direction: column; min-height: calc(100vh - 126px); }
+  /* 100vh on mobile is the "largest" viewport height, as if the browser's
+     own address bar weren't there — it stretches this column past what's
+     actually visible once that bar is on screen, shoving .d-sub ("Based
+     in...") down behind it (seen on Firefox for Android). 100svh is the
+     guaranteed-visible height with browser UI accounted for; kept as a
+     fallback-first pair since older browsers don't parse svh at all and
+     would otherwise drop the whole declaration. The larger subtraction
+     (was 126px) also just gives the whole column less room to stretch
+     into, so the auto-margin split reads noticeably higher up overall. */
+  .d-hero-text {
+    display: flex; flex-direction: column;
+    min-height: calc(100vh - 200px);
+    min-height: calc(100svh - 200px);
+  }
   /* Smaller than the desktop 260px — frees up real room for the
      even-spacing below on a phone-height viewport, where a full-size
      circle plus a 4-5 line headline alone can already exceed 100vh. */
