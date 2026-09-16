@@ -45,9 +45,22 @@ body.draft-hero {
      right edge via .v2-nav's space-between). */
   display: inline-block; min-width: 62px; text-align: left;
   font-size: 13px; font-weight: 400; color: var(--accent);
-  background: none; border: none; padding: 0; cursor: pointer; font-family: inherit;
+  background: none; cursor: pointer; font-family: inherit;
   transition: opacity 0.15s ease;
   -webkit-user-select: none; user-select: none;
+  /* .d-nav-links a has an invisible 1px border-bottom + 2px padding-bottom
+     reserved for its active-page underline — without the same here, this
+     button's own box is 3px shorter, and .v2-nav's align-items:center
+     centers each on its own box, so its text lands a couple px lower
+     than the links' text. Matching (transparent) border keeps the boxes
+     the same height without showing anything extra. */
+  border: none; border-bottom: 1px solid transparent; padding: 0 0 2px;
+  /* <button> elements get their own browser-default line-height
+     ("normal") instead of actually inheriting the page's, unlike the
+     <a> links next to it — forcing it back to inherit is what was
+     really causing the couple-px vertical offset, more than the
+     border/padding box-height mismatch above. */
+  line-height: inherit;
 }
 .d-mood-cycle:hover { opacity: 0.7; }
 
@@ -107,6 +120,11 @@ body.draft-hero {
 .d-more {
   color: var(--gray-mid); text-decoration: underline; text-underline-offset: 3px;
   transition: color 0.15s ease;
+  /* Keeps "More about me ↗" together as one unit — it can still wrap to
+     its own line below the location/languages if it doesn't fit, but
+     never splits internally (e.g. "me" stranding the arrow on its own
+     line below it). */
+  white-space: nowrap;
 }
 .d-more:hover { color: var(--black); }
 .d-arrow { display: inline-block; }
@@ -205,25 +223,44 @@ body.draft-hero {
      stretching into a mobile browser's address bar either. */
   .d-hero { margin-top: 40px; }
   /* Nav items were nearly edge-to-edge with no room left over for
-     space-between to push the logo away from "Home" — narrower gaps
-     between the links themselves free up that room instead of adding a
-     separate margin between the logo and the group. Padding, logo size,
-     link size and the mood button's own min-width all trimmed too — on
-     a narrow phone (or a docked sidebar, ~300-320px) the nav was still
-     wide enough to overflow and clip "[snappy]" off the right edge
-     entirely even with the gap alone reduced. */
-  .d-nav { padding-left: 16px; padding-right: 16px; }
-  .d-nav .v2-logo-img { height: 24px; }
-  .d-nav-links { gap: 10px; }
-  .d-nav-links a { font-size: 13px; }
-  .d-mood-cycle { min-width: 54px; font-size: 12px; }
+     space-between to push the logo away from "Home" — a narrower gap
+     between the links themselves frees up that room instead of adding a
+     separate margin between the logo and the group. This tier is sized
+     for real phones (~360px and up); an even tighter override for
+     narrower contexts (a docked sidebar, say) follows below. */
+  .d-nav { padding-left: 20px; padding-right: 20px; }
+  .d-nav .v2-logo-img { height: 28px; }
+  .d-nav-links { gap: 16px; }
+  .d-mood-cycle { min-width: 58px; }
   /* "Project snapshots | I'll be quick." stacks into two lines instead of
      staying on one — the divider pipe only made sense inline, so it's
      hidden once the tagline drops to its own line below the title. */
   .d-snapshots-band .v2-section-head p { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
   .d-snapshots-band .v2-section-head .v2-accent-divider { display: none; }
+  /* At least one full screen tall regardless of the device's actual
+     height, so the snapshots band right after it never peeks into the
+     first screen on a taller phone — without hardcoding a gap tuned for
+     one specific device height, which either wastes space on shorter
+     screens or isn't enough on taller ones (both happened here before).
+     Content stays put at the top; on a short screen the hero is just as
+     tall as its content needs (min-height doesn't force it shorter), on
+     a tall one the natural gap after .d-sub simply grows to fill it. */
+  .d-hero {
+    min-height: 100vh;
+    min-height: 100svh;
+    box-sizing: border-box;
+    margin-bottom: 0; /* the base rule's 100px is for the desktop layout's own rhythm — min-height plus the band's own margin-top below already provide the mobile gap */
+  }
   .d-hero-text { display: flex; flex-direction: column; }
-  .d-hero-circle, .d-hero-circle .v2-callout-circle { width: 200px; height: 200px; }
+  /* Fluid instead of a fixed size — scales with the viewport so it's
+     always as large as comfortably fits, rather than a single px value
+     that reads small on a wide phone and cramped on a narrow one. 60vw
+     keeps roughly a fifth of the width as breathing room on each side
+     (e.g. ~70px each at 375px wide); the floor keeps it from shrinking
+     too far on very narrow screens, the ceiling caps it at the desktop
+     size so it doesn't balloon past that once there's tablet-width room
+     to spare within this same breakpoint. */
+  .d-hero-circle, .d-hero-circle .v2-callout-circle { width: clamp(180px, 60vw, 260px); height: clamp(180px, 60vw, 260px); }
   .d-hero-circle { align-self: center; margin-bottom: 28px; }
   /* Two fewer lines than the 26px floor it was clamped to. */
   .d-headline { font-size: 20px; }
@@ -233,9 +270,20 @@ body.draft-hero {
      already right. Smaller font so "English, Portuguese (BR), Swedish"
      fits on one line instead of wrapping mid-list. */
   .d-sub { margin-top: 28px; margin-bottom: 40px; font-size: 12px; }
-  /* Just past the fold, not deep below it — enough that the band never
-     peeks into the first screen, without the large gap that leaves. */
-  .d-hero + .d-snapshots-band { margin-top: 40px; }
+  /* A small fixed breathing gap on top of whatever min-height above
+     already guarantees — the band should never sit flush against the
+     exact fold pixel either. */
+  .d-hero + .d-snapshots-band { margin-top: 24px; }
+}
+/* Rescues the nav specifically on genuinely narrow contexts (a resized
+   sidebar down around 300-320px, smaller/older phones) where even the
+   tier above would overflow and clip "[snappy]" off the right edge. */
+@media (max-width: 340px) {
+  .d-nav { padding-left: 16px; padding-right: 16px; }
+  .d-nav .v2-logo-img { height: 24px; }
+  .d-nav-links { gap: 10px; }
+  .d-nav-links a { font-size: 13px; }
+  .d-mood-cycle { min-width: 54px; font-size: 12px; }
 }
 /* Portrait only — landscape phones/tablets keep the avatar-first order
    above, where there's width to spare and the same top-heavy stack reads
