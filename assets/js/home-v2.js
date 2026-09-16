@@ -61,8 +61,46 @@ document.addEventListener('DOMContentLoaded', () => {
   // the scroll and the card's own width transition move as one motion
   // instead of a "grow, then jump" two-step.
   const LIQUID_MS = 700;
-  // CSS open width breakpoint (see the max-width:640px block in home-v2.css).
-  function openCardWidth() { return window.innerWidth <= 640 ? 460 : 688; }
+
+  // The open card's width on phones can't just be a fixed 460px — on
+  // anything narrower than ~460+margins (i.e. most phones) that's wider
+  // than the screen itself, and openCard()'s own scroll-centering logic
+  // has to fall back to aligning the card's *right* edge with the
+  // viewport, cropping the image/title off the left with no way back to
+  // see them short of a manual drag. Instead the total open width, and
+  // how it's split between the image column and the expand panel, are
+  // computed from the actual row width and written to CSS custom
+  // properties, so the CSS transition and this scroll math always agree
+  // on a width that actually fits — keeping the whole card in view when
+  // it opens rather than just part of it. The image column shrinks first
+  // (down to a 160px floor) before the expand panel gives up any of its
+  // own (130px floor, for legible stat numbers) — desktop's fixed
+  // 268/420 split is unaffected.
+  const OPEN_WIDTH_DESKTOP = 688;
+  const CARD_MAIN_WIDTH = 268;
+  const MAIN_MIN_WIDTH = 160;
+  const EXPAND_MIN_WIDTH = 130;
+  let openWidthMobile = 460;
+  function syncOpenCardSizing() {
+    if (window.innerWidth > 640) {
+      document.documentElement.style.removeProperty('--card-open-w');
+      document.documentElement.style.removeProperty('--card-open-main-w');
+      document.documentElement.style.removeProperty('--card-open-expand-w');
+      return;
+    }
+    const available = row.clientWidth - 16; // small breathing room once fit
+    const total = Math.max(MAIN_MIN_WIDTH + EXPAND_MIN_WIDTH, Math.min(460, available));
+    const expandWidth = Math.min(192, Math.max(EXPAND_MIN_WIDTH, total - CARD_MAIN_WIDTH));
+    const mainWidth = total - expandWidth;
+    openWidthMobile = total;
+    document.documentElement.style.setProperty('--card-open-w', `${total}px`);
+    document.documentElement.style.setProperty('--card-open-main-w', `${mainWidth}px`);
+    document.documentElement.style.setProperty('--card-open-expand-w', `${expandWidth}px`);
+  }
+  syncOpenCardSizing();
+  window.addEventListener('resize', syncOpenCardSizing);
+
+  function openCardWidth() { return window.innerWidth <= 640 ? openWidthMobile : OPEN_WIDTH_DESKTOP; }
 
   function easeOutExpo(t) { return t === 1 ? 1 : 1 - Math.pow(2, -10 * t); }
 

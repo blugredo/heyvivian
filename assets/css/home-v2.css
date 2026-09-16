@@ -169,6 +169,15 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
 .v2-card-row {
   display: flex; gap: 32px; align-items: flex-start;
   overflow-x: auto;
+  /* Explicit, not left to default — with only overflow-x set, the spec
+     computes overflow-y as auto too, quietly making this a *vertical*
+     scroll container as well. On touch that let a finger swipe meant for
+     the page get captured as an internal scroll of the row instead,
+     cropping an open card's top edge against its own clipped box. This
+     row only ever scrolls horizontally (via the drag/touch handling in
+     home-v2.js) — vertical gestures should always fall through to the
+     page. */
+  overflow-y: hidden;
   /* No scroll-snap: combined with padding on a scroll container, Chrome's
      snap-on-load can set the initial scrollLeft to the padding amount,
      which visually eats the left inset. Dragging works fine without it. */
@@ -410,6 +419,31 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
   .v2-callout { padding: 0 24px; }
   .v2-card-row { padding-left: 24px; padding-right: 24px; }
   .v2-nugget-row { grid-template-columns: repeat(2, 1fr); padding: 0 24px; }
-  .v2-card.is-open { width: 460px; }
-  .v2-card.is-open .v2-card-expand { flex-basis: 192px; width: 192px; padding: 28px 18px; }
+  /* Set by home-v2.js from the row's actual width, so the card never
+     opens wider than the screen — see syncOpenCardSizing there for why.
+     The px fallbacks only matter if JS hasn't run yet. */
+  .v2-card.is-open { width: var(--card-open-w, 460px); }
+  .v2-card.is-open .v2-card-main { flex-basis: var(--card-open-main-w, 268px); width: var(--card-open-main-w, 268px); }
+  .v2-card.is-open .v2-card-expand { flex-basis: var(--card-open-expand-w, 192px); width: var(--card-open-expand-w, 192px); padding: 36px 18px; }
+  /* The expand panel's own floor (130px) is narrower than "100M DAUs" fits
+     on one line at the stat's normal 32px/nowrap sizing — stack the
+     number over its label instead of clipping the line against the
+     card's overflow:hidden. Font size trimmed too, so it takes less
+     width at this column size. */
+  .v2-card.is-open .v2-stat { flex-direction: column; align-items: flex-start; gap: 2px; white-space: normal; }
+  .v2-card.is-open .v2-stat-num { font-size: 22px; }
+  /* .v2-card-expand centers its stats vertically (justify-content:center
+     on the base rule) — how close that centered block's top edge lands
+     to the close button varies by card (more stats = taller block = less
+     top clearance), so a fixed padding tuned for one card either wastes
+     space on short ones or still isn't enough for the tallest. A small
+     backdrop behind the button instead makes any close overlap read as
+     an intentional layered control rather than clipped/broken text. */
+  .v2-card.is-open .v2-card-close {
+    background: rgba(0,0,0,0.45); border-radius: 50%;
+    width: 26px; height: 26px; padding: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .v2-card.on-light.is-open .v2-card-close,
+  .v2-card.paylink.is-open .v2-card-close { background: rgba(255,255,255,0.65); }
 }
