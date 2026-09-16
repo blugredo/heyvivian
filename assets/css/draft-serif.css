@@ -207,29 +207,23 @@ body.draft-hero {
      the min-height budget below — otherwise it reads bigger than
      what's actually left and the auto-margins find no free space to
      split. */
-  /* Trimmed from 40px — the avatar/headline sitting higher frees up real
-     space at the bottom of the column for the gap before the snapshots
-     band, instead of that space getting eaten at the top. */
-  .d-hero { margin-top: 16px; }
+  .d-hero { margin-top: 40px; }
   /* 100vh on mobile is the "largest" viewport height, as if the browser's
      own address bar weren't there — it stretches this column past what's
      actually visible once that bar is on screen, shoving .d-sub ("Based
      in...") down behind it (seen on Firefox for Android). 100svh is the
      guaranteed-visible height with browser UI accounted for; kept as a
      fallback-first pair since older browsers don't parse svh at all and
-     would otherwise drop the whole declaration. The subtraction here
-     tracks nav (~86px) + this section's own margin-top above, plus a
-     buffer so the auto-margin split reads noticeably higher up overall
-     rather than stretching to fill every last px of the viewport. */
+     would otherwise drop the whole declaration. */
   .d-hero-text {
     display: flex; flex-direction: column;
-    min-height: calc(100vh - 176px);
-    min-height: calc(100svh - 176px);
+    min-height: calc(100vh - 200px);
+    min-height: calc(100svh - 200px);
   }
-  /* Smaller than the desktop 260px — frees up real room for the
-     even-spacing below on a phone-height viewport, where a full-size
-     circle plus a 4-5 line headline alone can already exceed 100vh. */
-  .d-hero-circle, .d-hero-circle .v2-callout-circle { width: 180px; height: 180px; }
+  /* Still smaller than the desktop 260px, but a step up from the earlier
+     180px now that the circle has its own reserved space up top (rather
+     than squeezed between the headline and .d-sub). */
+  .d-hero-circle, .d-hero-circle .v2-callout-circle { width: 225px; height: 225px; }
   /* margin-bottom nudges the circle up a bit off center (was splitting the
      leftover space with .d-sub dead-even) — a little more breathing room
      above the "Based in..." line reads better than perfectly even. */
@@ -238,25 +232,21 @@ body.draft-hero {
      doesn't sit flush against the very bottom of the hero's min-height
      — a little breathing room before the snapshots band starts. */
   .d-sub { margin-top: auto; margin-bottom: 40px; }
-  /* Tighter than the 340px desktop gap, but bumped up from the previous
-     100px now that trimming the hero's own top/min-height freed up real
-     space to spend here instead. */
-  .d-hero + .d-snapshots-band { margin-top: 130px; }
+  /* Deliberately below the fold on a typical phone screen — the band
+     shouldn't be visible (even a sliver of it) until the visitor scrolls,
+     so the hero reads as a complete first screen on its own. */
+  .d-hero + .d-snapshots-band { margin-top: 220px; }
 }
 /* Portrait only — landscape phones/tablets keep the avatar-first order
    above, where there's width to spare and the same top-heavy stack reads
-   fine. In portrait the circle leads instead, in its own reserved band
-   of whitespace between the nav and the avatar: centered horizontally
-   (align-self, as before) and now vertically too, via equal margins
-   above and below rather than sharing space with .d-sub as the default
-   order does. min-height is dropped here since nothing needs an
-   auto-margin split to stretch into anymore — every gap in this order is
-   a fixed value, so the column is exactly as tall as its content. */
+   fine. In portrait the circle leads instead: reordered to the top of
+   the column and given a margin-bottom:auto share alongside its existing
+   margin-top:auto, so it centers itself in whatever whitespace collects
+   above the avatar (from the min-height stretch above) rather than
+   sitting flush against it. Avatar/headline/sub keep their normal fixed
+   spacing untouched — this only touches the circle. */
 @media (max-width: 780px) and (orientation: portrait) {
-  .d-hero-text { min-height: 0; }
-  .d-hero-circle { order: -1; align-self: center; margin: 40px auto; }
-  .d-avatar-wrap { margin-top: 0; }
-  .d-sub { margin-top: 24px; margin-bottom: 40px; }
+  .d-hero-circle { order: -1; margin-bottom: auto; }
 }
 @media (max-width: 640px) {
   .d-hero { padding: 0 20px; }
