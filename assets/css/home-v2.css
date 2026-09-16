@@ -545,20 +545,27 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
      wrapping — flex:1 lets it take the row's remaining width and wrap
      within it instead. */
   .v2-card.v-accordion.is-open .v2-stat-label { flex: 1 1 auto; min-width: 0; }
-  /* No bottom margin — the card's own rounding is top-only (matching
-     every other card, collapsed or open), so its bottom edge is already
-     square; a bottom gap here just left a strip of the card's own dark
-     background showing below the image before its square-cut bottom. */
+  /* Stays position:absolute in every state (rest, peeked, open) instead
+     of switching to static/in-flow when open — a position change can't
+     itself be animated, so keeping one consistent positioning mode
+     throughout means the image can just slide smoothly (a plain
+     transform transition) between however far down each state pushes
+     it, opening *and* closing, with no jump and no separate fade
+     needed. home-v2.js measures how far "below the stats" is per open
+     and writes it to --shot-full-open-y; card height is computed to
+     match so there's no gap (and thus no visible strip of the card's
+     own dark background) below the image's own square-cut bottom
+     corners, matching every other card's top-only rounding. */
   .v2-card.v-accordion.is-open .v2-card-shot {
-    order: 5; position: static; transform: none;
-    width: calc(100% - 16px); margin: 20px auto 0;
-    opacity: 1; transition: opacity 0.28s ease;
+    transform: translateY(var(--shot-full-open-y, 400px));
   }
-  /* On close, home-v2.js fades the screenshot out before it swaps back to
-     the collapsed layout's absolute-positioned slide-reveal — without
-     this, whatever sliver of it hadn't yet been clipped away by the
-     shrinking card would visibly jump from its in-flow spot near the
-     bottom up to its collapsed spot near the top, since a position
-     change (static -> absolute) can't itself be smoothly animated. */
-  .v2-card.v-accordion.is-closing .v2-card-shot { opacity: 0; }
+  /* Overrides the base 1s transform transition (tuned for the
+     side-panel cards' quicker reveal) so the image's slide and the
+     card's own height change move at exactly the same pace — the
+     "image moves down slower, in sync with the reveal" this card
+     wanted, rather than the two drifting out of step. Kept in sync by
+     hand with ACCORDION_MS/ACCORDION_EASE in home-v2.js. */
+  .v2-card.v-accordion .v2-card-shot {
+    transition: transform 600ms cubic-bezier(0.65, 0, 0.35, 1);
+  }
 }

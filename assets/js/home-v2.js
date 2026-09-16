@@ -154,6 +154,25 @@ document.addEventListener('DOMContentLoaded', () => {
     card.addEventListener('mouseenter', () => syncShotOpenOffset(card));
   });
 
+  // Same idea as syncShotOpenOffset above, but for the accordion card's
+  // full stats reveal — the image needs to sit right below whatever the
+  // *last* piece of expanded content is (last stat, or the divider/desc
+  // for cards without stats) rather than always the teaser text. Returns
+  // the computed top in px so the caller can also use it to size the
+  // card's own height to match (see openCard).
+  function syncShotFullOpenOffset(card) {
+    const cardTop = card.getBoundingClientRect().top;
+    const stats = card.querySelectorAll('.v2-stat');
+    const bottomEl = stats.length
+      ? stats[stats.length - 1]
+      : (card.querySelector('.v2-card-divider') || card.querySelector('.v2-card-desc'));
+    if (!bottomEl) return SHOT_REST_TOP;
+    const bottomRect = bottomEl.getBoundingClientRect();
+    const desiredShotTop = (bottomRect.bottom - cardTop) + 20; // 20px breathing room before the image, matching the gap the side-panel reveal keeps
+    card.style.setProperty('--shot-full-open-y', `${desiredShotTop - SHOT_REST_TOP}px`);
+    return desiredShotTop;
+  }
+
   // Dragging a finger across the row reveals each card in turn the same
   // way :hover does on desktop — touch never fires :hover, so without
   // this a finger-drag would just scroll past every card at rest.
@@ -262,7 +281,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // toHeight — everything about *why* lives on the two call sites below,
   // since what "start"/"target"/"then what" mean differs for open vs.
   // close (target content already laid out vs. not yet reverted).
-  function animateAccordionHeight(card, toHeight, onDone) {
+  // keepHeight leaves the inline px height in place after the transition
+  // instead of clearing it back to CSS's height:auto — needed when
+  // opening, since the screenshot is position:absolute (so it never
+  // contributes to an auto-computed height) and clearing the inline
+  // value would otherwise let the card immediately snap back down to
+  // just its flowing content's height, undoing the reveal it just did.
+  function animateAccordionHeight(card, toHeight, keepHeight, onDone) {
     const startHeight = card.getBoundingClientRect().height;
     card.style.height = `${startHeight}px`;
     card.offsetHeight; // force a reflow so the start height commits before the target below is set — same-frame changes to both would leave nothing to transition from
@@ -271,7 +296,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function cleanup(e) {
       if (e && (e.target !== card || e.propertyName !== 'height')) return;
       card.style.transition = '';
-      card.style.height = '';
+      if (!keepHeight) card.style.height = '';
       card.removeEventListener('transitionend', cleanup);
       if (onDone) onDone();
     }
@@ -287,17 +312,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // the shrinking box — a "rolled up" motion — rather than snapping to
   // the collapsed layout first and just shrinking an empty box after.
   function closeAccordionCard(card) {
-    // Fades the screenshot out (see .v-accordion.is-closing in
-    // home-v2.css) well before the shrink finishes, so it's already
-    // invisible by the time closeCard() below swaps it from its in-flow
-    // position back to the collapsed layout's absolute one — a position
-    // change can't be animated, so without this it'd visibly jump.
-    card.classList.add('is-closing');
-    animateAccordionHeight(card, CARD_COLLAPSED_HEIGHT, () => {
-      closeCard(card);
-      card.classList.remove('is-closing');
-    });
-    card.setAttribute('aria-expanded', 'false');
+    // The screenshot stays position:absolute in every state (see
+    // home-v2.css), so removing is-open right away just changes its
+    // transform *target* — the transition already on it (synced to
+    // ACCORDION_MS/EASE) carries it smoothly back up on its own, in
+    // step with the height shrink below, with no separate fade or
+    // layout-swap trick needed.
+    closeCard(card);
+    animateAccordionHeight(card, CARD_COLLAPSED_HEIGHT, false);
   }
 
   function closeCard(card) {
@@ -319,15 +341,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Accordion cards (mobile test: .v-accordion) grow downward in place
-    // instead of widening — no horizontal scroll math applies, and they
-    // don't use the --shot-open-y slide (the image just sits in normal
-    // flow at the bottom of the expanded column), so both are skipped.
+    // instead of widening — no horizontal scroll math applies, so that's
+    // skipped entirely.
     if (isMobileAccordion) {
       const startHeight = card.getBoundingClientRect().height;
-      card.classList.add('is-open'); // lays out the expanded content so its natural (target) height can be read below
-      const targetHeight = card.scrollHeight;
+      card.classList.add('is-open'); // lays out title/desc/divider/stats so the space they take up (and thus where the image should slide to) can be measured below
+      const shotTop = syncShotFullOpenOffset(card);
+      const shotHeight = card.querySelector('.v2-card-shot').getBoundingClientRect().height;
+      const targetHeight = shotTop + shotHeight; // flush with the image's own bottom — no gap below it, matching the card's top-only rounding
       card.style.height = `${startHeight}px`; // pin back to the pre-open height for a frame, so the animation below has a real start point instead of jumping straight to target
-      animateAccordionHeight(card, targetHeight);
+      animateAccordionHeight(card, targetHeight, true);
       card.setAttribute('aria-expanded', 'true');
       return;
     }
@@ -392,18 +415,11 @@ document.addEventListener('DOMContentLoaded', () => {
       // the card via SHOT_DRAG_THRESHOLD above would immediately get a
       // second, conflicting tap-toggle right behind it.
       if (shotDragTriggered) { shotDragTriggered = false; return; }
-      const arrow = e.target.closest('.v2-card-arrow');
-      if (arrow) {
-        if (card.classList.contains('is-open')) closeAccordionCard(card); // stats close, but stays peeked — the arrow only ever toggles this one layer
-        else { peekCard(card); openCard(card); }
-        return;
-      }
-      // Tapping the card body itself steps back down a full level each
-      // time (stats -> peeked -> rest) rather than the arrow's
-      // stats-layer-only toggle, since a tap anywhere that isn't a
-      // specific control reads more like "dismiss" than "step back".
-      if (card.classList.contains('is-open')) { closeAccordionCard(card); unpeekCard(card); }
-      else if (card.classList.contains('is-peeked')) unpeekCard(card);
+      // A plain three-tap cycle now — rest -> peeked -> open -> rest —
+      // and any tap on the card advances it, arrow included; nothing
+      // about *where* on the card was tapped matters anymore.
+      if (card.classList.contains('is-open')) { unpeekCard(card); closeAccordionCard(card); }
+      else if (card.classList.contains('is-peeked')) openCard(card);
       else peekCard(card);
       return;
     }
