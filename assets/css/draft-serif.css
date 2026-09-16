@@ -196,62 +196,44 @@ body.draft-hero {
 
 @media (max-width: 780px) {
   /* Single column now (avatar, headline, circle, sub are genuine
-     siblings, so this just falls back to a plain flex stack). Avatar +
-     headline stay put at the top (unmoved, no auto-margin); the circle
-     and the "Based in..." row share whatever vertical space is left,
-     evenly — two flex items with margin-top:auto in the same column
-     split the leftover space equally between their gaps, so this needs
-     no fixed px guess that would break at different screen heights.
-     Nav (~86px) + this section's own 40px margin-top both eat into the
-     viewport before .d-hero-text starts, so both are subtracted from
-     the min-height budget below — otherwise it reads bigger than
-     what's actually left and the auto-margins find no free space to
-     split. */
+     siblings, so this just falls back to a plain flex stack). Switched
+     from the earlier min-height + auto-margin centering scheme to plain
+     fixed spacing throughout — with this many specific pixel/line-count
+     requests to hit, a dynamic "share the leftover space" layout made
+     the numbers a moving target; fixed values are predictable and the
+     column is just as tall as its content, so there's no risk of
+     stretching into a mobile browser's address bar either. */
   .d-hero { margin-top: 40px; }
+  /* Nav items were nearly edge-to-edge with no room left over for
+     space-between to push the logo away from "Home" — narrower gaps
+     between the links themselves free up that room instead of adding a
+     separate margin between the logo and the group. */
+  .d-nav-links { gap: 18px; }
   /* "Project snapshots | I'll be quick." stacks into two lines instead of
      staying on one — the divider pipe only made sense inline, so it's
      hidden once the tagline drops to its own line below the title. */
   .d-snapshots-band .v2-section-head p { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
   .d-snapshots-band .v2-section-head .v2-accent-divider { display: none; }
-  /* 100vh on mobile is the "largest" viewport height, as if the browser's
-     own address bar weren't there — it stretches this column past what's
-     actually visible once that bar is on screen, shoving .d-sub ("Based
-     in...") down behind it (seen on Firefox for Android). 100svh is the
-     guaranteed-visible height with browser UI accounted for; kept as a
-     fallback-first pair since older browsers don't parse svh at all and
-     would otherwise drop the whole declaration. */
-  .d-hero-text {
-    display: flex; flex-direction: column;
-    min-height: calc(100vh - 200px);
-    min-height: calc(100svh - 200px);
-  }
-  /* Still smaller than the desktop 260px, but a step up from the earlier
-     180px now that the circle has its own reserved space up top (rather
-     than squeezed between the headline and .d-sub). */
-  .d-hero-circle, .d-hero-circle .v2-callout-circle { width: 225px; height: 225px; }
-  /* margin-bottom nudges the circle up a bit off center (was splitting the
-     leftover space with .d-sub dead-even) — a little more breathing room
-     above the "Based in..." line reads better than perfectly even. */
-  .d-hero-circle { align-self: center; margin-top: auto; margin-bottom: 24px; }
-  /* margin-bottom (not just the margin-top:auto share) so the row
-     doesn't sit flush against the very bottom of the hero's min-height
-     — a little breathing room before the snapshots band starts. */
-  .d-sub { margin-top: auto; margin-bottom: 40px; }
-  /* Deliberately below the fold on a typical phone screen — the band
-     shouldn't be visible (even a sliver of it) until the visitor scrolls,
-     so the hero reads as a complete first screen on its own. */
-  .d-hero + .d-snapshots-band { margin-top: 220px; }
+  .d-hero-text { display: flex; flex-direction: column; }
+  .d-hero-circle, .d-hero-circle .v2-callout-circle { width: 200px; height: 200px; }
+  .d-hero-circle { align-self: center; margin-bottom: 28px; }
+  /* Two fewer lines than the 26px floor it was clamped to. */
+  .d-headline { font-size: 20px; }
+  /* margin-top (not the headline's own margin-bottom) is the gap that
+     was reading as "too close" — moves the language row down away from
+     the headline without touching the fixed 40px below it, which was
+     already right. Smaller font so "English, Portuguese (BR), Swedish"
+     fits on one line instead of wrapping mid-list. */
+  .d-sub { margin-top: 28px; margin-bottom: 40px; font-size: 12px; }
+  /* Just past the fold, not deep below it — enough that the band never
+     peeks into the first screen, without the large gap that leaves. */
+  .d-hero + .d-snapshots-band { margin-top: 40px; }
 }
 /* Portrait only — landscape phones/tablets keep the avatar-first order
    above, where there's width to spare and the same top-heavy stack reads
-   fine. In portrait the circle leads instead: reordered to the top of
-   the column and given a margin-bottom:auto share alongside its existing
-   margin-top:auto, so it centers itself in whatever whitespace collects
-   above the avatar (from the min-height stretch above) rather than
-   sitting flush against it. Avatar/headline/sub keep their normal fixed
-   spacing untouched — this only touches the circle. */
+   fine. In portrait the circle leads instead, ahead of the avatar. */
 @media (max-width: 780px) and (orientation: portrait) {
-  .d-hero-circle { order: -1; margin-bottom: auto; }
+  .d-hero-circle { order: -1; }
 }
 @media (max-width: 640px) {
   .d-hero { padding: 0 20px; }

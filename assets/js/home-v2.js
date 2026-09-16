@@ -232,6 +232,18 @@ document.addEventListener('DOMContentLoaded', () => {
     animateScrollLeft(row, target, LIQUID_MS);
   }
 
+  // Resetting the row's scroll to 0 on close made sense for the desktop
+  // side-panel reveal (the card had just widened, so re-centering the
+  // row read as a natural "settle back"). On mobile the row's horizontal
+  // scroll position has nothing to do with which card is open — jumping
+  // back to the first card when the visitor closes, say, the fourth one
+  // is just disorienting. Desktop keeps the reset; mobile leaves the
+  // scroll position exactly where it was.
+  function closeCardAndSettle(card) {
+    closeCard(card);
+    if (window.innerWidth > 640) animateScrollLeft(row, 0, LIQUID_MS);
+  }
+
   row.addEventListener('click', (e) => {
     if (justDragged) { e.preventDefault(); e.stopPropagation(); return; }
 
@@ -240,13 +252,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!card) return;
 
     if (closeBtn) {
-      closeCard(card);
-      animateScrollLeft(row, 0, LIQUID_MS);
+      closeCardAndSettle(card);
       return;
     }
     if (card.classList.contains('is-open')) {
-      closeCard(card);
-      animateScrollLeft(row, 0, LIQUID_MS);
+      closeCardAndSettle(card);
     } else {
       openCard(card);
     }
@@ -258,8 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!card) return;
     e.preventDefault();
     if (card.classList.contains('is-open')) {
-      closeCard(card);
-      animateScrollLeft(row, 0, LIQUID_MS);
+      closeCardAndSettle(card);
     } else {
       openCard(card);
     }
@@ -275,11 +284,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // teasers just show the snappy one, per the copy doc.
 // ---------------------------------------------------------------------
 const CARDS = [
-  // hasOwnArrow: true — this card's markup has a dedicated .v2-card-arrow
-  // element after the teaser text (for the mobile accordion test), so the
-  // JS-appended " >" below is skipped for it specifically; every other
-  // card still gets that suffix appended as plain text, unchanged.
-  { id: 'remitly-business', hasOwnArrow: true, teasers: { snappy: 'Hidden experiment to $408M business in one year. Zero to one, three countries.', zen: null } },
+  { id: 'remitly-business', teasers: { snappy: 'Hidden experiment to $408M business in one year. Zero to one, three countries.', zen: null } },
   { id: 'duolingo-news-feed', teasers: { snappy: "Pitched a new tab connecting 500M learners to each other. It’s still there.", zen: null } },
   { id: 'pay-with-a-link', teasers: { snappy: 'Pay contractors abroad without asking for bank details. A family product, rebuilt for business.', zen: null } },
   { id: 'duocon', teasers: { snappy: "Co-created and branded Duolingo’s first live event. Also added a word to High Valyrian.", zen: null } },
@@ -328,8 +333,7 @@ document.addEventListener('DOMContentLoaded', () => {
     CARDS.forEach((card) => {
       const el = document.getElementById(`desc-${card.id}`);
       if (!el) return;
-      const suffix = card.hasOwnArrow ? '' : ' >';
-      setTextSmooth(el, (card.teasers[mood] || card.teasers.snappy) + suffix, animate);
+      setTextSmooth(el, card.teasers[mood] || card.teasers.snappy, animate);
     });
   }
 

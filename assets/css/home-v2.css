@@ -251,11 +251,19 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
 }
 .v2-card.on-light .v2-card-title,
 .v2-card.on-light .v2-card-desc { color: var(--v2-black); }
-/* Trailing arrow glyph — a dedicated element (not the literal ">" text
-   JS appends to the other cards' teasers) so it can be independently
-   styled/rotated for the mobile accordion test below, without the mood
-   cycle's text-fade update ever touching or clobbering it. */
-.v2-card-arrow::before { content: '\203A'; }
+/* Trailing arrow — a dedicated element (not literal ">" text baked into
+   the teaser) so it can be independently styled/rotated for the mobile
+   accordion below, without the mood cycle's text-fade update ever
+   touching or clobbering it. An actual chevron icon (mask + currentColor,
+   so it recolors correctly on the on-light card) rather than a text
+   glyph, which read too thin/inconsistent across fonts. */
+.v2-card-arrow {
+  display: inline-block; width: 9px; height: 9px; margin-left: 4px;
+  vertical-align: -1px;
+  background-color: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 6l6 6-6 6'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 6l6 6-6 6'/%3E%3C/svg%3E") center / contain no-repeat;
+}
 
 .v2-card:hover .v2-card-desc,
 .v2-card.is-open .v2-card-desc,
@@ -462,12 +470,14 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
    redefined here, and with three classes' worth of specificity it wins
    over the two-class .v2-card.is-open rules above without editing them. */
 @media (max-width: 640px) {
+  /* Same chevron icon as every other card, just rotated: pointing down
+     at rest (this card expands downward, not sideways) and flipped to
+     point up once open. */
   .v2-card.v-accordion .v2-card-arrow {
-    display: inline-block; margin-left: 4px;
     transition: transform 0.3s var(--liquid-ease);
+    transform: rotate(90deg);
   }
-  .v2-card.v-accordion .v2-card-arrow::before { content: '\2304'; }
-  .v2-card.v-accordion.is-open .v2-card-arrow { transform: rotate(180deg); }
+  .v2-card.v-accordion.is-open .v2-card-arrow { transform: rotate(-90deg); }
   /* Present in the HTML for the expanded layout below but invisible at
      rest — the side-panel design (every other card, and this card's own
      desktop/tablet state) has no divider at all. */
@@ -513,8 +523,12 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
      wrapping — flex:1 lets it take the row's remaining width and wrap
      within it instead. */
   .v2-card.v-accordion.is-open .v2-stat-label { flex: 1 1 auto; min-width: 0; }
+  /* No bottom margin — the card's own rounding is top-only (matching
+     every other card, collapsed or open), so its bottom edge is already
+     square; a bottom gap here just left a strip of the card's own dark
+     background showing below the image before its square-cut bottom. */
   .v2-card.v-accordion.is-open .v2-card-shot {
     order: 5; position: static; transform: none;
-    margin: 20px 8px 8px;
+    width: calc(100% - 16px); margin: 20px auto 0;
   }
 }
