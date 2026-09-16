@@ -77,6 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // own (130px floor, for legible stat numbers) — desktop's fixed
   // 268/420 split is unaffected.
   const OPEN_WIDTH_DESKTOP = 688;
+  const CARD_COLLAPSED_HEIGHT = 383; // matches .v2-card's own fixed height
   const CARD_MAIN_WIDTH = 268;
   const MAIN_MIN_WIDTH = 160;
   const EXPAND_MIN_WIDTH = 130;
@@ -185,19 +186,73 @@ document.addEventListener('DOMContentLoaded', () => {
   row.addEventListener('touchend', clearTouched);
   row.addEventListener('touchcancel', clearTouched);
 
+  // Accordion cards grow/shrink their own height (width stays fixed), and
+  // CSS alone can't transition to/from "auto" — this measures the real
+  // pixel heights and animates between them by hand, same liquid ease as
+  // everything else on the row so it reads as one family of motion
+  // rather than a plain/instant mobile-only exception.
+  const ACCORDION_MS = 550;
+  // Animates the card's own box from its current rendered height to
+  // toHeight — everything about *why* lives on the two call sites below,
+  // since what "start"/"target"/"then what" mean differs for open vs.
+  // close (target content already laid out vs. not yet reverted).
+  function animateAccordionHeight(card, toHeight, onDone) {
+    const startHeight = card.getBoundingClientRect().height;
+    card.style.height = `${startHeight}px`;
+    card.offsetHeight; // force a reflow so the start height commits before the target below is set — same-frame changes to both would leave nothing to transition from
+    card.style.transition = `height ${ACCORDION_MS}ms var(--liquid-ease)`;
+    requestAnimationFrame(() => { card.style.height = `${toHeight}px`; });
+    function cleanup(e) {
+      if (e && (e.target !== card || e.propertyName !== 'height')) return;
+      card.style.transition = '';
+      card.style.height = '';
+      card.removeEventListener('transitionend', cleanup);
+      if (onDone) onDone();
+    }
+    card.addEventListener('transitionend', cleanup);
+    // transitionend can be missed (e.g. the tab was backgrounded mid-
+    // transition) — this guarantees cleanup still runs and the card isn't
+    // left pinned at an explicit pixel height forever.
+    setTimeout(cleanup, ACCORDION_MS + 150);
+  }
+  // Collapses an already-open accordion card: is-open (and the expanded
+  // layout it drives) is kept all the way through the shrink, so the
+  // stats/screenshot are still there to be progressively clipped away by
+  // the shrinking box — a "rolled up" motion — rather than snapping to
+  // the collapsed layout first and just shrinking an empty box after.
+  function closeAccordionCard(card) {
+    animateAccordionHeight(card, CARD_COLLAPSED_HEIGHT, () => closeCard(card));
+    card.setAttribute('aria-expanded', 'false');
+  }
+
   function closeCard(card) {
+    // Accordion cards animate their own close via closeAccordionCard,
+    // which calls this itself once the height has finished collapsing —
+    // by the time it runs here there's nothing left to animate.
     card.classList.remove('is-open');
     card.setAttribute('aria-expanded', 'false');
   }
   function openCard(card) {
-    cards.forEach((c) => { if (c !== card) closeCard(c); });
+    const isMobileAccordion = card.classList.contains('v-accordion') && window.innerWidth <= 640;
+    cards.forEach((c) => {
+      if (c === card) return;
+      if (isMobileAccordion && c.classList.contains('v-accordion') && c.classList.contains('is-open')) {
+        closeAccordionCard(c);
+      } else {
+        closeCard(c);
+      }
+    });
 
     // Accordion cards (mobile test: .v-accordion) grow downward in place
     // instead of widening — no horizontal scroll math applies, and they
     // don't use the --shot-open-y slide (the image just sits in normal
     // flow at the bottom of the expanded column), so both are skipped.
-    if (card.classList.contains('v-accordion') && window.innerWidth <= 640) {
-      card.classList.add('is-open');
+    if (isMobileAccordion) {
+      const startHeight = card.getBoundingClientRect().height;
+      card.classList.add('is-open'); // lays out the expanded content so its natural (target) height can be read below
+      const targetHeight = card.scrollHeight;
+      card.style.height = `${startHeight}px`; // pin back to the pre-open height for a frame, so the animation below has a real start point instead of jumping straight to target
+      animateAccordionHeight(card, targetHeight);
       card.setAttribute('aria-expanded', 'true');
       return;
     }
@@ -240,6 +295,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // is just disorienting. Desktop keeps the reset; mobile leaves the
   // scroll position exactly where it was.
   function closeCardAndSettle(card) {
+    if (card.classList.contains('v-accordion') && window.innerWidth <= 640) {
+      closeAccordionCard(card);
+      return;
+    }
     closeCard(card);
     if (window.innerWidth > 640) animateScrollLeft(row, 0, LIQUID_MS);
   }
