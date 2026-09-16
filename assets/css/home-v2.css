@@ -475,6 +475,15 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
    redefined here, and with three classes' worth of specificity it wins
    over the two-class .v2-card.is-open rules above without editing them. */
 @media (max-width: 640px) {
+  /* Touch devices can leave :hover "stuck" active after a tap (there's
+     no real pointer to leave), which would otherwise trigger the
+     side-panel cards' own hover slide-reveal on this card too, right
+     before the actual open/close handler takes over — the same
+     conflicting-motion problem the touch-drag skip in home-v2.js's
+     cardAtTouch fixes, just via :hover instead of .is-touched. This
+     card's own reveal is entirely click/is-open driven. */
+  .v2-card.v-accordion:hover .v2-card-desc { opacity: 0.4; }
+  .v2-card.v-accordion:hover .v2-card-shot { transform: none; }
   /* Same chevron icon as every other card, just rotated: pointing down
      at rest (this card expands downward, not sideways) and flipped to
      point up once open. */

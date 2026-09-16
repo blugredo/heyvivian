@@ -207,8 +207,16 @@ body.draft-hero {
   /* Nav items were nearly edge-to-edge with no room left over for
      space-between to push the logo away from "Home" — narrower gaps
      between the links themselves free up that room instead of adding a
-     separate margin between the logo and the group. */
-  .d-nav-links { gap: 18px; }
+     separate margin between the logo and the group. Padding, logo size,
+     link size and the mood button's own min-width all trimmed too — on
+     a narrow phone (or a docked sidebar, ~300-320px) the nav was still
+     wide enough to overflow and clip "[snappy]" off the right edge
+     entirely even with the gap alone reduced. */
+  .d-nav { padding-left: 16px; padding-right: 16px; }
+  .d-nav .v2-logo-img { height: 24px; }
+  .d-nav-links { gap: 10px; }
+  .d-nav-links a { font-size: 13px; }
+  .d-mood-cycle { min-width: 54px; font-size: 12px; }
   /* "Project snapshots | I'll be quick." stacks into two lines instead of
      staying on one — the divider pipe only made sense inline, so it's
      hidden once the tagline drops to its own line below the title. */

@@ -173,7 +173,18 @@ document.addEventListener('DOMContentLoaded', () => {
   // preventDefault, so native horizontal scroll/tap behavior is untouched.
   function cardAtTouch(touch) {
     const el = document.elementFromPoint(touch.clientX, touch.clientY);
-    return el ? el.closest('.v2-card') : null;
+    const card = el ? el.closest('.v2-card') : null;
+    // The touch-drag slide-reveal is for the side-panel cards' hover
+    // equivalent — the accordion card has its own click-driven open/
+    // close motion instead, and letting is-touched also fire on it
+    // meant a tap first triggered this slide (image sliding down over
+    // the text, mid-touch) and then, a beat later, the actual open
+    // handler snapped the image to its static in-flow position — two
+    // conflicting motions reading as a jump rather than one continuous
+    // one. Skipping it here means a tap on that card only ever drives
+    // the one (now-animated) open/close motion.
+    if (card && card.classList.contains('v-accordion') && window.innerWidth <= 640) return null;
+    return card;
   }
   row.addEventListener('touchstart', (e) => {
     const t = e.touches[0];
