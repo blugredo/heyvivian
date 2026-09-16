@@ -102,6 +102,11 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
   width: 260px; height: 260px; border-radius: 50%; overflow: hidden;
   background: transparent; color: var(--accent);
   display: block; cursor: pointer;
+  /* Without this, a touch-drag on the circle also pans the page underneath
+     it — the browser's default touch behavior competes with the canvas's
+     own touchmove handling for the same gesture. This tells the browser
+     not to reserve the gesture for scrolling here at all. */
+  touch-action: none;
 }
 
 /* --- 3D tilt ring graphic. A cluster of thin circles that spins slowly
