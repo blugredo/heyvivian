@@ -243,6 +243,21 @@ body.draft-hero {
      space to spend here instead. */
   .d-hero + .d-snapshots-band { margin-top: 130px; }
 }
+/* Portrait only — landscape phones/tablets keep the avatar-first order
+   above, where there's width to spare and the same top-heavy stack reads
+   fine. In portrait the circle leads instead, in its own reserved band
+   of whitespace between the nav and the avatar: centered horizontally
+   (align-self, as before) and now vertically too, via equal margins
+   above and below rather than sharing space with .d-sub as the default
+   order does. min-height is dropped here since nothing needs an
+   auto-margin split to stretch into anymore — every gap in this order is
+   a fixed value, so the column is exactly as tall as its content. */
+@media (max-width: 780px) and (orientation: portrait) {
+  .d-hero-text { min-height: 0; }
+  .d-hero-circle { order: -1; align-self: center; margin: 40px auto; }
+  .d-avatar-wrap { margin-top: 0; }
+  .d-sub { margin-top: 24px; margin-bottom: 40px; }
+}
 @media (max-width: 640px) {
   .d-hero { padding: 0 20px; }
 }
