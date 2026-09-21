@@ -342,19 +342,29 @@ document.addEventListener('DOMContentLoaded', () => {
     // final open width — then kick off the card's grow (CSS transition)
     // and the row's scroll (JS-animated, same duration/easing) in the same
     // tick, so they read as one continuous motion rather than sequential.
-    const rowRect = row.getBoundingClientRect();
+    // Positions are worked out from the cards' *closed* widths rather than
+    // measured off the page: if another card was open a moment ago (and
+    // just got closed above), its width transition hasn't started yet, so
+    // a live measurement still sees it at full width and everything after
+    // it — including this card — reads as further right than it's about
+    // to actually be. That's what left the target overshooting and the
+    // card cut off when switching from one open card straight to another.
     const cardRectNow = card.getBoundingClientRect();
-    const cardLeft = row.scrollLeft + (cardRectNow.left - rowRect.left);
+    const closedW = cardRectNow.width;
+    const gap = parseFloat(getComputedStyle(row).columnGap) || 0;
+    const rowStyle = getComputedStyle(row);
+    const inset = parseFloat(rowStyle.paddingLeft) || 0;
+    const padRight = parseFloat(rowStyle.paddingRight) || 0;
     const finalWidth = openCardWidth();
-    const widthGrowth = finalWidth - cardRectNow.width;
-    const maxScroll = row.scrollWidth - row.clientWidth + widthGrowth;
-
+    const index = cards.indexOf(card);
     // Left edge lines up with the section heading's left edge (the row's
     // own left padding is that same inset) rather than centering — a
     // centered card could land partly off-screen on narrower panes, which
     // read as the card "moving out of frame" when opened.
-    const inset = parseFloat(getComputedStyle(row).paddingLeft) || 0;
-    const target = Math.min(Math.max(0, cardLeft - inset), Math.max(0, maxScroll));
+    const cardLeft = index * (closedW + gap);
+    const contentW = inset + padRight + cards.length * closedW + (cards.length - 1) * gap + (finalWidth - closedW);
+    const maxScroll = contentW - row.clientWidth;
+    const target = Math.min(Math.max(0, cardLeft), Math.max(0, maxScroll));
 
     card.classList.add('is-open');
     card.setAttribute('aria-expanded', 'true');
