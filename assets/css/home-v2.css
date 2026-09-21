@@ -220,7 +220,12 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
   -webkit-user-select: none; user-select: none;
 }
 .v2-card:focus { outline: none; }
-.v2-card:focus-visible { outline: 2px solid rgba(255,255,255,0.6); outline-offset: -2px; }
+/* Same color as the card's own divider line (see .v2-card-expand's
+   border-left and .v2-card-divider) rather than a bright white ring,
+   which read as an off-palette border on the light cards. */
+.v2-card:focus-visible { outline: 2px solid rgba(255,255,255,0.18); outline-offset: -2px; }
+.v2-card.on-light:focus-visible,
+.v2-card.duocon:focus-visible { outline-color: rgba(0,0,0,0.12); }
 /* A soft lift once open — reads as the card actually rising off the row
    rather than just changing size, on top of whichever direction (wider,
    or taller for the mobile accordion) it's actually growing in. */

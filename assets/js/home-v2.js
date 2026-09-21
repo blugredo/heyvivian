@@ -226,6 +226,20 @@ document.addEventListener('DOMContentLoaded', () => {
   function peekCard(card) {
     syncShotOpenOffset(card);
     card.classList.add('is-peeked');
+    alignCardLeft(card);
+  }
+  // Slides the row so this card's left edge lines up with the section
+  // heading's left edge (the row's own left padding is that same inset)
+  // — a card sitting partly off-screen to the right otherwise stays
+  // that way once it expands, since its width never changes and so no
+  // scroll adjustment happens on its own. Clamped by the browser to the
+  // row's real scroll range, so the last card just gets as close as it can.
+  function alignCardLeft(card) {
+    const rowRect = row.getBoundingClientRect();
+    const cardLeft = row.scrollLeft + (card.getBoundingClientRect().left - rowRect.left);
+    const inset = parseFloat(getComputedStyle(row).paddingLeft) || 0;
+    const target = Math.min(Math.max(0, cardLeft - inset), Math.max(0, row.scrollWidth - row.clientWidth));
+    animateScrollLeft(row, target, LIQUID_MS);
   }
   function unpeekCard(card) {
     card.classList.remove('is-peeked');
@@ -332,20 +346,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const cardRectNow = card.getBoundingClientRect();
     const cardLeft = row.scrollLeft + (cardRectNow.left - rowRect.left);
     const finalWidth = openCardWidth();
-    const cardRight = cardLeft + finalWidth;
     const widthGrowth = finalWidth - cardRectNow.width;
     const maxScroll = row.scrollWidth - row.clientWidth + widthGrowth;
 
-    let target;
-    if (finalWidth <= rowRect.width) {
-      target = cardLeft - (rowRect.width - finalWidth) / 2;
-    } else {
-      target = cardLeft;
-    }
-    target = Math.min(Math.max(0, target), Math.max(0, maxScroll));
-    if (cardRight - target > rowRect.width) {
-      target = Math.min(cardRight - rowRect.width, maxScroll);
-    }
+    // Left edge lines up with the section heading's left edge (the row's
+    // own left padding is that same inset) rather than centering — a
+    // centered card could land partly off-screen on narrower panes, which
+    // read as the card "moving out of frame" when opened.
+    const inset = parseFloat(getComputedStyle(row).paddingLeft) || 0;
+    const target = Math.min(Math.max(0, cardLeft - inset), Math.max(0, maxScroll));
 
     card.classList.add('is-open');
     card.setAttribute('aria-expanded', 'true');
