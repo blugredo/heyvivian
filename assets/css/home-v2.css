@@ -205,10 +205,16 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
      never past it. */
   --liquid-ease-image: cubic-bezier(.16, 1, .3, 1);
   --liquid-duration: 0.7s;
+  /* One source of truth for a resting card's footprint — the mobile
+     block further down re-points these, and home-v2.js reads
+     --v2-card-h back to know what height to collapse an accordion card
+     to, so the two can't drift apart. */
+  --v2-card-w: 268px;
+  --v2-card-h: 383px;
 }
 
 .v2-card {
-  flex: 0 0 auto; width: 268px; height: 383px;
+  flex: 0 0 auto; width: var(--v2-card-w); height: var(--v2-card-h);
   border-radius: 15px 15px 0 0; overflow: hidden; position: relative;
   text-decoration: none; color: inherit; cursor: pointer;
   display: flex; flex-direction: row; align-items: stretch;
@@ -264,15 +270,16 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
 /* Trailing arrow — a dedicated element (not literal ">" text baked into
    the teaser) so it can be independently styled/rotated for the mobile
    accordion below, without the mood cycle's text-fade update ever
-   touching or clobbering it. An actual chevron icon (mask + currentColor,
-   so it recolors correctly on the on-light card) rather than a text
-   glyph, which read too thin/inconsistent across fonts. */
+   touching or clobbering it. A proper arrow (shaft + head), not a bare
+   chevron, which still read as the ">" character it replaced. Drawn as
+   a mask filled with currentColor so it recolors itself correctly on
+   the on-light cards. */
 .v2-card-arrow {
-  display: inline-block; width: 9px; height: 9px; margin-left: 4px;
-  vertical-align: -1px;
+  display: inline-block; width: 13px; height: 13px; margin-left: 5px;
+  vertical-align: -2px;
   background-color: currentColor;
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 6l6 6-6 6'/%3E%3C/svg%3E") center / contain no-repeat;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 6l6 6-6 6'/%3E%3C/svg%3E") center / contain no-repeat;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 12h15M12.5 5.5L19 12l-6.5 6.5'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 12h15M12.5 5.5L19 12l-6.5 6.5'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 
 .v2-card:hover .v2-card-desc,
@@ -441,6 +448,23 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
   .v2-hero p.v2-sub { width: 100%; min-width: 0; }
   .v2-callout { padding: 0 24px; }
   .v2-card-row { padding-left: 24px; padding-right: 24px; }
+  /* Roughly 80% of the screen, so a card reads as the main thing on it
+     while the next one still peeks in at the right to show the row
+     scrolls. 80vw plus the row's own 24px inset leaves that peek a bit
+     under 40px on a typical phone, which the tighter gap below keeps
+     from being swallowed. Capped so it doesn't balloon on a tablet
+     that's still inside this breakpoint. Height stays proportional to
+     the desktop card's 268x383 so the screenshot inside crops the same
+     way it always has. */
+  :root {
+    --v2-card-w: min(80vw, 340px);
+    --v2-card-h: calc(min(80vw, 340px) * 1.429);
+  }
+  .v2-card-row { gap: 16px; }
+  /* The inner column is a fixed 268px by default (it's the left half of
+     the desktop side-panel split) — on mobile the card is one column,
+     so it should just fill whatever width the card now has. */
+  .v2-card-main { flex-basis: 100%; width: 100%; }
   .v2-nugget-row { grid-template-columns: repeat(2, 1fr); padding: 0 24px; }
   /* Set by home-v2.js from the row's actual width, so the card never
      opens wider than the screen — see syncOpenCardSizing there for why.
@@ -511,7 +535,7 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
   .v2-card.v-accordion .v2-card-divider { display: none; }
 
   .v2-card.v-accordion.is-open {
-    width: 268px; height: auto;
+    width: var(--v2-card-w); height: auto; /* width never changes for these — they grow downward only */
     flex-direction: column; align-items: stretch;
   }
   /* Unboxes .v2-card-main/-expand so their own children (title, desc,

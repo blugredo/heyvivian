@@ -77,7 +77,17 @@ document.addEventListener('DOMContentLoaded', () => {
   // own (130px floor, for legible stat numbers) — desktop's fixed
   // 268/420 split is unaffected.
   const OPEN_WIDTH_DESKTOP = 688;
-  const CARD_COLLAPSED_HEIGHT = 383; // matches .v2-card's own fixed height
+  // Measured off whichever card is currently at rest rather than
+  // hardcoded, since --v2-card-h (home-v2.css) scales with the viewport
+  // on mobile. Reading the custom property directly wouldn't work — an
+  // unregistered property comes back as its literal calc() expression,
+  // not a resolved px value. Only one card is ever open at a time, so
+  // there's always a resting sibling to measure.
+  function collapsedHeight(card) {
+    const rest = cards.find((c) => !c.classList.contains('is-open')) || card;
+    const h = rest.getBoundingClientRect().height;
+    return h > 0 ? h : 383;
+  }
   const CARD_MAIN_WIDTH = 268;
   const MAIN_MIN_WIDTH = 160;
   const EXPAND_MIN_WIDTH = 130;
@@ -121,12 +131,18 @@ document.addEventListener('DOMContentLoaded', () => {
   // Prev/next buttons — step by one card-width + gap in either direction,
   // clamped to the row's actual scroll range, using the same eased scroll
   // as the click-to-expand auto-scroll above.
-  const STEP = 268 + 32; // card width + row gap
+  // Measured rather than hardcoded, since both the card width and the
+  // row gap differ on mobile (see --v2-card-w in home-v2.css).
+  function stepDistance() {
+    const first = row.querySelector('.v2-card');
+    const w = first ? first.getBoundingClientRect().width : 268;
+    return w + (parseFloat(getComputedStyle(row).columnGap) || 0);
+  }
   const prevBtn = document.getElementById('scrollPrev');
   const nextBtn = document.getElementById('scrollNext');
   function stepScroll(dir) {
     const maxScroll = row.scrollWidth - row.clientWidth;
-    const target = Math.min(Math.max(0, row.scrollLeft + dir * STEP), Math.max(0, maxScroll));
+    const target = Math.min(Math.max(0, row.scrollLeft + dir * stepDistance()), Math.max(0, maxScroll));
     animateScrollLeft(row, target, LIQUID_MS);
   }
   if (prevBtn) prevBtn.addEventListener('click', () => stepScroll(-1));
@@ -300,7 +316,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // step with the height shrink below, with no separate fade or
     // layout-swap trick needed.
     closeCard(card);
-    animateAccordionHeight(card, CARD_COLLAPSED_HEIGHT, false);
+    animateAccordionHeight(card, collapsedHeight(card), false);
   }
 
   function closeCard(card) {
