@@ -490,6 +490,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }, FADE_MS);
   }
 
+  // Same cross-fade, but split across the teaser's two spans: the last
+  // word lives in .v2-card-desc-tail together with the trailing arrow
+  // (see that rule in home-v2.css for why), so the two have to fade and
+  // update as one. Only the tail's own text node is rewritten —
+  // textContent would take the arrow element with it.
+  function setTeaserSmooth(textEl, text, animate) {
+    const tail = textEl.parentElement.querySelector('.v2-card-desc-tail');
+    if (!tail || !tail.firstChild) { setTextSmooth(textEl, text, animate); return; }
+    const cut = text.replace(/\s+$/, '').lastIndexOf(' ');
+    const head = cut === -1 ? '' : text.slice(0, cut + 1);
+    const last = cut === -1 ? text : text.slice(cut + 1);
+    const write = () => { textEl.textContent = head; tail.firstChild.nodeValue = last; };
+    if (!animate) { write(); return; }
+    for (const el of [textEl, tail]) {
+      el.style.transition = `opacity ${FADE_MS}ms ease`;
+      el.style.opacity = '0';
+    }
+    setTimeout(() => {
+      write();
+      for (const el of [textEl, tail]) el.style.opacity = '1';
+    }, FADE_MS);
+  }
+
   function applyMood(mood, animate) {
     if (!MOODS[mood]) return;
     body.dataset.mood = mood;
@@ -502,7 +525,7 @@ document.addEventListener('DOMContentLoaded', () => {
     CARDS.forEach((card) => {
       const el = document.getElementById(`desc-${card.id}`);
       if (!el) return;
-      setTextSmooth(el, card.teasers[mood] || card.teasers.snappy, animate);
+      setTeaserSmooth(el, card.teasers[mood] || card.teasers.snappy, animate);
     });
   }
 

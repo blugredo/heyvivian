@@ -281,6 +281,14 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 12h15M12.5 5.5L19 12l-6.5 6.5'/%3E%3C/svg%3E") center / contain no-repeat;
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 12h15M12.5 5.5L19 12l-6.5 6.5'/%3E%3C/svg%3E") center / contain no-repeat;
 }
+/* Holds the teaser's last word *and* the arrow, so a line break can't
+   leave the arrow stranded alone on a line of its own — an atomic
+   inline box like it allows a break immediately before it even with no
+   whitespace there. (A word joiner between the two, the usual trick,
+   doesn't stop it; only keeping them inside one nowrap box does.)
+   home-v2.js writes the split, and only ever rewrites this span's text
+   node, so the arrow element itself survives every mood swap. */
+.v2-card-desc-tail { white-space: nowrap; }
 
 .v2-card:hover .v2-card-desc,
 .v2-card.is-open .v2-card-desc,
