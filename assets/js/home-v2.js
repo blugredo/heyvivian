@@ -2,6 +2,12 @@
 // mouse users click-and-drag horizontally; touch/trackpad already scrolls
 // natively and is left alone (we only hook mouse pointer events).
 document.addEventListener('DOMContentLoaded', () => {
+  // Work-in-progress System snapshots row: hidden on the live site,
+  // shown when previewing locally (see the note on it in index.html).
+  if (['localhost', '127.0.0.1'].includes(location.hostname)) {
+    document.getElementById('systemSnapshots')?.removeAttribute('hidden');
+  }
+
   // One controller per card row (there are two now: project snapshots and
   // system snapshots). Each owns its own drag, scroll and open/close
   // state; `rowControllers` only exists so that opening a card in one row
