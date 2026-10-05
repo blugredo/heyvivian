@@ -272,9 +272,15 @@ body[data-mood="zen"] .d-mode-copy[data-mode="zen"] { display: inline; }
      Content stays put at the top; on a short screen the hero is just as
      tall as its content needs (min-height doesn't force it shorter), on
      a tall one the natural gap after .d-sub simply grows to fill it. */
+  /* Sized so the hero ends right at the fold rather than a full screen
+     below its own top (the nav + 40px margin above it already take
+     ~112px of that screen), and capped so a very tall window (a
+     stretched desktop side panel, say) doesn't pad it out with a big
+     empty gap — real phones stay under the cap, so the band still
+     starts just below the fold on them. */
   .d-hero {
-    min-height: 100vh;
-    min-height: 100svh;
+    min-height: min(calc(100vh - 112px), 760px);
+    min-height: min(calc(100svh - 112px), 760px);
     box-sizing: border-box;
     margin-bottom: 0; /* the base rule's 100px is for the desktop layout's own rhythm — min-height plus the band's own margin-top below already provide the mobile gap */
   }
@@ -290,7 +296,7 @@ body[data-mood="zen"] .d-mode-copy[data-mode="zen"] { display: inline; }
   .d-hero-circle, .d-hero-circle .v2-callout-circle { width: clamp(180px, 60vw, 260px); height: clamp(180px, 60vw, 260px); }
   .d-hero-circle { align-self: center; margin-bottom: 28px; }
   /* Two fewer lines than the 26px floor it was clamped to. */
-  .d-headline { font-size: 20px; }
+  .d-headline { font-size: 22px; }
   /* margin-top (not the headline's own margin-bottom) is the gap that
      was reading as "too close" — moves the language row down away from
      the headline without touching the fixed 40px below it, which was
