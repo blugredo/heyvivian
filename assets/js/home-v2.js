@@ -2,8 +2,18 @@
 // mouse users click-and-drag horizontally; touch/trackpad already scrolls
 // natively and is left alone (we only hook mouse pointer events).
 document.addEventListener('DOMContentLoaded', () => {
-  const row = document.querySelector('.v2-card-row');
-  if (!row) return;
+  // One controller per card row (there are two now: project snapshots and
+  // system snapshots). Each owns its own drag, scroll and open/close
+  // state; `rowControllers` only exists so that opening a card in one row
+  // can collapse whatever was open in the other, keeping one open card on
+  // the page rather than one per row.
+  const rowControllers = [];
+  document.querySelectorAll('.v2-card-row').forEach((el) => {
+    const controller = initCardRow(el);
+    if (controller) rowControllers.push(controller);
+  });
+
+  function initCardRow(row) {
 
   // Ease the row to its left-aligned resting position on load rather
   // than snapping there — invisible when it's already at 0, but smooths
@@ -55,7 +65,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Click-to-expand: a real click (not the tail end of a drag) toggles a
   // card open/closed. Only one card is open at a time. The close (←)
   // button always collapses regardless of what else is open.
-  const cards = Array.from(document.querySelectorAll('.v2-card'));
+  const cards = Array.from(row.querySelectorAll('.v2-card'));
+  if (!cards.length) return null;
 
   // Matches --liquid-duration in home-v2.css — kept as one shared number so
   // the scroll and the card's own width transition move as one motion
@@ -138,8 +149,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const w = first ? first.getBoundingClientRect().width : 268;
     return w + (parseFloat(getComputedStyle(row).columnGap) || 0);
   }
-  const prevBtn = document.getElementById('scrollPrev');
-  const nextBtn = document.getElementById('scrollNext');
+  // Scoped to this row's own section head (the element just before its
+  // scroll wrap) rather than looked up by a page-wide id, so each row
+  // drives its own arrows. Taken in document order: prev, then next.
+  const head = row.closest('.v2-scroll-wrap')?.previousElementSibling;
+  const navBtns = head && head.classList.contains('v2-section-head')
+    ? head.querySelectorAll('.v2-scroll-nav-btn')
+    : [];
+  const prevBtn = navBtns[0];
+  const nextBtn = navBtns[1];
   function stepScroll(dir) {
     const maxScroll = row.scrollWidth - row.clientWidth;
     const target = Math.min(Math.max(0, row.scrollLeft + dir * stepDistance()), Math.max(0, maxScroll));
@@ -177,16 +195,23 @@ document.addEventListener('DOMContentLoaded', () => {
   // the computed top in px so the caller can also use it to size the
   // card's own height to match (see openCard).
   function syncShotFullOpenOffset(card) {
-    const cardTop = card.getBoundingClientRect().top;
+    const desiredShotTop = expandedContentBottom(card) + 20; // 20px breathing room before the image, matching the gap the side-panel reveal keeps
+    card.style.setProperty('--shot-full-open-y', `${desiredShotTop - SHOT_REST_TOP}px`);
+    return desiredShotTop;
+  }
+  // Bottom of the last thing in the expanded panel, relative to the top
+  // of the card: the last stat, or for a card without stats whatever it
+  // shows instead (a mechanism note, a "no data yet" line, the divider).
+  function expandedContentBottom(card) {
     const stats = card.querySelectorAll('.v2-stat');
     const bottomEl = stats.length
       ? stats[stats.length - 1]
-      : (card.querySelector('.v2-card-soon') || card.querySelector('.v2-card-divider') || card.querySelector('.v2-card-desc'));
+      : (card.querySelector('.v2-card-note')
+        || card.querySelector('.v2-card-soon')
+        || card.querySelector('.v2-card-divider')
+        || card.querySelector('.v2-card-desc'));
     if (!bottomEl) return SHOT_REST_TOP;
-    const bottomRect = bottomEl.getBoundingClientRect();
-    const desiredShotTop = (bottomRect.bottom - cardTop) + 20; // 20px breathing room before the image, matching the gap the side-panel reveal keeps
-    card.style.setProperty('--shot-full-open-y', `${desiredShotTop - SHOT_REST_TOP}px`);
-    return desiredShotTop;
+    return bottomEl.getBoundingClientRect().bottom - card.getBoundingClientRect().top;
   }
 
   // Dragging a finger across the row reveals each card in turn the same
@@ -336,6 +361,9 @@ document.addEventListener('DOMContentLoaded', () => {
         closeCard(c);
       }
     });
+    // ...and collapse whatever the other row had open, so there's one
+    // open card on the page rather than one per row.
+    rowControllers.forEach((c) => { if (c.row !== row) c.collapseOpen(); });
 
     // Accordion cards (mobile test: .v-accordion) grow downward in place
     // instead of widening — no horizontal scroll math applies, so that's
@@ -343,9 +371,21 @@ document.addEventListener('DOMContentLoaded', () => {
     if (isMobileAccordion) {
       const startHeight = card.getBoundingClientRect().height;
       card.classList.add('is-open'); // lays out title/desc/divider/stats so the space they take up (and thus where the image should slide to) can be measured below
-      const shotTop = syncShotFullOpenOffset(card);
-      const shotHeight = card.querySelector('.v2-card-shot').getBoundingClientRect().height;
-      const targetHeight = shotTop + shotHeight; // flush with the image's own bottom — no gap below it, matching the card's top-only rounding
+      const shot = card.querySelector('.v2-card-shot');
+      // With a screenshot, the card ends flush with the image's own
+      // bottom (no gap below it, matching the card's top-only rounding).
+      // Without one (the system snapshots), it ends a padding's worth
+      // below the last line of the panel instead.
+      // With a screenshot, the card ends flush with the image's own
+      // bottom (no gap below it, matching the card's top-only rounding).
+      // Without one, it ends a padding's worth below the last line of
+      // the panel, but never shorter than it was at rest — the system
+      // cards' panels are shorter than the card itself, and a card that
+      // got smaller when you expanded it would read backwards. Those
+      // just reveal the panel in the space they already had.
+      const targetHeight = shot
+        ? syncShotFullOpenOffset(card) + shot.getBoundingClientRect().height
+        : Math.max(collapsedHeight(card), expandedContentBottom(card) + 24);
       card.style.height = `${startHeight}px`; // pin back to the pre-open height for a frame, so the animation below has a real start point instead of jumping straight to target
       animateAccordionHeight(card, targetHeight, true);
       card.setAttribute('aria-expanded', 'true');
@@ -411,11 +451,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!card) return;
 
     if (isMobileAccordionCard(card)) {
-      // A plain three-tap cycle now — rest -> peeked -> open -> rest —
-      // and any tap on the card advances it, arrow included; nothing
-      // about *where* on the card was tapped matters anymore.
+      // A plain three-tap cycle — rest -> peeked -> open -> rest — and
+      // any tap on the card advances it, arrow included; nothing about
+      // *where* on the card was tapped matters. Cards with no screenshot
+      // skip the peek stage: peeking exists to slide the image down off
+      // the teaser, so on those it would look like a tap that did
+      // nothing. They just toggle open and shut.
       if (card.classList.contains('is-open')) { unpeekCard(card); closeAccordionCard(card); }
-      else if (card.classList.contains('is-peeked')) openCard(card);
+      else if (card.classList.contains('is-peeked') || !card.querySelector('.v2-card-shot')) openCard(card);
       else peekCard(card);
       return;
     }
@@ -442,6 +485,19 @@ document.addEventListener('DOMContentLoaded', () => {
       openCard(card);
     }
   });
+
+  return {
+    row,
+    // Collapses this row's open card, if it has one, the same way a tap
+    // on it would. Called by the other row's openCard.
+    collapseOpen() {
+      const open = cards.find((c) => c.classList.contains('is-open'));
+      if (!open) return;
+      if (isMobileAccordionCard(open)) { unpeekCard(open); closeAccordionCard(open); }
+      else closeCard(open);
+    },
+  };
+  }
 });
 
 // ---------------------------------------------------------------------
@@ -453,15 +509,45 @@ document.addEventListener('DOMContentLoaded', () => {
 // teasers just show the snappy one, per the copy doc.
 // ---------------------------------------------------------------------
 const CARDS = [
-  { id: 'remitly-business', teasers: { snappy: 'Hidden experiment to $408M business in one year. Zero to one, three countries.', zen: null } },
-  { id: 'duolingo-news-feed', teasers: { snappy: "Pitched a new tab connecting 500M learners to each other. It’s still there.", zen: null } },
-  { id: 'pay-with-a-link', teasers: { snappy: 'Pay contractors abroad without asking for bank details. A family product, rebuilt for business.', zen: null } },
-  { id: 'duocon', teasers: { snappy: "Co-created and branded Duolingo’s first live event. Also added a word to High Valyrian.", zen: null } },
-  { id: 'duolingo-streak-society', teasers: { snappy: 'An exclusive club for Duolingo’s most obsessive learners.', zen: null } },
+  {
+    id: 'remitly-business',
+    teasers: {
+      snappy: 'Hidden experiment to $408M business in one year. Zero to one, three countries.',
+      zen: 'Something nobody was supposed to find, growing quietly into a $408M business across three countries, which is what happens when you let an experiment keep breathing.',
+    },
+  },
+  {
+    id: 'duolingo-news-feed',
+    teasers: {
+      snappy: 'Pitched a new tab connecting 500M learners to each other. It’s still there.',
+      zen: 'A tab I pitched so that 500M people learning alone could notice each other, and it is still there, which is the most anyone can ask of a thing they made.',
+    },
+  },
+  {
+    id: 'pay-with-a-link',
+    teasers: {
+      snappy: 'Pay contractors abroad without asking for bank details. A family product, rebuilt for business.',
+      zen: 'A way to pay someone across the world without asking for their bank details, which turned out to be less about payments and more about the awkwardness of asking.',
+    },
+  },
+  {
+    id: 'duocon',
+    teasers: {
+      snappy: 'Co-created and branded Duolingo’s first live event. Also added a word to High Valyrian.',
+      zen: 'Duolingo’s first live event, which I co-created and branded, and which ended with me adding a word to a language that does not technically exist.',
+    },
+  },
+  {
+    id: 'duolingo-streak-society',
+    teasers: {
+      snappy: 'An exclusive club for Duolingo’s most obsessive learners.',
+      zen: 'A club for people who have not missed a single day in a year, built on the understanding that devotion, once measured, becomes difficult to put down.',
+    },
+  },
 ];
 const MOODS = {
   snappy: { label: 'SNAPPY', tagline: 'I’ll be quick.' },
-  zen: { label: 'ZEN', tagline: 'Take your time.' },
+  zen: { label: 'ZEN', tagline: 'Take your time. None of it was as urgent as it felt at the time.' },
 };
 // Cycle order for the single mood button — click steps to the next one
 // and wraps around. Adding a third mood later is just another entry
@@ -522,6 +608,13 @@ document.addEventListener('DOMContentLoaded', () => {
       g.classList.toggle('is-active', g.dataset.circle === mood);
     });
     if (tagline) setTextSmooth(tagline, MOODS[mood].tagline, animate);
+    // Anything else whose copy changes with mood carries both strings in
+    // data-snappy/data-zen next to where it renders — the second card
+    // row's tagline and the footer line, today. Falls back to the snappy
+    // string for any mode it doesn't have its own wording for.
+    document.querySelectorAll('[data-snappy]').forEach((el) => {
+      setTextSmooth(el, el.dataset[mood] || el.dataset.snappy, animate);
+    });
     CARDS.forEach((card) => {
       const el = document.getElementById(`desc-${card.id}`);
       if (!el) return;

@@ -27,6 +27,22 @@
   --v2-streak: #5f7d8b;
 }
 
+/* Mode type: Snappy tightens, Zen loosens, same typeface either way.
+   Read by .d-headline (draft-serif.css) and the card teasers below.
+   Weight is applied to the teasers only — the headline's Crimson Text
+   only ships 400 and 600 here, and 600 at headline size is a much
+   heavier jump than "tighten" is asking for. */
+body[data-mood="snappy"] {
+  --mode-line-height: 1.28;
+  --mode-letter-spacing: -0.015em;
+  --mode-weight: 500;
+}
+body[data-mood="zen"] {
+  --mode-line-height: 1.5;
+  --mode-letter-spacing: 0.005em;
+  --mode-weight: 400;
+}
+
 body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont, sans-serif; }
 
 /* ---------- NAV ---------- */
@@ -259,7 +275,12 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
   /* Weight 500, not 400 — plain regular white-on-color was hard to read;
      600 turned out too heavy, especially on the on-light (dark-text)
      cards. 500 needs Inclusive Sans' medium weight loaded in index.html. */
-  font-weight: 500; font-size: 13px; line-height: 1.85; color: #fff;
+  /* Weight/leading/tracking follow the mode (see body[data-mood] up
+     top); the fallbacks are what this carried before modes existed. */
+  font-weight: var(--mode-weight, 500); font-size: 13px;
+  line-height: calc(var(--mode-line-height, 1.3) * 1.42);
+  letter-spacing: var(--mode-letter-spacing, 0);
+  color: #fff;
   position: absolute; top: 60px; left: 0; right: 0; z-index: 1;
   padding: 0 23px;
   opacity: 0.4;
@@ -376,6 +397,24 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
 
 .v2-card-soon { color: #fff; font-size: 15px; opacity: 0.8; }
 .v2-card.on-light .v2-card-soon { color: var(--v2-black); }
+
+/* ---------- ROW 2: SYSTEM SNAPSHOTS ----------
+   Same card component as Row 1. Colors are pulled from Row 1's own
+   palette rather than new ones being invented — placeholder pending
+   Vivian. These cards have no screenshot and (until their stat panels
+   are unblocked) no stats, so the expand panel carries a plain
+   mechanism description instead. */
+.v2-card.sys-alloc { background: var(--v2-remitly); }
+.v2-card.sys-gate { background: var(--v2-streak); }
+.v2-card.sys-patterns { background: var(--v2-paylink-bg); }
+.v2-card-note { color: #fff; font-size: 14px; line-height: 1.6; opacity: 0.85; }
+.v2-card.on-light .v2-card-note { color: var(--v2-black); }
+
+/* With no screenshot sliding down over it, the teaser has nothing to be
+   revealed from behind — so it sits at full strength from the start
+   instead of the dimmed resting state the other cards use, and the
+   hover/peek brightening has nothing left to do. */
+.v2-card.no-shot .v2-card-desc { opacity: 1; }
 
 /* card 1 — remitly business */
 .v2-card.remitly { background: var(--v2-remitly); }
@@ -578,7 +617,8 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
   .v2-card.v-accordion.is-open .v2-stat-num { font-size: 26px; }
   /* Cards with no shareable stats yet (pay with a link) show this
      instead — same order/spacing slot a first stat would take. */
-  .v2-card.v-accordion.is-open .v2-card-soon { order: 4; padding: 0 23px; margin-top: 18px; }
+  .v2-card.v-accordion.is-open .v2-card-soon,
+  .v2-card.v-accordion.is-open .v2-card-note { order: 4; padding: 0 23px; margin-top: 18px; }
   /* flex:0 0 auto (the base rule, for the side-panel's own fixed-width
      column) never shrinks, so a long label like "component library
      created for expansion" just ran off the card's right edge instead of

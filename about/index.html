@@ -38,11 +38,12 @@
     <path d="M58.2605 38.0381V15.2267C58.2605 14.0747 58.9518 13.3834 59.9887 13.3834C60.9871 13.3834 61.6784 14.0747 61.6784 15.2267V38.0381C61.6784 39.1902 60.9871 39.8815 59.9887 39.8815C58.9518 39.8815 58.2605 39.1902 58.2605 38.0381Z" fill="currentColor"/>
   </svg>
   </a>
-  <ul class="nav-links">
+  <ul class="nav-links nav-menu" id="navMenu">
     <li><a href="/">Home</a></li>
     <li><a href="/about" class="active">About</a></li>
-    <li><a href="https://www.linkedin.com/in/reidler/" target="_blank" rel="noopener">LinkedIn</a></li>
+    <li class="nav-desktop-only"><a href="https://www.linkedin.com/in/reidler/" target="_blank" rel="noopener">LinkedIn</a></li>
   </ul>
+  <button class="nav-toggle" type="button" aria-controls="navMenu" aria-expanded="false" aria-label="Open menu"><span class="nav-toggle-burger"></span><span class="nav-toggle-close"></span></button>
 </nav>
 
 <section class="about-hero">
@@ -88,5 +89,6 @@
 </footer>
 
 <script src="/assets/js/main.js"></script>
+<script src="/assets/js/nav-menu.js"></script>
 </body>
 </html>

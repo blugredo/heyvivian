@@ -103,6 +103,79 @@ nav.site-nav.scrolled { border-bottom-color: #e8e8e4; }
 }
 .nav-links a:hover, .nav-links a.active { color: var(--black); }
 
+/* ---------------- MOBILE NAV MENU ---------------- */
+/* Burger button + dropdown panel, shared by the home and About navs (see
+   nav-menu.js). On desktop the button is hidden and the homepage's
+   .nav-menu wrapper un-boxes itself, so the links sit in the row as
+   normal. The `nav` prefix on the mobile rules out-ranks each page's own
+   link styling (draft-serif.css, About's inline <style>), which loads
+   after this file. */
+.nav-toggle { display: none; }
+div.nav-menu { display: contents; }
+
+@media (max-width: 780px) {
+  nav .nav-toggle {
+    display: inline-block; position: relative; flex-shrink: 0;
+    width: 40px; height: 40px; margin-right: -9px; padding: 0;
+    background: none; border: none; cursor: pointer; color: var(--black);
+    -webkit-tap-highlight-color: transparent;
+  }
+  nav .nav-toggle:focus { outline: none; }
+  nav .nav-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+  /* Both glyphs share one centered 22px box and cross-fade: the burger
+     spins out a quarter turn while the X spins in from the other side.
+     Masks (not <img>) so each takes the nav's text color. */
+  .nav-toggle-burger, .nav-toggle-close {
+    position: absolute; top: 50%; left: 50%; width: 22px; height: 20px;
+    margin: -10px 0 0 -11px; background-color: currentColor;
+    transition: transform 0.4s cubic-bezier(0.65, 0, 0.35, 1), opacity 0.25s ease;
+  }
+  .nav-toggle-burger {
+    -webkit-mask: url("/assets/images/nav-burger.png") center / contain no-repeat;
+    mask: url("/assets/images/nav-burger.png") center / contain no-repeat;
+  }
+  .nav-toggle-close {
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 5l14 14M19 5L5 19' stroke='black' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 5l14 14M19 5L5 19' stroke='black' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E") center / contain no-repeat;
+    opacity: 0; transform: rotate(-90deg) scale(0.6);
+  }
+  .is-menu-open .nav-toggle-burger { opacity: 0; transform: rotate(90deg) scale(0.6); }
+  .is-menu-open .nav-toggle-close { opacity: 1; transform: none; }
+
+  /* The panel drops down from under the nav bar, full width. Closed it's
+     visibility:hidden (after the fade finishes), which also takes its
+     links out of the tab order. */
+  nav .nav-menu {
+    position: absolute; top: 100%; left: 0; right: 0; z-index: 100;
+    display: flex; flex-direction: column; gap: 0; margin: 0; list-style: none;
+    /* Side padding matches the nav's own, so the links line up under the logo. */
+    padding: 4px 24px 20px; padding-left: inherit; padding-right: inherit;
+    background: var(--white); border-bottom: 1px solid #e8e8e4;
+    box-shadow: 0 12px 24px -16px rgba(0, 0, 0, 0.18);
+    opacity: 0; visibility: hidden; transform: translateY(-10px);
+    transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.65, 0, 0.35, 1), visibility 0s linear 0.4s;
+  }
+  nav.is-menu-open .nav-menu {
+    opacity: 1; visibility: visible; transform: none;
+    transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.65, 0, 0.35, 1), visibility 0s;
+  }
+  nav .nav-menu a {
+    display: block; padding: 12px 0;
+    font-size: 20px; font-weight: 400; letter-spacing: normal; text-transform: none;
+    color: var(--gray-mid); border-bottom: none;
+  }
+  nav .nav-menu a.is-active, nav .nav-menu a.active { color: var(--black); }
+  /* Each link follows the panel in, a beat apart. */
+  nav .nav-menu > * {
+    opacity: 0; transform: translateY(-6px);
+    transition: opacity 0.25s ease, transform 0.35s cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  nav.is-menu-open .nav-menu > * { opacity: 1; transform: none; }
+  nav.is-menu-open .nav-menu > :nth-child(1) { transition-delay: 0.08s; }
+  nav.is-menu-open .nav-menu > :nth-child(2) { transition-delay: 0.14s; }
+  nav .nav-menu .nav-desktop-only { display: none; }
+}
+
 /* ---------------- FOOTER ---------------- */
 footer.site-footer {
   border-top: 1px solid #e8e8e4;
