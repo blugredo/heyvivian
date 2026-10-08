@@ -48,9 +48,14 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Browsers give buttons and form fields their own system font (Arial)
+   instead of the page's; make them inherit like everything else. */
+button, input, select, textarea { font-family: inherit; }
+
+/* Site type pair: Crimson Text for headings, Inter for everything else. */
 h1, h2, h3, h4 {
-  font-family: 'Karla', sans-serif;
-  font-weight: 700;
+  font-family: 'Crimson Text', Georgia, serif;
+  font-weight: 600;
   letter-spacing: -0.02em;
   color: var(--black);
 }
@@ -122,25 +127,22 @@ div.nav-menu { display: contents; }
   }
   nav .nav-toggle:focus { outline: none; }
   nav .nav-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
-  /* Both glyphs share one centered 22px box and cross-fade: the burger
-     spins out a quarter turn while the X spins in from the other side.
-     Masks (not <img>) so each takes the nav's text color. */
-  .nav-toggle-burger, .nav-toggle-close {
-    position: absolute; top: 50%; left: 50%; width: 22px; height: 20px;
-    margin: -10px 0 0 -11px; background-color: currentColor;
-    transition: transform 0.4s cubic-bezier(0.65, 0, 0.35, 1), opacity 0.25s ease;
-  }
+  /* A plus that spins a turn and three-eighths into an X when the menu
+     opens (and back when it closes). Drawn as two rounded bars on the
+     first span, in the nav's text color; the second span isn't needed. */
   .nav-toggle-burger {
-    -webkit-mask: url("/assets/images/nav-burger.png") center / contain no-repeat;
-    mask: url("/assets/images/nav-burger.png") center / contain no-repeat;
+    position: absolute; top: 50%; left: 50%; width: 20px; height: 20px;
+    margin: -10px 0 0 -10px;
+    transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1);
   }
-  .nav-toggle-close {
-    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 5l14 14M19 5L5 19' stroke='black' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E") center / contain no-repeat;
-    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 5l14 14M19 5L5 19' stroke='black' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E") center / contain no-repeat;
-    opacity: 0; transform: rotate(-90deg) scale(0.6);
+  .nav-toggle-burger::before, .nav-toggle-burger::after {
+    content: ''; position: absolute; left: 50%; top: 50%;
+    width: 18px; height: 2px; margin: -1px 0 0 -9px;
+    border-radius: 1px; background: currentColor;
   }
-  .is-menu-open .nav-toggle-burger { opacity: 0; transform: rotate(90deg) scale(0.6); }
-  .is-menu-open .nav-toggle-close { opacity: 1; transform: none; }
+  .nav-toggle-burger::after { transform: rotate(90deg); }
+  .nav-toggle-close { display: none; }
+  .is-menu-open .nav-toggle-burger { transform: rotate(135deg); }
 
   /* The panel drops down from under the nav bar, full width. Closed it's
      visibility:hidden (after the fade finishes), which also takes its

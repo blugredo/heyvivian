@@ -354,6 +354,11 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
      when the Y position is identical. This makes all five consistent
      regardless of what's in the source file. */
   border-radius: 14px 14px 0 0;
+  /* One shared shadow on every card image. The source files that had a
+     shadow baked in (and the per-card side offsets that compensated
+     for it) were swapped for trimmed *-clean.png copies, so they don't
+     double up and every image sits on its card the same way. */
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.18);
   transform: none; filter: none; transition: none;
 }
 
@@ -373,7 +378,7 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
 
 .v2-card-close {
   position: absolute; top: 24px; right: 28px;
-  background: none; border: none; padding: 4px; margin: 0;
+  background: none; border: none; padding: 4px; margin: 0; font-family: inherit;
   font-size: 24px; color: inherit; opacity: 0.6; cursor: pointer; line-height: 1;
   transition: opacity 0.2s ease, transform 0.2s var(--liquid-ease);
 }
@@ -450,21 +455,12 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
 /* card 1 — remitly business */
 .v2-card.remitly { background: var(--v2-remitly); }
 
-/* Per-card side-inset tuning only — every card shares the same 383px
-   height (the base .v2-card rule) so the row stays a clean, even-topped
-   line. Each source screenshot still has its own drop-shadow quirks
-   (some sit dead-center in their canvas, some are shifted a few px one
-   way), so the horizontal inset is nudged per card to keep the phone
-   graphic itself visually centered — the taller images just get a
-   little more of themselves clipped off the bottom, never a gap. */
-.v2-card.remitly .v2-card-shot { left: 6px; right: 10px; }
 
 /* duolingo stories */
 .v2-card.stories { background: #226dc7; }
 
 /* card 2 — duolingo news feed */
 .v2-card.newsfeed { background: var(--v2-newsfeed); }
-.v2-card.newsfeed .v2-card-shot { left: 2px; right: 14px; }
 
 /* card 3 — pay with a link */
 .v2-card.paylink { background: var(--v2-paylink-bg); }
@@ -498,16 +494,9 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
    ::before/::after background layers (z-index 0) — only .v2-card-expand
    needs the explicit bump, since it's otherwise unpositioned. */
 .v2-card.duocon .v2-card-expand { position: relative; z-index: 1; }
-/* No shadow on the badge photo itself (the source PNG's own baked-in
-   border/shadow was cropped off separately); rounded top matches every
-   other card's peek image via the shared .v2-card-shot img rule. */
-.v2-card.duocon .v2-card-shot img { box-shadow: none; }
-/* This photo has no baked-in shadow at all — it's edge to edge already,
-   so the side insets stay symmetric (the shared default). */
 
 /* card 5 — duolingo streak society */
 .v2-card.streak { background: var(--v2-streak); }
-.v2-card.streak .v2-card-shot { left: 1px; right: 15px; }
 
 /* ---------- NUGGETS (placeholder) ---------- */
 /* Same max-width + centering + padding recipe as .v2-section-head /
@@ -686,10 +675,12 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
   }
 }
 
-/* ---------- CASE-STUDY ICONS: LOCKED BY DEFAULT ----------
-   Hidden until unlocked from the footer lock (dive-lock.js), except the
-   ones marked .is-public (DuoCon), which always show. */
-html:not(.dive-unlocked) .v2-card-link:not(.is-public) { display: none; }
+/* ---------- CASE-STUDY ICONS: OPTIONAL LOCK ----------
+   Off for now: every "dive deeper" link shows. To lock the site again,
+   add class="site-locked" to <html> in index.html and remove `hidden`
+   from the footer's .dive-lock button; links then stay hidden until
+   unlocked from the footer (dive-lock.js), except .is-public (DuoCon). */
+html.site-locked:not(.dive-unlocked) .v2-card-link:not(.is-public) { display: none; }
 
 /* ---------- ROW DOTS (phones) ----------
    Built by home-v2.js under each company row; one per card, the active
@@ -710,4 +701,25 @@ html:not(.dive-unlocked) .v2-card-link:not(.is-public) { display: none; }
   .v2-row-dot.is-active::before { background: var(--accent); width: 18px; border-radius: 4px; }
   .v2-row-dot:focus { outline: none; }
   .v2-row-dot:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; border-radius: 6px; }
+}
+
+/* A small bracketed status note at the end of a card's line, e.g.
+   "[current experiment]": same size, a touch quieter than the line. */
+.v2-card-tag { white-space: nowrap; opacity: 0.6; }
+
+/* Small project name under a stat's label (Remitly Business card), so
+   each number says which piece of work it came from. */
+.v2-stat-project {
+  display: block; margin-top: 3px; font-size: 10.5px; line-height: 1.3;
+  letter-spacing: 0.04em; text-transform: uppercase; opacity: 0.7;
+}
+
+/* Remitly Business stats: numbers of very different widths ("25,000+"
+   vs "~2×") left each label starting somewhere else. On the desktop side
+   panel the numbers get a shared column (sized to the widest), so every
+   label lines up, and labels may wrap within what's left. */
+@media (min-width: 641px) {
+  .v2-card.remitly .v2-stat { white-space: normal; }
+  .v2-card.remitly .v2-stat-num { min-width: 136px; }
+  .v2-card.remitly .v2-stat-label { flex: 1 1 auto; min-width: 0; }
 }

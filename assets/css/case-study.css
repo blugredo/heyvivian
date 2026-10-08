@@ -1,7 +1,8 @@
 /* ============================================================
    CASE STUDY PAGES (v2)
-   Rebuilt from the original Webflow case studies (fonts, sizes and
-   colors read off the original page), on top of style.css for the
+   Rebuilt from the original Webflow case studies (sizes and colors read
+   off the original page; type switched to the site's own pair, Crimson
+   Text for headings and Inter for the rest), on top of style.css for the
    shared nav and footer. Everything here is scoped to body.cs-page so
    the older .cs-* rules in style.css can't leak in.
    ============================================================ */
@@ -52,7 +53,7 @@
 .cs-page .cs-hero2-art img { height: 100%; width: auto; display: block; }
 .cs-page .cs-hero2-text { align-self: center; max-width: 687px; }
 .cs-page .cs-hero2 h1 {
-  font-family: 'Karla', sans-serif; font-size: 34px; font-weight: 700;
+  font-family: 'Crimson Text', Georgia, serif; font-size: 38px; font-weight: 600;
   line-height: 1.4; color: #fff; text-transform: lowercase; margin: 0 0 12px;
 }
 .cs-page .cs-hero2-sub { font-size: 18px; font-weight: 300; line-height: 28px; color: #fff; margin: 0 0 10px; }
@@ -66,7 +67,7 @@
   text-transform: uppercase; color: var(--cs-label); margin: 10px 0;
 }
 .cs-page .cs-h2 {
-  font-family: 'Karla', sans-serif; font-size: 30px; font-weight: 700;
+  font-family: 'Crimson Text', Georgia, serif; font-size: 34px; font-weight: 600;
   line-height: 50px; color: #000; margin: 0 0 10px;
 }
 .cs-page .cs-meta { font-size: 14px; line-height: 24px; color: var(--cs-label); margin: 0; }
@@ -76,7 +77,7 @@
 .cs-page .cs-text strong { font-weight: 700; color: #000; }
 .cs-page .cs-text a { color: inherit; }
 .cs-page .cs-subhead {
-  font-family: 'Karla', sans-serif; font-size: 22px; font-weight: 700;
+  font-family: 'Crimson Text', Georgia, serif; font-size: 25px; font-weight: 600;
   line-height: 40px; color: var(--cs-subhead); margin: 40px 0 10px;
 }
 .cs-page .cs-caption { font-size: 13px; line-height: 28px; color: #000; margin: 8px 0 0; }
@@ -97,7 +98,7 @@
 .cs-page .cs-solving-icon { width: 115px; margin: 0 auto 60px; }
 .cs-page .cs-solving .cs-label { color: rgba(255,255,255,0.3); }
 .cs-page .cs-solving h3 {
-  font-family: 'Karla', sans-serif; font-size: 26px; font-weight: 700;
+  font-family: 'Crimson Text', Georgia, serif; font-size: 29px; font-weight: 600;
   line-height: 42px; color: #fff; margin: 0 0 20px;
 }
 .cs-page .cs-solving p { font-size: 16px; line-height: 28px; color: #fff; margin: 0; }
@@ -120,11 +121,15 @@
 .cs-page .cs-carousel-dots span { width: 10px; height: 10px; border-radius: 50%; background: #c9c9c5; }
 
 /* ---------- GRAY / WHITE BANDS WITH PILL HEADERS ---------- */
-.cs-page .cs-band2 { padding: 0 0 80px; margin-top: 60px; }
+.cs-page .cs-band2 { padding: 60px 0 80px; margin-top: 60px; }
+/* The band's own top padding gives the first header room inside the gray;
+   its margin used to leak out above the band instead (collapsing through
+   the band's top edge), leaving the header flush with the gray's top. */
+.cs-page .cs-band2 .cs-col > .cs-pill:first-child { margin-top: 0; }
 .cs-page .cs-band2.gray { background: var(--cs-band); }
 .cs-page .cs-band2 + .cs-band2 { margin-top: 0; }
 .cs-page .cs-pill {
-  font-family: 'Karla', sans-serif; font-size: 20px; font-weight: 700; line-height: 38px;
+  font-family: 'Crimson Text', Georgia, serif; font-size: 23px; font-weight: 600; line-height: 34px;
   color: #000; text-align: center; background: var(--cs-pill);
   border-radius: 20px 20px 20px 0; padding: 20px 40px; margin: 60px 0 20px;
 }
@@ -190,7 +195,7 @@
 
 /* "What we are solving", dark gray variant with no icon. */
 .cs-page .cs-solving.gray { background: #353535; padding: 50px 60px 56px; margin-top: 40px; }
-.cs-page .cs-solving.gray .cs-label { font-family: 'Karla', sans-serif; font-weight: 700; color: #afafaf; }
+.cs-page .cs-solving.gray .cs-label { color: #afafaf; }
 
 /* Full-width video embed at the column width. */
 .cs-page .cs-video { position: relative; aspect-ratio: 16 / 9; margin-top: 30px; }
@@ -227,7 +232,7 @@
 
 /* Pull quote */
 .cs-page .cs-quote2 {
-  font-family: 'Bitter', Georgia, serif; font-size: 19px; font-style: italic; line-height: 34px;
+  font-family: 'Crimson Text', Georgia, serif; font-size: 22px; font-style: italic; line-height: 34px;
   color: #000; border-left: 5px solid #e2e2e2; padding-left: 30px; margin: 40px 0 0;
 }
 .cs-page .cs-quote2-by { text-align: right; font-size: 16px; color: #979797; margin: 16px 0 0; }
@@ -241,7 +246,7 @@
   .cs-page .cs-solving.gray { padding: 36px 24px 40px; }
   .cs-page .cs-photos.three.thumbs { grid-template-columns: repeat(2, 1fr); }
   .cs-page .cs-logo-panel { height: 280px; }
-  .cs-page .cs-quote2 { font-size: 17px; line-height: 30px; padding-left: 20px; }
+  .cs-page .cs-quote2 { font-size: 20px; line-height: 30px; padding-left: 20px; }
 }
 
 /* ============================================================
@@ -264,7 +269,7 @@
 .cs-page .cs-dark > img { margin: 0 auto; }
 .cs-page .cs-dark .cs-label { color: rgba(255,255,255,0.3); margin-top: 60px; }
 .cs-page .cs-dark h3 {
-  font-family: 'Karla', sans-serif; font-size: 26px; font-weight: 700; line-height: 42px;
+  font-family: 'Crimson Text', Georgia, serif; font-size: 29px; font-weight: 600; line-height: 42px;
   color: #fff; margin: 0 0 20px;
 }
 .cs-page .cs-dark p { font-size: 16px; line-height: 28px; color: #fff; margin: 0; }
@@ -281,8 +286,10 @@
 .cs-page .cs-shots img { width: 100%; }
 .cs-page .cs-shots figcaption { font-size: 13px; line-height: 21px; margin-top: 8px; text-align: center; }
 
-/* List items whose bold first line is a heading for the text under it. */
-.cs-page .cs-text li strong { display: block; }
+/* Lists whose items open with a bold heading line (News Feed's entry
+   point options). Opt-in via .cs-options, so a bold phrase mid-sentence
+   in an ordinary list item stays inline. */
+.cs-page .cs-text ul.cs-options li > strong:first-child { display: block; }
 
 /* Pink band: final design on the left, the story on the right. */
 .cs-page .cs-pinkband { background: #cc348d; margin-top: 80px; }
@@ -376,3 +383,15 @@ html.lb-lock, html.lb-lock body { overflow: hidden; }
   /* On phones the side arrows would cover the image; swipe instead. */
   .lb-prev, .lb-next { top: auto; bottom: 4px; transform: none; font-size: 36px; }
 }
+
+/* Options with a verdict: a small mark on the bottom-right corner, an X
+   for the ones passed over and a check for the pick. */
+.cs-page .cs-pick { position: relative; margin: 0; }
+.cs-page .cs-pick-mark {
+  position: absolute; right: -4px; bottom: -4px; width: 22px; height: 22px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid #fff; box-sizing: border-box;
+}
+.cs-page .cs-pick-mark svg { width: 12px; height: 12px; fill: none; stroke: #fff; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.cs-page .cs-pick-mark.no { background: #c4c4c4; }
+.cs-page .cs-pick-mark.yes { background: var(--cs-green); }

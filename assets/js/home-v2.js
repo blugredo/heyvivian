@@ -295,7 +295,13 @@ document.addEventListener('DOMContentLoaded', () => {
         || card.querySelector('.v2-card-divider')
         || card.querySelector('.v2-card-desc'));
     if (!bottomEl) return SHOT_REST_TOP;
-    return bottomEl.getBoundingClientRect().bottom - card.getBoundingClientRect().top;
+    // Layout position (offsetTop/Height, walked up to the card) rather than
+    // getBoundingClientRect: the stats fade in from 10px lower, so measuring
+    // their on-screen box right as the card opens came out too low and left
+    // the card sized for a layout it never settles into.
+    let top = 0;
+    for (let el = bottomEl; el && el !== card; el = el.offsetParent) top += el.offsetTop;
+    return top + bottomEl.offsetHeight;
   }
 
   // Dragging a finger across the row reveals each card in turn the same
@@ -471,7 +477,17 @@ document.addEventListener('DOMContentLoaded', () => {
         ? syncShotFullOpenOffset(card) + shot.getBoundingClientRect().height
         : Math.max(collapsedHeight(card), expandedContentBottom(card) + 24);
       card.style.height = `${startHeight}px`; // pin back to the pre-open height for a frame, so the animation below has a real start point instead of jumping straight to target
-      animateAccordionHeight(card, targetHeight, true);
+      // Once it's done, measure again with everything settled and snap the
+      // card's bottom to the image's bottom, so no strip of card color is
+      // ever left under the screenshot (or the image cut short).
+      animateAccordionHeight(card, targetHeight, true, () => {
+        if (!shot || !card.classList.contains('is-open')) return;
+        const settled = syncShotFullOpenOffset(card) + shot.getBoundingClientRect().height;
+        if (Math.abs(settled - card.getBoundingClientRect().height) > 1) {
+          card.style.transition = 'height 200ms ease';
+          card.style.height = `${settled}px`;
+        }
+      });
       card.setAttribute('aria-expanded', 'true');
       return;
     }
@@ -626,8 +642,8 @@ const CARDS = [
   {
     id: 'duolingo-news-feed',
     teasers: {
-      snappy: 'Pitched a new tab connecting 500M learners to each other. It’s still there.',
-      zen: 'A tab I pitched so that 500M people learning alone could notice each other, and it is still there, which is the most anyone can ask of a thing they made.',
+      snappy: 'Launched a new tab connecting 500M learners to each other. It’s still there.',
+      zen: 'A tab I launched so that 500M people learning alone could notice each other, and it is still there, which is the most anyone can ask of a thing they made.',
     },
   },
 ];
