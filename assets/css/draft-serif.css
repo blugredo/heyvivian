@@ -382,10 +382,11 @@ body[data-mood="zen"] .d-mode-copy[data-mode="zen"] { display: inline; }
 .dive-lock {
   display: inline-flex; align-items: center; gap: 5px;
   background: none; border: 0; padding: 2px 0; cursor: pointer;
-  font: inherit; font-size: 12px; line-height: 1; color: var(--gray-light);
-  opacity: 0.7; transition: opacity 0.15s ease, color 0.15s ease;
+  /* The accent color, like the VIVIAN logo (it follows the mood too). */
+  font: inherit; font-size: 12px; line-height: 1; color: var(--accent);
+  transition: opacity 0.15s ease;
 }
-.dive-lock:hover, .dive-lock:focus-visible { opacity: 1; color: var(--gray-mid); }
+.dive-lock:hover, .dive-lock:focus-visible { opacity: 0.7; }
 .dive-lock:focus { outline: none; }
 .dive-lock:focus-visible { outline: 1px solid var(--gray-light); outline-offset: 2px; border-radius: 3px; }
 .dive-lock-icon { width: 12px; height: 12px; }

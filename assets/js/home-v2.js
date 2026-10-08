@@ -94,10 +94,23 @@ document.addEventListener('DOMContentLoaded', () => {
   // unregistered property comes back as its literal calc() expression,
   // not a resolved px value. Only one card is ever open at a time, so
   // there's always a resting sibling to measure.
+  // Height of a card at rest, read off a sibling that's actually resting:
+  // not this card (when closing, it's already lost is-open but is still
+  // at its tall open height), not open, and not mid-animation with an
+  // inline height. Without the first check, closing the first card in a
+  // row measured itself and never shrank.
   function collapsedHeight(card) {
-    const rest = cards.find((c) => !c.classList.contains('is-open')) || card;
-    const h = rest.getBoundingClientRect().height;
-    return h > 0 ? h : 383;
+    const rest = cards.find((c) => c !== card && !c.classList.contains('is-open') && !c.style.height);
+    const h = rest ? rest.getBoundingClientRect().height : 0;
+    if (h > 0) return h;
+    // Fallback: the size CSS gives a resting card, measured on a probe.
+    const probe = document.createElement('div');
+    probe.className = 'v2-card';
+    probe.style.cssText = 'position:absolute;visibility:hidden;pointer-events:none';
+    row.appendChild(probe);
+    const ph = probe.getBoundingClientRect().height;
+    probe.remove();
+    return ph > 0 ? ph : 383;
   }
   const CARD_MAIN_WIDTH = 268;
   const MAIN_MIN_WIDTH = 160;
@@ -166,6 +179,68 @@ document.addEventListener('DOMContentLoaded', () => {
   if (prevBtn) prevBtn.addEventListener('click', () => stepScroll(-1));
   if (nextBtn) nextBtn.addEventListener('click', () => stepScroll(1));
 
+  // Phone-width dots under the company rows (CSS shows them at <=640px
+  // only), so it's clear there are more cards than the one in view. One
+  // dot per card; the active one follows the scroll, and tapping a dot
+  // scrolls to its card. Until the visitor touches the row (or opens a
+  // card), it also auto-advances one card every few seconds, looping
+  // back to the first, and only while the row is on screen.
+  if (row.closest('.d-company')) {
+    const wrap = row.closest('.v2-scroll-wrap');
+    const dots = document.createElement('div');
+    dots.className = 'v2-row-dots';
+    dots.setAttribute('role', 'group');
+    dots.setAttribute('aria-label', 'Cards in this row');
+    const dotEls = cards.map((_, i) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'v2-row-dot';
+      b.setAttribute('aria-label', `Card ${i + 1} of ${cards.length}`);
+      b.addEventListener('click', () => { stopAuto(); goTo(i); });
+      dots.appendChild(b);
+      return b;
+    });
+    wrap.after(dots);
+
+    const maxScroll = () => Math.max(0, row.scrollWidth - row.clientWidth);
+    const goTo = (i) => animateScrollLeft(row, Math.min(i * stepDistance(), maxScroll()), LIQUID_MS);
+    const currentIndex = () => {
+      // Past the last full step the row can't scroll further, so the end
+      // of the range counts as the last card.
+      if (row.scrollLeft >= maxScroll() - 2) return cards.length - 1;
+      return Math.round(row.scrollLeft / stepDistance());
+    };
+    const paint = () => {
+      const active = currentIndex();
+      dotEls.forEach((d, i) => d.classList.toggle('is-active', i === active));
+    };
+    row.addEventListener('scroll', paint, { passive: true });
+    window.addEventListener('resize', paint);
+    paint();
+
+    // Auto-advance. Any real interaction with the row ends it for good.
+    const AUTO_MS = 4000;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let timer = null;
+    function stopAuto() { clearInterval(timer); timer = null; }
+    // Mostly on screen: at least ~60% of the row's height in the viewport.
+    const onScreen = () => {
+      const r = row.getBoundingClientRect();
+      const visible = Math.min(r.bottom, window.innerHeight) - Math.max(r.top, 0);
+      return visible > r.height * 0.6;
+    };
+    function tick() {
+      if (window.innerWidth > 640 || document.hidden || !onScreen()) return;
+      if (cards.some((c) => c.classList.contains('is-open') || c.classList.contains('is-peeked'))) return;
+      const next = currentIndex() + 1;
+      goTo(next >= cards.length ? 0 : next);
+    }
+    ['pointerdown', 'touchstart', 'wheel', 'keydown'].forEach((ev) => {
+      row.addEventListener(ev, stopAuto, { passive: true });
+    });
+    if (!reduceMotion) timer = setInterval(tick, AUTO_MS);
+  }
+
   // Keeps the gap below the teaser text (before the screenshot) equal to
   // the gap above it (title-to-teaser) — teaser length varies per card
   // (2-4 lines), so a single fixed reveal distance in CSS left some
@@ -205,9 +280,14 @@ document.addEventListener('DOMContentLoaded', () => {
   function expandedContentBottom(card) {
     const stats = card.querySelectorAll('.v2-stat');
     // The case-study link sits under the stats, so it's the bottom when
-    // present. The notes are a list, so take the last one.
+    // it's showing. While the site is locked it's display:none and
+    // measures as zero, which sent the screenshot up over the title, so
+    // only count it when it actually has a box. The notes are a list,
+    // so take the last one.
     const notes = card.querySelectorAll('.v2-card-note');
-    const bottomEl = card.querySelector('.v2-card-link')
+    const link = card.querySelector('.v2-card-link');
+    const linkShown = link && link.getClientRects().length > 0;
+    const bottomEl = (linkShown ? link : null)
       || (stats.length ? stats[stats.length - 1] : null)
       || (notes.length ? notes[notes.length - 1] : null)
       || (card.querySelector('.v2-card-note')
@@ -493,6 +573,27 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       openCard(card);
     }
+  });
+
+  // Crossing the phone breakpoint (rotating, or dragging a window or side
+  // panel narrower or wider) while a card is open would leave it in the
+  // wrong layout: a side-panel card suddenly styled as a downward
+  // accordion, never sized for it, with its stats spilling out and the
+  // screenshot pushed out of view (or the reverse). Reset every card to
+  // rest instead, so the next tap opens it properly for the new width.
+  // Tracked by width on resize (the same test isMobileAccordionCard uses)
+  // rather than only a media-query listener, so it can't drift from it.
+  let wasPhone = window.innerWidth <= 640;
+  window.addEventListener('resize', () => {
+    const isPhone = window.innerWidth <= 640;
+    if (isPhone === wasPhone) return;
+    wasPhone = isPhone;
+    cards.forEach((c) => {
+      c.classList.remove('is-open', 'is-peeked', 'is-touched');
+      c.setAttribute('aria-expanded', 'false');
+      c.style.transition = '';
+      c.style.height = '';
+    });
   });
 
   return {

@@ -234,7 +234,10 @@
 
 @media (max-width: 780px) {
   .cs-page .cs-hero2.photo { height: auto; }
-  .cs-page .cs-hero2.photo .cs-hero2-inner { padding: 120px 24px 40px; }
+  .cs-page .cs-hero2.photo .cs-hero2-inner { padding: 72px 24px 40px; }
+  /* The desktop 600px flex-basis is a width there, but once the hero
+     stacks into a column it would become a 600px height. */
+  .cs-page .cs-hero2.photo .cs-hero2-text { flex: 0 0 auto; }
   .cs-page .cs-solving.gray { padding: 36px 24px 40px; }
   .cs-page .cs-photos.three.thumbs { grid-template-columns: repeat(2, 1fr); }
   .cs-page .cs-logo-panel { height: 280px; }
@@ -327,4 +330,49 @@
 .reveal-ready .cs-page main img.is-revealed {
   opacity: 1;
   transform: none;
+}
+
+/* ============================================================
+   IMAGE VIEWER (lightbox.js)
+   Tap any content image to see it full screen.
+   ============================================================ */
+.cs-page img.lb-target { cursor: zoom-in; }
+.cs-page img.lb-target:focus { outline: none; }
+.cs-page img.lb-target:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+html.lb-lock, html.lb-lock body { overflow: hidden; }
+
+.lb {
+  position: fixed; inset: 0; z-index: 1000;
+  display: flex; align-items: center; justify-content: center;
+  padding: 56px 16px; box-sizing: border-box;
+  background: rgba(10, 10, 10, 0.92);
+  opacity: 0; transition: opacity 0.25s ease;
+  cursor: zoom-out;
+}
+.lb[hidden] { display: none; }
+.lb.is-open { opacity: 1; }
+.lb-img {
+  max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain;
+  cursor: default; transform: scale(0.97); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.lb.is-open .lb-img { transform: none; }
+.lb-caption {
+  position: absolute; bottom: 16px; left: 0; right: 0; margin: 0;
+  text-align: center; font-size: 12px; color: rgba(255,255,255,0.6);
+}
+.lb-btn {
+  position: absolute; background: none; border: 0; color: #fff; cursor: pointer;
+  font-size: 34px; line-height: 1; padding: 8px 14px; opacity: 0.75;
+  -webkit-tap-highlight-color: transparent;
+}
+.lb-btn:hover, .lb-btn:focus-visible { opacity: 1; }
+.lb-btn:focus { outline: none; }
+.lb-btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; border-radius: 4px; }
+.lb-close { top: 8px; right: 8px; font-size: 32px; }
+.lb-prev { left: 4px; top: 50%; transform: translateY(-50%); font-size: 44px; }
+.lb-next { right: 4px; top: 50%; transform: translateY(-50%); font-size: 44px; }
+@media (max-width: 780px) {
+  .lb { padding: 56px 8px 48px; }
+  /* On phones the side arrows would cover the image; swipe instead. */
+  .lb-prev, .lb-next { top: auto; bottom: 4px; transform: none; font-size: 36px; }
 }

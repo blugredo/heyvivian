@@ -205,7 +205,7 @@ footer.site-footer {
   display: flex; align-items: center; justify-content: center;
   padding: 16px 48px;
 }
-.footer-bottom-row span { font-size: 12px; color: var(--gray-light); }
+.footer-bottom-row span { font-size: 12px; color: var(--gray-mid); }
 .footer-links {
   display: flex; justify-content: center; gap: 28px;
   padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px solid #eeeeea;
