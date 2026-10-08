@@ -517,18 +517,11 @@ document.addEventListener('DOMContentLoaded', () => {
 // Card copy is keyed per-mood with a snappy fallback so unwritten zen
 // teasers just show the snappy one, per the copy doc.
 // ---------------------------------------------------------------------
-// Streak Society, Duocon and Send with link moved to new "Helping..."
-// lines (Oct 8) with no Zen wording yet, so they're left out here and
+// Remitly Business, Streak Society, Duocon and Send with link moved to
+// new lines (Oct 8) with no Zen wording yet, so they're left out here and
 // keep their one line in both modes. Add an entry back with the card's
 // desc id once a Zen line exists.
 const CARDS = [
-  {
-    id: 'remitly-business',
-    teasers: {
-      snappy: 'Hidden experiment to $408M business in one year. Zero to one, three countries.',
-      zen: 'Something nobody was supposed to find, growing quietly into a $408M business across three countries, which is what happens when you let an experiment keep breathing.',
-    },
-  },
   {
     id: 'duolingo-news-feed',
     teasers: {
