@@ -208,6 +208,42 @@ body[data-mood="zen"] .d-mode-copy[data-mode="zen"] { display: inline; }
    lines up with the heading regardless of viewport width. */
 .d-snapshots-band .v2-card-row { padding-bottom: 0; padding-left: var(--band-inset); }
 
+/* ---------- COMPANY SECTIONS ----------
+   The band itself sits on the page color now; under a "Quick project
+   samples" title, each company gets its cards on a light gray strip and,
+   below that, a white strip with the company name and a short framing
+   paragraph plus a proof link. Card bottoms sit flush on the white strip. */
+.d-snapshots-band.d-work { background: none; padding-top: 0; }
+.d-snapshots-title {
+  padding: 0 24px 0 var(--band-inset); margin-bottom: 20px; font-size: 15px;
+}
+.d-snapshots-title p { margin: 0; }
+.d-snapshots-title strong { color: var(--accent); font-weight: 600; margin-right: 8px; }
+.d-snapshots-title em { color: var(--gray-mid); font-size: 13px; }
+.d-company .v2-scroll-wrap { background: #f0f0ee; padding-top: 24px; }
+.d-company-info {
+  display: flex; align-items: flex-start; gap: 24px; box-sizing: border-box;
+  padding: 28px 24px 56px var(--band-inset);
+  max-width: calc(var(--band-inset) + 1176px);
+}
+/* Same serif as the hero headline. The negative top margin lifts its
+   larger x-height so its first line sits level with the paragraph's. */
+.d-company-name {
+  flex: 0 0 104px; margin: -4px 0 0; font-family: 'Crimson Text', Georgia, serif;
+  font-size: 22px; font-weight: 600; line-height: 1.2; color: var(--black);
+  text-transform: lowercase;
+}
+.d-company-body { flex: 1 1 auto; min-width: 0; }
+.d-company-text { margin: 0; font-size: 13px; line-height: 1.6; color: var(--gray-mid); }
+.d-company-link {
+  display: inline-block; margin-top: 10px; font-size: 13px;
+  color: var(--accent); text-decoration: none;
+}
+.d-company-link:hover { text-decoration: underline; }
+/* Card titles a size down from the base 17px, as in the mockup, so the
+   longest one ("home and navigation revamp") stays on one line. */
+.d-company .v2-card-title { font-size: 15px; }
+
 /* ---------- ENTRANCE ---------- */
 /* Sequenced in two beats: the circle fades in on its own first
    (.d-fade-in, no delay), then once that's mostly settled the rest of
@@ -264,6 +300,10 @@ body[data-mood="zen"] .d-mode-copy[data-mode="zen"] { display: inline; }
      hidden once the tagline drops to its own line below the title. */
   .d-snapshots-band .v2-section-head p { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
   .d-snapshots-band .v2-section-head .v2-accent-divider { display: none; }
+  /* Name stacks above its paragraph; the tagline drops under the title. */
+  .d-company-info { flex-direction: column; gap: 6px; padding-bottom: 44px; }
+  .d-company-name { flex-basis: auto; }
+  .d-snapshots-title em { display: block; margin-top: 2px; }
   /* At least one full screen tall regardless of the device's actual
      height, so the snapshots band right after it never peeks into the
      first screen on a taller phone — without hardcoding a gap tuned for
@@ -328,3 +368,41 @@ body[data-mood="zen"] .d-mode-copy[data-mode="zen"] { display: inline; }
 @media (max-width: 640px) {
   .d-hero { padding: 0 20px; }
 }
+
+/* ---------- FOOTER ROW ----------
+   Copyright on the left edge of the content column; a discreet
+   "Unlock" + padlock on the right edge (see dive-lock.js), with its
+   small password field opening just to its left. */
+.d-footer-row {
+  justify-content: flex-start; gap: 10px; max-width: 1200px; margin: 0 auto;
+  padding-left: 24px; padding-right: 24px; box-sizing: border-box;
+}
+.d-footer-row .dive-lock-form { margin-left: auto; }
+.d-footer-row .dive-lock-form[hidden] + .dive-lock { margin-left: auto; }
+.dive-lock {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: none; border: 0; padding: 2px 0; cursor: pointer;
+  font: inherit; font-size: 12px; line-height: 1; color: var(--gray-light);
+  opacity: 0.7; transition: opacity 0.15s ease, color 0.15s ease;
+}
+.dive-lock:hover, .dive-lock:focus-visible { opacity: 1; color: var(--gray-mid); }
+.dive-lock:focus { outline: none; }
+.dive-lock:focus-visible { outline: 1px solid var(--gray-light); outline-offset: 2px; border-radius: 3px; }
+.dive-lock-icon { width: 12px; height: 12px; }
+.dive-lock .dive-lock-open, .dive-unlocked .dive-lock .dive-lock-closed { display: none; }
+.dive-unlocked .dive-lock .dive-lock-open { display: block; }
+.dive-unlocked .dive-lock .dive-lock-label.dive-lock-open { display: inline; }
+.dive-lock-form { margin: 0; }
+.dive-lock-input {
+  width: 110px; font: inherit; font-size: 12px; color: var(--black);
+  background: transparent; border: 0; border-bottom: 1px solid #d6d6d2; padding: 1px 2px; outline: none;
+}
+.dive-lock-input:focus { border-bottom-color: var(--gray-mid); }
+.dive-lock-input.is-wrong { animation: dive-lock-shake 0.35s ease; border-bottom-color: #e07a7a; }
+@keyframes dive-lock-shake {
+  20%, 60% { transform: translateX(-4px); }
+  40%, 80% { transform: translateX(4px); }
+}
+@media (max-width: 780px) { .d-footer-row { padding-left: 20px; padding-right: 20px; } }
+/* footer.site-footer itself picks up 24px side padding at this width (style.css). */
+@media (max-width: 640px) { .d-footer-row { padding-left: 0; padding-right: 0; } }

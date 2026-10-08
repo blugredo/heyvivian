@@ -1,0 +1,330 @@
+/* ============================================================
+   CASE STUDY PAGES (v2)
+   Rebuilt from the original Webflow case studies (fonts, sizes and
+   colors read off the original page), on top of style.css for the
+   shared nav and footer. Everything here is scoped to body.cs-page so
+   the older .cs-* rules in style.css can't leak in.
+   ============================================================ */
+.cs-page {
+  --cs-navy: #013048;
+  --cs-band: #e5e5e5;
+  --cs-pill: #cecece;
+  --cs-pill-light: rgba(206, 206, 206, 0.5);
+  --cs-label: #b6b4b4;
+  --cs-subhead: #949494;
+  --cs-green: #4fb602;
+  --cs-red: #ff7c7c;
+  --cs-col: 850px;
+  background: #fff;
+  color: #000;
+}
+
+/* Same nav as the home and About pages: 1200px wide with a 24px inset,
+   30px logo, normal-case muted links (matches About's inline styles). */
+.cs-page nav.site-nav { max-width: 1200px; margin: 0 auto; padding-left: 24px; padding-right: 24px; background: #fff; }
+/* The nav is sticky but only 1200px wide; this paints its background out
+   to both page edges so the full-width hero can't show beside it on
+   scroll. A pseudo-element rather than a clipped box-shadow, which also
+   clipped the mobile menu's dropdown hanging below the bar. */
+.cs-page nav.site-nav::before {
+  content: ''; position: absolute; top: 0; bottom: 0; left: -100vmax; right: -100vmax;
+  background: #fff; z-index: -1;
+}
+.cs-page .nav-logo svg { height: 30px; }
+.cs-page .nav-links a {
+  font-size: 14px; font-weight: 400; letter-spacing: normal; text-transform: none;
+  color: var(--gray-mid); padding-bottom: 2px; border-bottom: 1px solid transparent;
+}
+.cs-page .nav-links a:hover { color: var(--black); }
+
+/* One centered text column, 850px wide like the original. */
+.cs-page .cs-col { max-width: var(--cs-col); margin: 0 auto; padding: 0 24px; box-sizing: content-box; }
+
+/* ---------- HERO ---------- */
+/* Full-bleed navy band. The art runs the band's full height, sitting on
+   its bottom edge, so the spotlights reach the top. */
+.cs-page .cs-hero2 { background: var(--cs-navy); height: 384px; overflow: hidden; }
+.cs-page .cs-hero2-inner {
+  max-width: 1200px; height: 100%; margin: 0 auto; padding: 0 24px;
+  display: flex; align-items: stretch; gap: 48px; box-sizing: border-box;
+}
+.cs-page .cs-hero2-art { flex: 0 0 auto; display: flex; align-items: flex-end; }
+.cs-page .cs-hero2-art img { height: 100%; width: auto; display: block; }
+.cs-page .cs-hero2-text { align-self: center; max-width: 687px; }
+.cs-page .cs-hero2 h1 {
+  font-family: 'Karla', sans-serif; font-size: 34px; font-weight: 700;
+  line-height: 1.4; color: #fff; text-transform: lowercase; margin: 0 0 12px;
+}
+.cs-page .cs-hero2-sub { font-size: 18px; font-weight: 300; line-height: 28px; color: #fff; margin: 0 0 10px; }
+.cs-page .cs-hero2-stats { font-size: 14px; line-height: 24px; color: rgba(255,255,255,0.5); margin: 0; }
+.cs-page .cs-hero2-stats a { color: rgba(255,255,255,0.5); text-decoration: underline; }
+.cs-page .cs-hero2-stats a:hover { color: #fff; }
+
+/* ---------- TYPE ---------- */
+.cs-page .cs-label {
+  font-size: 14px; font-weight: 500; line-height: 25px; letter-spacing: 1px;
+  text-transform: uppercase; color: var(--cs-label); margin: 10px 0;
+}
+.cs-page .cs-h2 {
+  font-family: 'Karla', sans-serif; font-size: 30px; font-weight: 700;
+  line-height: 50px; color: #000; margin: 0 0 10px;
+}
+.cs-page .cs-meta { font-size: 14px; line-height: 24px; color: var(--cs-label); margin: 0; }
+.cs-page .cs-text p, .cs-page .cs-text ul { font-size: 16px; line-height: 28px; color: #000; margin: 20px 0 0; }
+.cs-page .cs-text ul { padding-left: 40px; }
+.cs-page .cs-text li + li { margin-top: 10px; }
+.cs-page .cs-text strong { font-weight: 700; color: #000; }
+.cs-page .cs-text a { color: inherit; }
+.cs-page .cs-subhead {
+  font-family: 'Karla', sans-serif; font-size: 22px; font-weight: 700;
+  line-height: 40px; color: var(--cs-subhead); margin: 40px 0 10px;
+}
+.cs-page .cs-caption { font-size: 13px; line-height: 28px; color: #000; margin: 8px 0 0; }
+.cs-page .cs-caption.center { text-align: center; }
+
+.cs-page .cs-block { padding-top: 80px; }
+.cs-page .cs-block:first-child { padding-top: 56px; }
+
+/* Images sit on the page as-is: no added white fill, border or frame. */
+.cs-page img { display: block; max-width: 100%; height: auto; background: none; border: 0; }
+.cs-page .cs-img { width: 100%; margin-top: 30px; }
+
+/* ---------- "WHAT WE ARE SOLVING" ---------- */
+.cs-page .cs-solving {
+  background: var(--cs-navy); color: #fff; margin-top: 60px;
+  padding: 100px 106px 80px;
+}
+.cs-page .cs-solving-icon { width: 115px; margin: 0 auto 60px; }
+.cs-page .cs-solving .cs-label { color: rgba(255,255,255,0.3); }
+.cs-page .cs-solving h3 {
+  font-family: 'Karla', sans-serif; font-size: 26px; font-weight: 700;
+  line-height: 42px; color: #fff; margin: 0 0 20px;
+}
+.cs-page .cs-solving p { font-size: 16px; line-height: 28px; color: #fff; margin: 0; }
+
+/* ---------- TWO-COLUMN SUMMARY ---------- */
+.cs-page .cs-two { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: start; }
+.cs-page .cs-two + .cs-two { margin-top: 60px; }
+.cs-page .cs-two .cs-text > p:first-child { margin-top: 0; }
+.cs-page .cs-two figure { margin: 0; }
+
+/* ---------- SLIDER ---------- */
+.cs-page .cs-carousel { margin-top: 20px; overflow: hidden; }
+.cs-page .cs-carousel-track {
+  display: flex; overflow-x: auto; scroll-snap-type: x mandatory;
+  scrollbar-width: none; -webkit-overflow-scrolling: touch;
+}
+.cs-page .cs-carousel-track::-webkit-scrollbar { display: none; }
+.cs-page .cs-carousel-track img { flex: 0 0 100%; scroll-snap-align: start; }
+.cs-page .cs-carousel-dots { display: flex; justify-content: center; gap: 10px; padding: 20px 0 0; }
+.cs-page .cs-carousel-dots span { width: 10px; height: 10px; border-radius: 50%; background: #c9c9c5; }
+
+/* ---------- GRAY / WHITE BANDS WITH PILL HEADERS ---------- */
+.cs-page .cs-band2 { padding: 0 0 80px; margin-top: 60px; }
+.cs-page .cs-band2.gray { background: var(--cs-band); }
+.cs-page .cs-band2 + .cs-band2 { margin-top: 0; }
+.cs-page .cs-pill {
+  font-family: 'Karla', sans-serif; font-size: 20px; font-weight: 700; line-height: 38px;
+  color: #000; text-align: center; background: var(--cs-pill);
+  border-radius: 20px 20px 20px 0; padding: 20px 40px; margin: 60px 0 20px;
+}
+.cs-page .cs-band2:not(.gray) .cs-pill { background: var(--cs-pill-light); }
+
+.cs-page .cs-grid { display: grid; gap: 30px 32px; margin-top: 40px; justify-content: center; }
+.cs-page .cs-grid img { width: 100%; }
+.cs-page .cs-grid.g2 { grid-template-columns: repeat(2, 242px); gap: 46px; }
+.cs-page .cs-grid.g3 { grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.cs-page .cs-grid.g3-narrow { grid-template-columns: repeat(3, 240px); gap: 36px; }
+.cs-page .cs-grid.g4 { grid-template-columns: repeat(4, 1fr); gap: 30px 30px; }
+.cs-page .cs-grid.g3-tiny { grid-template-columns: repeat(3, 113px); gap: 70px; }
+.cs-page .cs-band2 .cs-caption { margin-top: 30px; }
+
+/* The animated prototype sits on a black panel the width of the column. */
+.cs-page .cs-gif { background: #000; margin-top: 40px; display: flex; justify-content: center; }
+.cs-page .cs-gif img { width: 270px; }
+
+/* ---------- RESULTS ---------- */
+.cs-page .cs-results2 { margin-top: 20px; }
+.cs-page .cs-stat { display: grid; grid-template-columns: 104px 1fr; gap: 19px; align-items: baseline; }
+.cs-page .cs-stat-num {
+  font-size: 21px; font-weight: 700; line-height: 34px; text-align: right;
+  color: var(--cs-green); margin-bottom: 5px;
+}
+.cs-page .cs-stat-num.neg { color: var(--cs-red); }
+.cs-page .cs-stat p { font-size: 16px; line-height: 28px; color: #212c1a; margin: 3px 0 30px; }
+
+/* ---------- PAGE END ---------- */
+.cs-page .cs-end { text-align: center; padding: 60px 24px 40px; }
+/* Both end links share the back-to-top style (style.css): 12px, light
+   gray, an arrow glyph in front, stacked close together. */
+.cs-page .cs-end .back-to-top { display: inline-block; padding: 4px 0; }
+.cs-page .cs-end-links { display: flex; justify-content: center; margin-top: 6px; }
+.cs-page .cs-end-links a { font-size: 12px; color: var(--gray-light); text-decoration: none; padding: 4px 0; }
+.cs-page .cs-end-links a:hover { color: var(--black); }
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 780px) {
+  .cs-page .cs-hero2 { height: auto; }
+  .cs-page .cs-hero2-inner { flex-direction: column-reverse; gap: 0; padding-top: 48px; }
+  .cs-page .cs-hero2-text { align-self: stretch; }
+  .cs-page .cs-hero2-art { justify-content: center; margin-top: 24px; }
+  .cs-page .cs-hero2-art img { height: 260px; }
+  .cs-page .cs-solving { padding: 56px 28px 48px; }
+  .cs-page .cs-solving-icon { width: 80px; margin-bottom: 36px; }
+  .cs-page .cs-two { grid-template-columns: 1fr; gap: 24px; }
+  .cs-page .cs-two.flip > :first-child { order: 2; }
+  .cs-page .cs-pill { font-size: 17px; line-height: 28px; padding: 16px 20px; }
+  .cs-page .cs-grid.g2, .cs-page .cs-grid.g3-narrow,
+  .cs-page .cs-grid.g3, .cs-page .cs-grid.g4 { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .cs-page .cs-grid.g3-tiny { grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .cs-page .cs-stat { grid-template-columns: 80px 1fr; gap: 14px; }
+}
+
+/* ============================================================
+   DUOCON-SPECIFIC PIECES
+   ============================================================ */
+/* Photo hero: a full-bleed photo with the text on the right half. */
+.cs-page .cs-hero2.photo { height: 351px; background-color: #000; background-size: cover; background-position: 50% 50%; }
+.cs-page .cs-hero2.photo .cs-hero2-inner { justify-content: flex-end; }
+.cs-page .cs-hero2.photo .cs-hero2-text { flex: 0 1 600px; }
+
+/* "What we are solving", dark gray variant with no icon. */
+.cs-page .cs-solving.gray { background: #353535; padding: 50px 60px 56px; margin-top: 40px; }
+.cs-page .cs-solving.gray .cs-label { font-family: 'Karla', sans-serif; font-weight: 700; color: #afafaf; }
+
+/* Full-width video embed at the column width. */
+.cs-page .cs-video { position: relative; aspect-ratio: 16 / 9; margin-top: 30px; }
+.cs-page .cs-video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
+/* Photo rows: one wide image, then a row that splits 2/3 + 1/3 (or
+   1/3 + 2/3), or 3 or 2 equal columns. Photos fill their cells. */
+.cs-page .cs-photos { display: grid; gap: 16px; margin-top: 16px; }
+.cs-page .cs-photos img { width: 100%; height: 100%; object-fit: cover; }
+.cs-page .cs-photos.wide-left { grid-template-columns: 2fr 1fr; }
+.cs-page .cs-photos.wide-right { grid-template-columns: 1fr 2fr; }
+.cs-page .cs-photos.three { grid-template-columns: repeat(3, 1fr); }
+.cs-page .cs-photos.two { grid-template-columns: repeat(2, 1fr); }
+.cs-page .cs-photos.thumbs img { aspect-ratio: 273 / 150; height: auto; }
+.cs-page .cs-img + .cs-photos { margin-top: 16px; }
+.cs-page .cs-production .cs-img { margin-top: 60px; }
+
+/* Caption paragraphs that open with a short label on a dark chip. */
+.cs-page .cs-caption-block { font-size: 13px; line-height: 28px; margin: 14px 0 0; }
+.cs-page .cs-caption-block strong { font-weight: 700; }
+.cs-page .cs-chip { background: #757575; color: #fff; padding: 2px 6px; font-size: 14px; }
+
+/* Themes row */
+.cs-page .cs-themes { text-align: center; padding: 50px 0 20px; }
+.cs-page .cs-themes h3 { font-size: 18px; font-weight: 400; letter-spacing: 1px; text-transform: uppercase; color: #b8b8b8; margin: 0 0 10px; }
+.cs-page .cs-themes p { font-size: 16px; line-height: 28px; margin: 0; }
+.cs-page .cs-themes span { color: #ccc; margin: 0 10px; }
+
+/* The logo, shown on a dark panel the width of the column. */
+.cs-page .cs-logo-panel { background: #353535; display: flex; align-items: center; justify-content: center; height: 440px; }
+.cs-page .cs-logo-panel img { width: 127px; }
+.cs-page .cs-col > .cs-pill { margin-top: 40px; }
+.cs-page .cs-img.narrow { width: 650px; max-width: 100%; margin-left: auto; margin-right: auto; }
+
+/* Pull quote */
+.cs-page .cs-quote2 {
+  font-family: 'Bitter', Georgia, serif; font-size: 19px; font-style: italic; line-height: 34px;
+  color: #000; border-left: 5px solid #e2e2e2; padding-left: 30px; margin: 40px 0 0;
+}
+.cs-page .cs-quote2-by { text-align: right; font-size: 16px; color: #979797; margin: 16px 0 0; }
+
+@media (max-width: 780px) {
+  .cs-page .cs-hero2.photo { height: auto; }
+  .cs-page .cs-hero2.photo .cs-hero2-inner { padding: 120px 24px 40px; }
+  .cs-page .cs-solving.gray { padding: 36px 24px 40px; }
+  .cs-page .cs-photos.three.thumbs { grid-template-columns: repeat(2, 1fr); }
+  .cs-page .cs-logo-panel { height: 280px; }
+  .cs-page .cs-quote2 { font-size: 17px; line-height: 30px; padding-left: 20px; }
+}
+
+/* ============================================================
+   NEWS FEED-SPECIFIC PIECES
+   ============================================================ */
+/* Pink hero with the phone art cropped by the band's bottom edge. Same
+   1200px box as the nav, so the phone's left edge lines up with the logo
+   and the text's right edge with the last nav link. The PNG has
+   transparent space around the phone (it spans x 172-649 of 823), so the
+   art box is sized to the phone and the image is shifted left by that
+   margin; the transparent edges overflow invisibly. */
+.cs-page .cs-hero2.pink { background: #cc348d; height: 450px; }
+.cs-page .cs-hero2.pink .cs-hero2-inner { align-items: flex-start; }
+.cs-page .cs-hero2.pink .cs-hero2-art { flex: 0 0 477px; min-width: 0; align-items: flex-start; }
+.cs-page .cs-hero2.pink .cs-hero2-art img { width: 823px; max-width: none; height: auto; margin-left: -172px; }
+.cs-page .cs-hero2.pink .cs-hero2-text { align-self: center; flex: 0 1 600px; margin-left: auto; position: relative; }
+
+/* Dark gray panels with an image set 100px from the top. */
+.cs-page .cs-dark { background: #3f3f3f; padding: 100px 68px 70px; margin-top: 40px; }
+.cs-page .cs-dark > img { margin: 0 auto; }
+.cs-page .cs-dark .cs-label { color: rgba(255,255,255,0.3); margin-top: 60px; }
+.cs-page .cs-dark h3 {
+  font-family: 'Karla', sans-serif; font-size: 26px; font-weight: 700; line-height: 42px;
+  color: #fff; margin: 0 0 20px;
+}
+.cs-page .cs-dark p { font-size: 16px; line-height: 28px; color: #fff; margin: 0; }
+.cs-page .cs-dark.img-only { padding: 100px 60px; }
+.cs-page .cs-dark-band { background: #3f3f3f; padding: 100px 24px; margin-top: 40px; }
+.cs-page .cs-dark-band img { max-width: var(--cs-col); width: 100%; margin: 0 auto; }
+
+/* A centered image at its own size. */
+.cs-page .cs-img.center { width: auto; margin-left: auto; margin-right: auto; }
+
+/* Three screens with a short caption under each. */
+.cs-page .cs-shots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 39px; margin-top: 30px; }
+.cs-page .cs-shots figure { margin: 0; }
+.cs-page .cs-shots img { width: 100%; }
+.cs-page .cs-shots figcaption { font-size: 13px; line-height: 21px; margin-top: 8px; text-align: center; }
+
+/* List items whose bold first line is a heading for the text under it. */
+.cs-page .cs-text li strong { display: block; }
+
+/* Pink band: final design on the left, the story on the right. */
+.cs-page .cs-pinkband { background: #cc348d; margin-top: 80px; }
+.cs-page .cs-pinkband-inner {
+  max-width: var(--cs-col); margin: 0 auto; padding: 63px 24px 62px; box-sizing: content-box;
+  display: grid; grid-template-columns: 369px 1fr; gap: 71px; align-items: start;
+}
+.cs-page .cs-pinkband .cs-subhead { color: #fff; margin-top: 17px; }
+.cs-page .cs-pinkband p { font-size: 16px; line-height: 28px; color: #fff; margin: 20px 0 0; }
+.cs-page .cs-gif-solo { width: 224px; border-radius: 10px; margin: 80px auto 0; }
+.cs-page .cs-quote2 strong { font-weight: 700; }
+
+@media (max-width: 1000px) {
+  .cs-page .cs-hero2.pink { height: auto; }
+  .cs-page .cs-hero2.pink .cs-hero2-inner { flex-direction: column-reverse; padding-top: 48px; }
+  .cs-page .cs-hero2.pink .cs-hero2-art { flex-basis: auto; width: 100%; height: 300px; overflow: hidden; justify-content: center; }
+  .cs-page .cs-hero2.pink .cs-hero2-text { margin-left: 0; flex-basis: auto; }
+  .cs-page .cs-hero2.pink .cs-hero2-art img { width: 420px; margin-left: 0; }
+}
+@media (max-width: 780px) {
+  .cs-page .cs-dark { padding: 56px 24px 40px; }
+  .cs-page .cs-dark-band { padding: 48px 24px; }
+  .cs-page .cs-shots { grid-template-columns: 1fr 1fr; gap: 16px; }
+  .cs-page .cs-pinkband-inner { grid-template-columns: 1fr; gap: 24px; padding: 40px 24px; }
+  .cs-page .cs-pinkband-inner img { max-width: 300px; margin: 0 auto; }
+}
+
+/* ============================================================
+   SCROLL-IN IMAGE REVEAL (pages with body[data-reveal-images])
+   A soft fade as each image drifts up a short way into place, on a long
+   ease-out so it decelerates gently instead of snapping. Only opacity
+   and transform animate (both GPU-friendly), so it stays smooth even on
+   big photos. The hidden start state only exists once reveal.js has
+   added .reveal-ready, so nothing is ever hidden without the script
+   there to show it again.
+   ============================================================ */
+.reveal-ready .cs-page main img {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 1.2s cubic-bezier(0.25, 0.1, 0.25, 1),
+    transform 1.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+.reveal-ready .cs-page main img.is-revealed {
+  opacity: 1;
+  transform: none;
+}

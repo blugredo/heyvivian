@@ -2,12 +2,6 @@
 // mouse users click-and-drag horizontally; touch/trackpad already scrolls
 // natively and is left alone (we only hook mouse pointer events).
 document.addEventListener('DOMContentLoaded', () => {
-  // Work-in-progress System snapshots row: hidden on the live site,
-  // shown when previewing locally (see the note on it in index.html).
-  if (['localhost', '127.0.0.1'].includes(location.hostname)) {
-    document.getElementById('systemSnapshots')?.removeAttribute('hidden');
-  }
-
   // One controller per card row (there are two now: project snapshots and
   // system snapshots). Each owns its own drag, scroll and open/close
   // state; `rowControllers` only exists so that opening a card in one row
@@ -210,9 +204,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // shows instead (a mechanism note, a "no data yet" line, the divider).
   function expandedContentBottom(card) {
     const stats = card.querySelectorAll('.v2-stat');
-    const bottomEl = stats.length
-      ? stats[stats.length - 1]
-      : (card.querySelector('.v2-card-note')
+    // The case-study link sits under the stats, so it's the bottom when
+    // present. The notes are a list, so take the last one.
+    const notes = card.querySelectorAll('.v2-card-note');
+    const bottomEl = card.querySelector('.v2-card-link')
+      || (stats.length ? stats[stats.length - 1] : null)
+      || (notes.length ? notes[notes.length - 1] : null)
+      || (card.querySelector('.v2-card-note')
         || card.querySelector('.v2-card-soon')
         || card.querySelector('.v2-card-divider')
         || card.querySelector('.v2-card-desc'));
@@ -452,9 +450,13 @@ document.addEventListener('DOMContentLoaded', () => {
   row.addEventListener('click', (e) => {
     if (justDragged) { e.preventDefault(); e.stopPropagation(); return; }
 
+    // A case-study link inside an open card navigates; it shouldn't
+    // also collapse the card on the way out.
+    if (e.target.closest('a')) return;
     const closeBtn = e.target.closest('.v2-card-close');
     const card = e.target.closest('.v2-card');
-    if (!card) return;
+    // .is-static cards (no detail to show yet, or locked) never open.
+    if (!card || card.classList.contains('is-static')) return;
 
     if (isMobileAccordionCard(card)) {
       // A plain three-tap cycle — rest -> peeked -> open -> rest — and
@@ -482,8 +484,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   row.addEventListener('keydown', (e) => {
     if (e.key !== 'Enter' && e.key !== ' ') return;
+    if (e.target.closest('a')) return;
     const card = e.target.closest('.v2-card');
-    if (!card) return;
+    if (!card || card.classList.contains('is-static')) return;
     e.preventDefault();
     if (card.classList.contains('is-open')) {
       closeCardAndSettle(card);
@@ -514,6 +517,10 @@ document.addEventListener('DOMContentLoaded', () => {
 // Card copy is keyed per-mood with a snappy fallback so unwritten zen
 // teasers just show the snappy one, per the copy doc.
 // ---------------------------------------------------------------------
+// Streak Society, Duocon and Send with link moved to new "Helping..."
+// lines (Oct 8) with no Zen wording yet, so they're left out here and
+// keep their one line in both modes. Add an entry back with the card's
+// desc id once a Zen line exists.
 const CARDS = [
   {
     id: 'remitly-business',
@@ -529,30 +536,9 @@ const CARDS = [
       zen: 'A tab I pitched so that 500M people learning alone could notice each other, and it is still there, which is the most anyone can ask of a thing they made.',
     },
   },
-  {
-    id: 'pay-with-a-link',
-    teasers: {
-      snappy: 'Pay contractors abroad without asking for bank details. A family product, rebuilt for business.',
-      zen: 'A way to pay someone across the world without asking for their bank details, which turned out to be less about payments and more about the awkwardness of asking.',
-    },
-  },
-  {
-    id: 'duocon',
-    teasers: {
-      snappy: 'Co-created and branded Duolingo’s first live event. Also added a word to High Valyrian.',
-      zen: 'Duolingo’s first live event, which I co-created and branded, and which ended with me adding a word to a language that does not technically exist.',
-    },
-  },
-  {
-    id: 'duolingo-streak-society',
-    teasers: {
-      snappy: 'An exclusive club for Duolingo’s most obsessive learners.',
-      zen: 'A club for people who have not missed a single day in a year, built on the understanding that devotion, once measured, becomes difficult to put down.',
-    },
-  },
 ];
 const MOODS = {
-  snappy: { label: 'SNAPPY', tagline: 'I’ll be quick.' },
+  snappy: { label: 'SNAPPY', tagline: 'For fans of brevity, the gift brought to us by the elevator' },
   zen: { label: 'ZEN', tagline: 'Take your time. None of it was as urgent as it felt at the time.' },
 };
 // Cycle order for the single mood button — click steps to the next one

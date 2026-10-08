@@ -41,7 +41,6 @@
     <div class="nav-menu" id="navMenu">
       <a href="/" class="is-active">Home</a>
       <a href="/about">About</a>
-      <a href="https://www.linkedin.com/in/reidler/" class="nav-desktop-only" target="_blank" rel="noopener">LinkedIn</a>
     </div>
     <button class="d-mood-cycle" id="moodCycle" type="button" aria-label="Cycle mood, currently snappy">[snappy]</button>
     <button class="nav-toggle" type="button" aria-controls="navMenu" aria-expanded="false" aria-label="Open menu"><span class="nav-toggle-burger"></span><span class="nav-toggle-close"></span></button>
@@ -85,16 +84,18 @@
   </div>
 </section>
 
-<!-- ---------- Work-sample cards, brought back below the fold ---------- -->
-<div class="d-snapshots-band">
-<div class="v2-section-head">
-  <p><strong>Project snapshots</strong> <span class="v2-accent-divider">|</span> <span id="moodTagline">I&rsquo;ll be quick.</span></p>
-  <div class="v2-scroll-nav">
-    <button class="v2-scroll-nav-btn" id="scrollPrev" type="button" aria-label="Scroll work samples left">&lsaquo;</button>
-    <button class="v2-scroll-nav-btn" id="scrollNext" type="button" aria-label="Scroll work samples right">&rsaquo;</button>
-  </div>
+<!-- ---------- Work, grouped by company ----------
+     One block per company: its row of snapshot cards on a light gray
+     strip, then a white strip with the company name and a short framing
+     paragraph (role, scope, lane) plus a proof link. Locked projects
+     show a blurred screenshot with a lock; the home and navigation card
+     doesn't open at all. -->
+<div class="d-snapshots-band d-work">
+<div class="d-snapshots-title">
+  <p><strong>Quick project samples</strong> <em id="moodTagline">For fans of brevity, the gift brought to us by the elevator</em></p>
 </div>
 
+<section class="d-company" aria-label="Remitly">
 <div class="v2-scroll-wrap">
   <div class="v2-card-row">
 
@@ -102,7 +103,7 @@
       <div class="v2-card-main">
         <p class="v2-card-title">remitly business</p>
         <p class="v2-card-desc"><span class="v2-card-desc-text" id="desc-remitly-business">Hidden experiment to $408M business in one year. Zero to one, three </span><span class="v2-card-desc-tail">countries.<span class="v2-card-arrow" aria-hidden="true"></span></span></p>
-        <div class="v2-card-shot"><img src="/assets/images/home-v2/remitly-shot.png" alt="Remitly business account type screen"></div>
+        <div class="v2-card-shot"><img src="/assets/images/remitly-imgs/lime%20frame.png" alt="Remitly profile type screen: personal or business"></div>
       </div>
       <div class="v2-card-expand">
         <button class="v2-card-close" aria-label="Collapse">&times;</button>
@@ -114,10 +115,55 @@
       </div>
     </div>
 
+    <div class="v2-card paylink on-light is-static">
+      <div class="v2-card-main">
+        <p class="v2-card-title">pay with a link</p>
+        <p class="v2-card-desc">Helping businesses pay people abroad with one link: recipients add their own details and choose how they get paid.</p>
+        <div class="v2-card-shot"><img src="/assets/images/home-v2/paylink-shot.png" alt="Pay with a link payment screen"></div>
+      </div>
+      <!-- Doesn't open for now. Detail lines for when it does:
+           "Businesses never handle recipients' bank info."
+           "No recipient account needed." -->
+    </div>
+
+    <div class="v2-card remitly is-locked is-static">
+      <div class="v2-card-main">
+        <p class="v2-card-title">industry selector</p>
+        <p class="v2-card-desc">Helping business owners find their exact industry in one search, instead of digging through a daunting list.</p>
+        <div class="v2-card-shot"><img src="/assets/images/remitly-imgs/Industry%20Drawer-locked.png" alt="Industry selector, locked while in experiment"></div>
+      </div>
+      <!-- Locked while the experiment runs. Detail lines for when it opens:
+           "Replaced a two-step category picker with one smart search."
+           "Accurate answers keep compliance on track." -->
+    </div>
+
+    <div class="v2-card paylink on-light is-locked is-static">
+      <div class="v2-card-main">
+        <p class="v2-card-title">home and navigation revamp</p>
+        <p class="v2-card-desc">Leading a global home screen and web navigation update to better serve business customers.</p>
+        <div class="v2-card-shot"><img src="/assets/images/remitly-imgs/home-locked.png" alt="Home and navigation revamp, locked"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+<div class="d-company-info">
+  <h2 class="d-company-name">Remitly</h2>
+  <div class="d-company-body">
+    <p class="d-company-text">Product Design Lead on Remitly Business, which grew from a stealth web experiment into a core company bet in the US, UK, and Canada. I lead design for the team and own the moments where compliance meets people: international KYC and KYB flows that still have to feel human. Here, trust is the whole product.</p>
+    <a class="d-company-link" href="#">Link one <span aria-hidden="true">&rsaquo;</span></a>
+  </div>
+</div>
+</section>
+
+<section class="d-company" aria-label="Duolingo">
+<div class="v2-scroll-wrap">
+  <div class="v2-card-row">
+
     <div class="v2-card streak v-accordion" tabindex="0" role="button" aria-expanded="false">
       <div class="v2-card-main">
         <p class="v2-card-title">duolingo streak society</p>
-        <p class="v2-card-desc"><span class="v2-card-desc-text" id="desc-duolingo-streak-society">An exclusive club for Duolingo&rsquo;s most obsessive </span><span class="v2-card-desc-tail">learners.<span class="v2-card-arrow" aria-hidden="true"></span></span></p>
+        <p class="v2-card-desc"><span class="v2-card-desc-text" id="desc-duolingo-streak-society">Helping the most committed learners keep going, and inspire others, by celebrating their effort in </span><span class="v2-card-desc-tail">public.<span class="v2-card-arrow" aria-hidden="true"></span></span></p>
         <div class="v2-card-shot"><img src="/assets/images/home-v2/streak-shot.png" alt="Streak Society welcome screen"></div>
       </div>
       <div class="v2-card-expand">
@@ -127,26 +173,14 @@
         <div class="v2-stat"><span class="v2-stat-num">+3.15%</span><span class="v2-stat-label">lift in Plus subscriber DAUs</span></div>
         <div class="v2-stat"><span class="v2-stat-num">+7.2%</span><span class="v2-stat-label">DAUs with 15+ minutes use</span></div>
         <div class="v2-stat"><span class="v2-stat-num">~60K</span><span class="v2-stat-label">daily taps on the home CTA</span></div>
-      </div>
-    </div>
-
-    <div class="v2-card paylink on-light v-accordion" tabindex="0" role="button" aria-expanded="false">
-      <div class="v2-card-main">
-        <p class="v2-card-title">pay with a link</p>
-        <p class="v2-card-desc"><span class="v2-card-desc-text" id="desc-pay-with-a-link">Pay contractors abroad without asking for bank details. A family product, rebuilt for </span><span class="v2-card-desc-tail">business.<span class="v2-card-arrow" aria-hidden="true"></span></span></p>
-        <div class="v2-card-shot"><img src="/assets/images/home-v2/paylink-shot.png" alt="Pay with a link payment screen"></div>
-      </div>
-      <div class="v2-card-expand">
-        <button class="v2-card-close" aria-label="Collapse">&times;</button>
-        <div class="v2-card-divider"></div>
-        <p class="v2-card-soon">No shareable data available yet</p>
+        <a class="v2-card-link" href="/work/streak-society" title="Read the case study"><span>dive deeper</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h12a1 1 0 0 1 1 1v4.5a2.5 2.5 0 0 1 -2.5 2.5h-.5a2 2 0 0 1 -2 -2a2 2 0 1 0 -4 0a2 2 0 0 1 -2 2h-.5a2.5 2.5 0 0 1 -2.5 -2.5v-4.5a1 1 0 0 1 1 -1z"/><path d="M10 17a2 2 0 0 0 2 2h3.5a5.5 5.5 0 0 0 5.5 -5.5v-9.5"/></svg></a>
       </div>
     </div>
 
     <div class="v2-card duocon v-accordion" tabindex="0" role="button" aria-expanded="false">
       <div class="v2-card-main">
         <p class="v2-card-title">duocon</p>
-        <p class="v2-card-desc"><span class="v2-card-desc-text" id="desc-duocon">Co-created and branded Duolingo&rsquo;s first live event. Also added a word to High </span><span class="v2-card-desc-tail">Valyrian.<span class="v2-card-arrow" aria-hidden="true"></span></span></p>
+        <p class="v2-card-desc"><span class="v2-card-desc-text" id="desc-duocon">Helping our most dedicated learners connect with each other, and Duolingo, in real </span><span class="v2-card-desc-tail">life.<span class="v2-card-arrow" aria-hidden="true"></span></span></p>
         <div class="v2-card-shot"><img src="/assets/images/home-v2/duocon-shot.png" alt="Duocon badge detail"></div>
       </div>
       <div class="v2-card-expand">
@@ -155,6 +189,15 @@
         <div class="v2-stat"><span class="v2-stat-num">~105%</span><span class="v2-stat-label">attendance, events "sold out"</span></div>
         <div class="v2-stat"><span class="v2-stat-num">90%</span><span class="v2-stat-label">rated the event 8/10+</span></div>
         <div class="v2-stat"><span class="v2-stat-num">+160K</span><span class="v2-stat-label">estimated viewers</span></div>
+        <a class="v2-card-link is-public" href="/work/duocon" title="Read the case study"><span>dive deeper</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h12a1 1 0 0 1 1 1v4.5a2.5 2.5 0 0 1 -2.5 2.5h-.5a2 2 0 0 1 -2 -2a2 2 0 1 0 -4 0a2 2 0 0 1 -2 2h-.5a2.5 2.5 0 0 1 -2.5 -2.5v-4.5a1 1 0 0 1 1 -1z"/><path d="M10 17a2 2 0 0 0 2 2h3.5a5.5 5.5 0 0 0 5.5 -5.5v-9.5"/></svg></a>
+      </div>
+    </div>
+
+    <div class="v2-card stories is-static">
+      <div class="v2-card-main">
+        <p class="v2-card-title">duolingo stories</p>
+        <p class="v2-card-desc">Helping learners follow real conversations through short, funny stories they actually want to finish.</p>
+        <div class="v2-card-shot"><img src="/assets/images/stories/stories-blue.png" alt="Duolingo Stories illustration"></div>
       </div>
     </div>
 
@@ -171,11 +214,20 @@
         <div class="v2-stat"><span class="v2-stat-num">+4,500</span><span class="v2-stat-label">beta tester sign-ups (+800%)</span></div>
         <div class="v2-stat"><span class="v2-stat-num">+0.42%</span><span class="v2-stat-label">total time spent learning</span></div>
         <div class="v2-stat"><span class="v2-stat-num">&gt;500</span><span class="v2-stat-label">Event Host applications in 10 days</span></div>
+        <a class="v2-card-link" href="/work/newsfeed-details" title="Read the case study"><span>dive deeper</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h12a1 1 0 0 1 1 1v4.5a2.5 2.5 0 0 1 -2.5 2.5h-.5a2 2 0 0 1 -2 -2a2 2 0 1 0 -4 0a2 2 0 0 1 -2 2h-.5a2.5 2.5 0 0 1 -2.5 -2.5v-4.5a1 1 0 0 1 1 -1z"/><path d="M10 17a2 2 0 0 0 2 2h3.5a5.5 5.5 0 0 0 5.5 -5.5v-9.5"/></svg></a>
       </div>
     </div>
 
   </div>
 </div>
+<div class="d-company-info">
+  <h2 class="d-company-name">Duolingo</h2>
+  <div class="d-company-body">
+    <p class="d-company-text">Nearly 8 years at Duolingo, from a team of about 30 through IPO, designing for 500M+ learners in a deeply global, multilingual product. Most of my work was community-focused, connecting learners to the brand and to each other.</p>
+    <a class="d-company-link" href="#">Link one <span aria-hidden="true">&rsaquo;</span></a>
+  </div>
+</div>
+</section>
 </div>
 
 <!-- ---------- Row 2: the systems behind the work ----------
@@ -185,9 +237,8 @@
      BLOCKED on Vivian, so the panels carry the mechanism description
      only. Card colors are drawn from the existing Row 1 palette as a
      placeholder. -->
-<!-- System snapshots: still a work in progress, so it ships hidden.
-     home-v2.js un-hides it on localhost only — delete `hidden` (and that
-     snippet) when it's ready to go live. -->
+<!-- System snapshots: still a work in progress, so it's hidden
+     everywhere for now. Delete `hidden` below when it's ready to show. -->
 <div class="d-snapshots-band d-systems-band" id="systemSnapshots" hidden>
 <div class="v2-section-head">
   <p><strong>System snapshots</strong> <span class="v2-accent-divider">|</span> <span data-snappy="I fix things twice." data-zen="Once for the problem, and once for the pattern that keeps making it.">I fix things twice.</span></p>
@@ -253,12 +304,23 @@
       </a>
     </div>
   </div>
-  <div class="footer-bottom-row">
+  <div class="footer-bottom-row d-footer-row">
     <span>&copy; Vivian Reidler, 2026</span>
+    <!-- Discreet lock: the right password reveals the case-study icons on
+         the cards (see dive-lock.js). -->
+    <form class="dive-lock-form" hidden>
+      <input class="dive-lock-input" type="password" aria-label="Password" autocomplete="off" spellcheck="false">
+    </form>
+    <button class="dive-lock" type="button" aria-label="Unlock" aria-expanded="false">
+      <span class="dive-lock-label dive-lock-closed">Unlock</span><span class="dive-lock-label dive-lock-open">Lock</span>
+      <svg class="dive-lock-icon dive-lock-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+      <svg class="dive-lock-icon dive-lock-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 7.5-2"/></svg>
+    </button>
   </div>
 </footer>
 
 <script src="/assets/js/home-v2.js"></script>
 <script src="/assets/js/nav-menu.js"></script>
+<script src="/assets/js/dive-lock.js"></script>
 </body>
 </html>

@@ -23,7 +23,7 @@
   /* exact card background colors from Figma */
   --v2-remitly: #242620;
   --v2-newsfeed: #cc348d;
-  --v2-paylink-bg: #d8d3cb;
+  --v2-paylink-bg: #ebe6e1;
   --v2-streak: #5f7d8b;
 }
 
@@ -340,6 +340,13 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
 .v2-card-shot img {
   width: 100%; height: auto; max-width: none; max-height: none;
   display: block;
+  /* Never shorter than the space from the shot's top (58px) to the
+     card's bottom edge: a screenshot with a wider aspect ratio would
+     otherwise stop short and leave a strip of card color under it.
+     Taller images are unaffected; a shorter one fills the gap by
+     cropping a little off its sides, anchored to the top. */
+  min-height: calc(var(--v2-card-h) - 58px);
+  object-fit: cover; object-position: top center;
   -webkit-user-drag: none; user-select: none;
   /* Uniform rounded top on every card's image — some source screenshots
      (remitly, pay with a link) already have a phone bezel baked in, but
@@ -416,6 +423,30 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
    hover/peek brightening has nothing left to do. */
 .v2-card.no-shot .v2-card-desc { opacity: 1; }
 
+/* ---------- CARD DEPTH TIERS ----------
+   Case study: a link at the bottom of the open panel. Overview: the
+   panel's notes/stats. Locked (.is-locked): a blurred screenshot with a
+   lock baked in. .is-static cards don't open at all (they lose the
+   pointer cursor), but still slide their screenshot down on hover to
+   show their one line, like every other card. */
+.v2-card.is-static { cursor: default; }
+.v2-card-link {
+  /* "dive deeper" + a diving-mask icon. Takes the card's text color. */
+  align-self: flex-start; display: inline-flex; align-items: center; gap: 6px;
+  color: #fff; line-height: 1; font-size: 13px; text-decoration: none;
+  opacity: 0.85; transition: opacity 0.15s ease, transform 0.15s ease;
+}
+.v2-card-link:hover { opacity: 1; transform: translateY(-1px); }
+/* In the open side panel it pins to the bottom-right corner: the icon
+   sits centered under the close X (whose glyph centers ~39px from the
+   right edge), the words run off to its left, and it's as far from the
+   bottom as the X is from the top. */
+.v2-card-expand .v2-card-link { position: absolute; right: 31px; bottom: 24px; }
+.v2-card.on-light .v2-card-link,
+.v2-card.duocon .v2-card-link { color: var(--v2-black); }
+/* Two short notes read as one list, not two separate paragraphs. */
+.v2-card-note + .v2-card-note { margin-top: -10px; }
+
 /* card 1 — remitly business */
 .v2-card.remitly { background: var(--v2-remitly); }
 
@@ -427,6 +458,9 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
    graphic itself visually centered — the taller images just get a
    little more of themselves clipped off the bottom, never a gap. */
 .v2-card.remitly .v2-card-shot { left: 6px; right: 10px; }
+
+/* duolingo stories */
+.v2-card.stories { background: #226dc7; }
 
 /* card 2 — duolingo news feed */
 .v2-card.newsfeed { background: var(--v2-newsfeed); }
@@ -619,6 +653,8 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
      instead — same order/spacing slot a first stat would take. */
   .v2-card.v-accordion.is-open .v2-card-soon,
   .v2-card.v-accordion.is-open .v2-card-note { order: 4; padding: 0 23px; margin-top: 18px; }
+  .v2-card.v-accordion.is-open .v2-card-note + .v2-card-note { margin-top: 6px; }
+  .v2-card.v-accordion.is-open .v2-card-link { order: 5; position: static; align-self: flex-end; margin: 20px 23px 0; }
   /* flex:0 0 auto (the base rule, for the side-panel's own fixed-width
      column) never shrinks, so a long label like "component library
      created for expansion" just ran off the card's right edge instead of
@@ -649,3 +685,8 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
     transition: transform 600ms cubic-bezier(0.65, 0, 0.35, 1);
   }
 }
+
+/* ---------- CASE-STUDY ICONS: LOCKED BY DEFAULT ----------
+   Hidden until unlocked from the footer lock (dive-lock.js), except the
+   ones marked .is-public (DuoCon), which always show. */
+html:not(.dive-unlocked) .v2-card-link:not(.is-public) { display: none; }
