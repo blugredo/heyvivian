@@ -638,15 +638,15 @@ document.addEventListener('DOMContentLoaded', () => {
 // new lines (Oct 8) with no Zen wording yet, so they're left out here and
 // keep their one line in both modes. Add an entry back with the card's
 // desc id once a Zen line exists.
-const CARDS = [
-  {
-    id: 'duolingo-news-feed',
-    teasers: {
-      snappy: 'Launched a new tab connecting 500M learners to each other. It’s still there.',
-      zen: 'A tab I launched so that 500M people learning alone could notice each other, and it is still there, which is the most anyone can ask of a thing they made.',
-    },
-  },
-];
+// No card has a Zen-only wording right now: every card shows the same
+// line in both moods ("make the snappy and zen card texts match for
+// now"). To give a card its own Zen line again, add an entry here:
+//   { id: 'duolingo-news-feed', teasers: { snappy: '...', zen: '...' } },
+// where id matches the teaser's id="desc-<id>" in index.html. The Zen
+// News Feed line that was here: "A tab I launched so that 500M people
+// learning alone could notice each other, and it is still there, which
+// is the most anyone can ask of a thing they made."
+const CARDS = [];
 const MOODS = {
   snappy: { label: 'SNAPPY', tagline: 'For fans of brevity, the gift brought to us by the elevator' },
   zen: { label: 'ZEN', tagline: 'Take your time. None of it was as urgent as it felt at the time.' },

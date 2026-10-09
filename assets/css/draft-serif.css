@@ -109,10 +109,11 @@ body.draft-hero {
   font-family: 'Crimson Text', Georgia, serif; font-weight: 400;
   font-size: clamp(26px, 3.2vw, 40px);
   color: var(--black);
-  /* Per-mode type (see body[data-mood] in home-v2.css) — the fallbacks
-     are the values this headline carried before the modes existed. */
-  line-height: var(--mode-line-height, 1.3);
-  letter-spacing: var(--mode-letter-spacing, -0.01em);
+  /* Same spacing in every mood (Snappy's values), so switching moods
+     only swaps the words, never reflows the headline. The per-mode
+     type variables in home-v2.css still apply to the card teasers. */
+  line-height: 1.28;
+  letter-spacing: -0.015em;
 }
 .d-headline em { font-style: italic; font-weight: 400; }
 /* Only the copy for the current mood is rendered; the other is removed
@@ -160,7 +161,21 @@ body[data-mood="zen"] .d-mode-copy[data-mode="zen"] { display: inline; }
 /* Desktop/normal-width: pushed down further, more clearly under the
    fold. Overridden smaller on tablet/mobile below, where there's much
    less vertical room to spare. */
-.d-hero + .d-snapshots-band { margin-top: 340px; }
+/* Desktop: the hero fills exactly the first screen below the nav (82px
+   tall), with its content centered in it, so the snapshots always start
+   at the fold however tall the window is, instead of a fixed distance
+   down that peeked into view on taller screens. min-height, so on a
+   short window it's just as tall as its content needs. */
+@media (min-width: 781px) {
+  .d-hero {
+    margin-top: 0; margin-bottom: 0; box-sizing: border-box;
+    min-height: calc(100vh - 82px); min-height: calc(100svh - 82px);
+    display: flex; flex-direction: column; justify-content: center;
+    padding-top: 40px; padding-bottom: 56px;
+  }
+  .d-hero .d-avatar-wrap { margin-top: 0; }
+  .d-hero + .d-snapshots-band { margin-top: 0; }
+}
 
 /* ---------- SNAPSHOTS BAND ---------- */
 /* Light gray backdrop behind the section head + card row. Top padding

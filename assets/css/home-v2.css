@@ -28,7 +28,10 @@
 }
 
 /* Mode type: Snappy tightens, Zen loosens, same typeface either way.
-   Read by .d-headline (draft-serif.css) and the card teasers below.
+   NOT applied right now: the hero headline and the card teasers use
+   Snappy's values in both moods (see .d-headline and .v2-card-desc), so
+   the two moods look identical apart from color and the circle. Point
+   those rules back at these variables to bring the difference back.
    Weight is applied to the teasers only — the headline's Crimson Text
    only ships 400 and 600 here, and 600 at headline size is a much
    heavier jump than "tighten" is asking for. */
@@ -275,11 +278,11 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
   /* Weight 500, not 400 — plain regular white-on-color was hard to read;
      600 turned out too heavy, especially on the on-light (dark-text)
      cards. 500 needs Inclusive Sans' medium weight loaded in index.html. */
-  /* Weight/leading/tracking follow the mode (see body[data-mood] up
-     top); the fallbacks are what this carried before modes existed. */
-  font-weight: var(--mode-weight, 500); font-size: 13px;
-  line-height: calc(var(--mode-line-height, 1.3) * 1.42);
-  letter-spacing: var(--mode-letter-spacing, 0);
+  /* Same in every mood for now (Snappy's values); the per-mode variables
+     up top can drive these again later. */
+  font-weight: 500; font-size: 13px;
+  line-height: calc(1.28 * 1.42);
+  letter-spacing: -0.015em;
   color: #fff;
   position: absolute; top: 60px; left: 0; right: 0; z-index: 1;
   padding: 0 23px;
