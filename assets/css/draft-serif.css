@@ -536,3 +536,8 @@ body[data-mood="zen"] .d-mode-copy[data-mode="zen"] { display: inline; }
   .sys-float { animation: none; }
   .sys-card, .sys-inner { transition-duration: 0.01s; }
 }
+
+/* More air between the last company's text and the System snapshots
+   heading below it. Scoped to that band, so the spacing between the
+   company sections (and above the footer) is unchanged. */
+.d-snapshots-band.d-work.d-systems { padding-top: 56px; }
