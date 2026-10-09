@@ -12,7 +12,7 @@
    ============================================================ */
 
 body.draft-hero {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: Manrope, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
 }
 
 /* ---------- NAV ---------- */
@@ -241,10 +241,11 @@ body[data-mood="zen"] .d-mode-copy[data-mode="zen"] { display: inline; }
   padding: 28px 24px 56px var(--band-inset);
   max-width: calc(var(--band-inset) + 1176px);
 }
-/* Same serif as the hero headline. The negative top margin lifts its
-   larger x-height so its first line sits level with the paragraph's. */
+
+/* Extra air under Remitly's text, before the Duolingo cards begin. */
+.d-company[aria-label="Remitly"] .d-company-info { padding-bottom: 96px; }
 .d-company-name {
-  flex: 0 0 104px; margin: -4px 0 0; font-family: 'Crimson Text', Georgia, serif;
+  flex: 0 0 104px; margin: 0; font-family: Manrope, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   font-size: 22px; font-weight: 600; line-height: 1.2; color: var(--black);
   text-transform: lowercase;
 }
@@ -317,6 +318,7 @@ body[data-mood="zen"] .d-mode-copy[data-mode="zen"] { display: inline; }
   .d-snapshots-band .v2-section-head .v2-accent-divider { display: none; }
   /* Name stacks above its paragraph; the tagline drops under the title. */
   .d-company-info { flex-direction: column; gap: 6px; padding-bottom: 44px; }
+  .d-company[aria-label="Remitly"] .d-company-info { padding-bottom: 72px; }
   .d-company-name { flex-basis: auto; }
   .d-snapshots-title em { display: block; margin-top: 2px; }
   /* At least one full screen tall regardless of the device's actual
@@ -435,10 +437,12 @@ body[data-mood="zen"] .d-mode-copy[data-mode="zen"] { display: inline; }
   background: #f0f0ee; padding: 56px 24px 44px; text-align: center; overflow: hidden;
 }
 .sys-stage {
-  --sys-w: 300px; --sys-h: 420px; --sys-fan: 136px;
+  font-family: Manrope, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  --sys-w: 300px; --sys-h: 500px; --sys-fan: 104px;
   position: relative; margin: 0 auto;
-  width: calc(var(--sys-w) + var(--sys-fan) * 2 + 24px);
+  width: calc(var(--sys-w) + var(--sys-fan) * 4 + 24px);
   max-width: 100%; height: calc(var(--sys-h) + 72px);
+  container-type: inline-size; /* lets Zen's row measure itself in cqw */
 }
 .sys-card {
   --tx: 0px; --ty: 0px; --rot: 0deg; --sc: 1;
@@ -453,9 +457,19 @@ body[data-mood="zen"] .d-mode-copy[data-mode="zen"] { display: inline; }
   -webkit-user-select: none; user-select: none;
 }
 .sys-card.is-dragging { transition: none; cursor: grabbing; }
-.sys-card[data-slot="0"] { z-index: 3; }
-.sys-card[data-slot="1"] { z-index: 2; --tx: calc(var(--sys-fan) * -1); --ty: 12px; --rot: -6deg; --sc: 0.95; }
-.sys-card[data-slot="2"] { z-index: 1; --tx: var(--sys-fan); --ty: 20px; --rot: 6deg; --sc: 0.91; }
+.sys-card[data-slot="0"] { z-index: 5; }
+/* The other four fan out either side of the front card, each one further
+   back, lower and more tilted. */
+.sys-card[data-slot="1"] { z-index: 4; --tx: calc(var(--sys-fan) * -1); --ty: 12px; --rot: -6deg; --sc: 0.95; }
+.sys-card[data-slot="2"] { z-index: 3; --tx: var(--sys-fan); --ty: 20px; --rot: 6deg; --sc: 0.91; }
+.sys-card[data-slot="3"] { z-index: 2; --tx: calc(var(--sys-fan) * -2); --ty: 32px; --rot: -11deg; --sc: 0.87; }
+.sys-card[data-slot="4"] { z-index: 1; --tx: calc(var(--sys-fan) * 2); --ty: 44px; --rot: 11deg; --sc: 0.83; }
+/* Any further cards wait out of sight behind the stack. */
+.sys-card[data-slot="5"], .sys-card[data-slot="6"] {
+  z-index: 0; --tx: 0px; --ty: 26px; --rot: 0deg; --sc: 0.8;
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transition: transform 0.75s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease, visibility 0s linear 0.6s;
+}
 /* Only the front card reacts to hover (a little lift); the ones behind
    stay put. */
 .sys-card[data-slot="0"]:hover { --ty: -6px; }
@@ -467,6 +481,8 @@ body[data-mood="zen"] .d-mode-copy[data-mode="zen"] { display: inline; }
 }
 .sys-card:nth-child(2) .sys-float { animation-duration: 7.2s; animation-delay: -2.4s; }
 .sys-card:nth-child(3) .sys-float { animation-duration: 6.6s; animation-delay: -4.1s; }
+.sys-card:nth-child(4) .sys-float { animation-duration: 7.8s; animation-delay: -1.3s; }
+.sys-card:nth-child(5) .sys-float { animation-duration: 6.9s; animation-delay: -5.2s; }
 @keyframes sys-bob {
   from { transform: translateY(0); }
   to   { transform: translateY(-9px); }
@@ -505,19 +521,32 @@ body[data-mood="zen"] .d-mode-copy[data-mode="zen"] { display: inline; }
   background: rgba(0, 0, 0, 0.5); opacity: 0; transition: opacity 0.6s ease;
 }
 .sys-card[data-slot="1"] .sys-face::after,
-.sys-card[data-slot="2"] .sys-face::after { opacity: 1; }
+.sys-card[data-slot="2"] .sys-face::after,
+.sys-card[data-slot="3"] .sys-face::after,
+.sys-card[data-slot="4"] .sys-face::after { opacity: 1; }
 
 .sys-title { margin: 0; }
 /* The front is one line, set big and bold: it's the whole front. */
 .sys-front .sys-line {
   margin: 0; font-weight: 800; font-size: 31px; line-height: 1.12; letter-spacing: -0.032em;
 }
+.sys-icon {
+  display: block; width: 44px; height: 44px; margin-bottom: 22px; background: var(--accent);
+  -webkit-mask: var(--icon) center / contain no-repeat; mask: var(--icon) center / contain no-repeat;
+}
+.sys-face:has(> .sys-icon)::before { display: none; } /* the icon takes the bar's place */
+.sys-icon-rabbit { --icon: url('../images/icons/rabbit.svg'); }
+.sys-icon-clock { --icon: url('../images/icons/clock-clockwise.svg'); }
+.sys-icon-bug { --icon: url('../images/icons/bug-beetle.svg'); }
+.sys-icon-lego { --icon: url('../images/icons/lego.svg'); }
+.sys-icon-island { --icon: url('../images/icons/island.svg'); }
+.sys-back .sys-hl { color: var(--accent); }
 .sys-back .sys-title {
   font-weight: 700; font-size: 12px; line-height: 1.3; letter-spacing: 0.14em;
   text-transform: uppercase; color: var(--gray-mid);
 }
 .sys-back .sys-note {
-  margin: 16px 0 0; font-weight: 700; font-size: 18px; line-height: 1.4; letter-spacing: -0.015em;
+  margin: 16px 0 0; font-weight: 600; font-size: 14pt; line-height: 1.4; letter-spacing: -0.015em;
 }
 .sys-flip-icon {
   position: absolute; right: 20px; bottom: 20px; width: 20px; height: 20px; opacity: 0.5;
@@ -527,7 +556,7 @@ body[data-mood="zen"] .d-mode-copy[data-mode="zen"] { display: inline; }
 
 @media (max-width: 640px) {
   .sys-strip { padding: 40px 16px 32px; }
-  .sys-stage { --sys-w: min(66vw, 270px); --sys-h: calc(var(--sys-w) * 1.4); --sys-fan: 34px; }
+  .sys-stage { --sys-w: min(66vw, 270px); --sys-h: calc(var(--sys-w) * 1.6); --sys-fan: 30px; }
   .sys-face { padding: 22px 20px 20px; }
   .sys-face::before { margin-bottom: 16px; }
   .sys-front .sys-line { font-size: 25px; }
@@ -542,3 +571,64 @@ body[data-mood="zen"] .d-mode-copy[data-mode="zen"] { display: inline; }
    heading below it. Scoped to that band, so the spacing between the
    company sections (and above the footer) is unchanged. */
 .d-snapshots-band.d-work.d-systems { padding-top: 56px; }
+
+/* Taglines under the section headings are parked for now: they carry
+   `hidden` in index.html, and this keeps them off despite their display rule. */
+.d-snapshots-title em[hidden] { display: none; }
+
+/* The mood word inside the System snapshots subheader: same accent color
+   as the nav's [snappy] label, and it cycles the mood the same way. */
+.d-mood-inline {
+  display: inline; padding: 0; border: none; background: none;
+  font: inherit; color: var(--accent); cursor: pointer; text-align: left;
+  -webkit-user-select: none; user-select: none; transition: opacity 0.15s ease;
+}
+.d-mood-inline:hover { opacity: 0.7; }
+.d-mood-inline:focus { outline: none; }
+.d-mood-inline:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+
+/* Carousel dots under the stack: one per card, the front (or, in Zen, the
+   last-picked) one lit in the accent color. They're real buttons, so
+   tapping one brings that card up. The button is a roomy 28px tap target
+   with the visible dot drawn inside it. */
+.sys-dots { display: flex; justify-content: center; gap: 2px; margin: -10px 0 0; position: relative; z-index: 6; }
+.sys-dot {
+  position: relative; width: 28px; height: 28px; padding: 0; border: none; background: none;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+.sys-dot::before {
+  content: ''; position: absolute; left: 50%; top: 50%; width: 10px; height: 10px; margin: -5px 0 0 -5px;
+  border-radius: 50%; background: rgba(0, 0, 0, 0.3);
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+.sys-dot.is-active::before { background: var(--accent); transform: scale(1.3); }
+.sys-dot:focus { outline: none; }
+.sys-dot:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+/* ---------- ZEN: the same cards in a straight, still row ----------
+   In Zen the fan lays out flat across the same width the text above uses
+   (min(100%, 1152px) inside the strip's padding lines up with
+   --band-inset). Cards sit upright, evenly spaced from the left edge to
+   the right, and overlap when they don't all fit. They don't bob or lift,
+   and each flips where it stands. The last one tapped is raised above the
+   others (system-stack.js sets its z-index) and stays there, even after
+   it's turned back over; the first tap lifts a card, the second turns it. --i is each card's place in the row. */
+.sys-card:nth-child(1) { --i: 0; }
+.sys-card:nth-child(2) { --i: 1; }
+.sys-card:nth-child(3) { --i: 2; }
+.sys-card:nth-child(4) { --i: 3; }
+.sys-card:nth-child(5) { --i: 4; }
+body[data-mood="zen"] .sys-stage { width: min(100%, 1152px); }
+body[data-mood="zen"] .sys-card,
+body[data-mood="zen"] .sys-card[data-slot] {
+  --tx: calc(var(--i) * ((100cqw - var(--sys-w)) / 4) - 50cqw + var(--sys-w) / 2);
+  --ty: 0px; --rot: 0deg; --sc: 1;
+  z-index: calc(var(--i) + 1);
+  opacity: 1; visibility: visible; pointer-events: auto;
+}
+body[data-mood="zen"] .sys-card[data-slot]:hover { --ty: 0px; }
+body[data-mood="zen"] .sys-float { animation: none; }
+body[data-mood="zen"] .sys-card[data-slot] .sys-face::after { opacity: 0; }
+/* Once a card has been picked, the others dim a touch. */
+body[data-mood="zen"] .sys-stage.has-pick .sys-card[data-slot]:not(.is-top) .sys-face::after { opacity: 0.4; }
+body[data-mood="zen"] .sys-card:hover .sys-flip-icon { opacity: 0.95; transform: rotate(90deg); }

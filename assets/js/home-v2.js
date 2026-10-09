@@ -724,6 +724,11 @@ document.addEventListener('DOMContentLoaded', () => {
     body.dataset.mood = mood;
     swapLabel(cycleBtn, `[${mood}]`, animate);
     cycleBtn.setAttribute('aria-label', `Cycle mood, currently ${mood}`);
+    // The same label also sits inside the System snapshots subheader.
+    document.querySelectorAll('.d-mood-inline').forEach((el) => {
+      swapLabel(el, mood, animate);
+      el.setAttribute('aria-label', `Cycle mood, currently ${mood}`);
+    });
     graphics.forEach((g) => {
       g.classList.toggle('is-active', g.dataset.circle === mood);
     });
@@ -741,6 +746,8 @@ document.addEventListener('DOMContentLoaded', () => {
       setTeaserSmooth(el, card.teasers[mood] || card.teasers.snappy, animate);
     });
   }
+
+  document.querySelectorAll('.d-mood-inline').forEach((el) => el.addEventListener('click', () => cycleBtn.click()));
 
   cycleBtn.addEventListener('click', () => {
     const current = body.dataset.mood || 'snappy';
