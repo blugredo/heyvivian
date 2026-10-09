@@ -225,7 +225,9 @@
   <h2 class="d-company-name">Duolingo</h2>
   <div class="d-company-body">
     <p class="d-company-text">Nearly 8 years at Duolingo, from a team of about 30 through IPO, designing for 500M+ learners in a deeply global, multilingual product. Most of my work was community-focused, connecting learners to the brand and to each other.</p>
+    <!-- Hidden for now. To bring it back, uncomment the line below:
     <a class="d-company-link" href="https://www.duolingo.com/" target="_blank" rel="noopener">duolingo.com <span aria-hidden="true">&rsaquo;</span></a>
+    -->
   </div>
 </div>
 </section>
@@ -238,57 +240,70 @@
      BLOCKED on Vivian, so the panels carry the mechanism description
      only. Card colors are drawn from the existing Row 1 palette as a
      placeholder. -->
-<!-- System snapshots: still a work in progress, so it's hidden
-     everywhere for now. Delete `hidden` below when it's ready to show. -->
-<div class="d-snapshots-band d-systems-band" id="systemSnapshots" hidden>
-<div class="v2-section-head">
-  <p><strong>System snapshots</strong> <span class="v2-accent-divider">|</span> <span data-snappy="I fix things twice." data-zen="Once for the problem, and once for the pattern that keeps making it.">I fix things twice.</span></p>
-  <div class="v2-scroll-nav">
-    <button class="v2-scroll-nav-btn" type="button" aria-label="Scroll system snapshots left">&lsaquo;</button>
-    <button class="v2-scroll-nav-btn" type="button" aria-label="Scroll system snapshots right">&rsaquo;</button>
-  </div>
+<!-- System snapshots: still a work in progress. Ships hidden; home-v2.js
+     un-hides it on localhost only, so it shows in the working copy and
+     never on the live site. When it's ready to go live, delete `hidden`
+     below and the localhost snippet in home-v2.js. -->
+<div class="d-snapshots-band d-work d-systems" id="systemSnapshots" hidden>
+<div class="d-snapshots-title">
+  <p><strong>System snapshots</strong> <em data-snappy="Patterns deserve systems" data-zen="Once for the problem, and once for the pattern that keeps making it.">Patterns deserve systems</em></p>
 </div>
 
-<div class="v2-scroll-wrap">
-  <div class="v2-card-row">
-
-    <div class="v2-card sys-alloc no-shot v-accordion" tabindex="0" role="button" aria-expanded="false">
-      <div class="v2-card-main">
-        <p class="v2-card-title">designer allocation</p>
-        <p class="v2-card-desc"><span class="v2-card-desc-text">Staffing my team ran on guesswork. Now it runs on a </span><span class="v2-card-desc-tail">system.<span class="v2-card-arrow" aria-hidden="true"></span></span></p>
+<section class="sys-company" aria-label="System snapshots">
+  <!-- Three floating cards in a fanned stack (system-stack.js): tap the
+       front one to flip it to its back; tap one behind to bring it
+       forward. No stat panels yet: those are BLOCKED on Vivian, so the
+       backs carry the mechanism description only. -->
+  <div class="sys-strip">
+    <div class="sys-stage" role="group" aria-label="System snapshot cards">
+      <div class="sys-card sys-alloc" data-slot="0" tabindex="0" role="button" data-line="Staffing our small team to make sure all projects keep running smoothly without being blocked on design was inconsistent and manual work." data-note="A daily-updating allocation model reading the engineering roadmap, the allocation plan, and the designer vacation calendar.">
+        <div class="sys-float"><div class="sys-inner">
+          <div class="sys-face sys-front">
+            <p class="sys-title">designer allocation</p>
+            <p class="sys-line">Staffing our small team to make sure all projects keep running smoothly without being blocked on design was inconsistent and manual work.</p>
+            <svg class="sys-flip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 0 1-14 5.3M4 12a8 8 0 0 1 14-5.3"/><path d="M18 3v4h-4M6 21v-4h4"/></svg>
+          </div>
+          <div class="sys-face sys-back">
+            <p class="sys-title">designer allocation</p>
+            <div class="sys-rule"></div>
+            <p class="sys-note">A daily-updating allocation model reading the engineering roadmap, the allocation plan, and the designer vacation calendar.</p>
+            <svg class="sys-flip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 0 1-14 5.3M4 12a8 8 0 0 1 14-5.3"/><path d="M18 3v4h-4M6 21v-4h4"/></svg>
+          </div>
+        </div></div>
       </div>
-      <div class="v2-card-expand">
-        <button class="v2-card-close" aria-label="Collapse">&times;</button>
-        <div class="v2-card-divider"></div>
-        <p class="v2-card-note">A daily-updating allocation model reading the engineering roadmap, the allocation plan, and the designer vacation calendar.</p>
+      <div class="sys-card sys-gate" data-slot="1" tabindex="0" role="button" data-line="Engineers shipped front-end changes without design. Now they don&rsquo;t." data-note="A codified approval step before any front-end change, bug fix, or feature ships, including a Claude design-parity skill engineers run themselves.">
+        <div class="sys-float"><div class="sys-inner">
+          <div class="sys-face sys-front">
+            <p class="sys-title">design review gate</p>
+            <p class="sys-line">Engineers shipped front-end changes without design. Now they don&rsquo;t.</p>
+            <svg class="sys-flip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 0 1-14 5.3M4 12a8 8 0 0 1 14-5.3"/><path d="M18 3v4h-4M6 21v-4h4"/></svg>
+          </div>
+          <div class="sys-face sys-back">
+            <p class="sys-title">design review gate</p>
+            <div class="sys-rule"></div>
+            <p class="sys-note">A codified approval step before any front-end change, bug fix, or feature ships, including a Claude design-parity skill engineers run themselves.</p>
+            <svg class="sys-flip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 0 1-14 5.3M4 12a8 8 0 0 1 14-5.3"/><path d="M18 3v4h-4M6 21v-4h4"/></svg>
+          </div>
+        </div></div>
+      </div>
+      <div class="sys-card sys-patterns" data-slot="2" tabindex="0" role="button" data-line="Anticipate growth and prepare for scaling." data-note="When creating a complex flow that will need to be altered for each geography, I built it from the get go as a component library. This allowed us to quickly keep track of variations of the same screen across geographies for major launches from the very beginning.">
+        <div class="sys-float"><div class="sys-inner">
+          <div class="sys-face sys-front">
+            <p class="sys-title">design system patterns</p>
+            <p class="sys-line">Anticipate growth and prepare for scaling.</p>
+            <svg class="sys-flip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 0 1-14 5.3M4 12a8 8 0 0 1 14-5.3"/><path d="M18 3v4h-4M6 21v-4h4"/></svg>
+          </div>
+          <div class="sys-face sys-back">
+            <p class="sys-title">design system patterns</p>
+            <div class="sys-rule"></div>
+            <p class="sys-note">When creating a complex flow that will need to be altered for each geography, I built it from the get go as a component library. This allowed us to quickly keep track of variations of the same screen across geographies for major launches from the very beginning.</p>
+            <svg class="sys-flip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 0 1-14 5.3M4 12a8 8 0 0 1 14-5.3"/><path d="M18 3v4h-4M6 21v-4h4"/></svg>
+          </div>
+        </div></div>
       </div>
     </div>
-
-    <div class="v2-card sys-gate no-shot v-accordion" tabindex="0" role="button" aria-expanded="false">
-      <div class="v2-card-main">
-        <p class="v2-card-title">design review gate</p>
-        <p class="v2-card-desc"><span class="v2-card-desc-text">Engineers shipped front-end changes without design. Now they </span><span class="v2-card-desc-tail">don&rsquo;t.<span class="v2-card-arrow" aria-hidden="true"></span></span></p>
-      </div>
-      <div class="v2-card-expand">
-        <button class="v2-card-close" aria-label="Collapse">&times;</button>
-        <div class="v2-card-divider"></div>
-        <p class="v2-card-note">A codified approval step before any front-end change, bug fix, or feature ships, including a Claude design-parity skill engineers run themselves.</p>
-      </div>
-    </div>
-
-    <div class="v2-card sys-patterns on-light no-shot v-accordion" tabindex="0" role="button" aria-expanded="false">
-      <div class="v2-card-main">
-        <p class="v2-card-title">design system patterns</p>
-        <p class="v2-card-desc"><span class="v2-card-desc-text">Found the same problem in five places. Made it a </span><span class="v2-card-desc-tail">pattern.<span class="v2-card-arrow" aria-hidden="true"></span></span></p>
-      </div>
-      <div class="v2-card-expand">
-        <button class="v2-card-close" aria-label="Collapse">&times;</button>
-        <div class="v2-card-divider"></div>
-      </div>
-    </div>
-
   </div>
-</div>
+</section>
 </div>
 
 <div class="v2-footer-spacer"></div>
@@ -322,5 +337,6 @@
 <script src="/assets/js/home-v2.js"></script>
 <script src="/assets/js/nav-menu.js"></script>
 <script src="/assets/js/dive-lock.js"></script>
+<script src="/assets/js/system-stack.js"></script>
 </body>
 </html>

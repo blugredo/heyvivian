@@ -423,3 +423,116 @@ body[data-mood="zen"] .d-mode-copy[data-mode="zen"] { display: inline; }
 @media (max-width: 780px) { .d-footer-row { padding-left: 20px; padding-right: 20px; } }
 /* footer.site-footer itself picks up 24px side padding at this width (style.css). */
 @media (max-width: 640px) { .d-footer-row { padding-left: 0; padding-right: 0; } }
+
+/* ---------- SYSTEM SNAPSHOTS: FLOATING CARD STACK ----------
+   Three cards fanned out and overlapping on a gray strip (see
+   system-stack.js). Every card is black on its front and white on its
+   back, in big bold type. Each .sys-card is a stack of three layers so
+   their transforms never fight: the card itself takes its slot
+   (position, tilt, layer); .sys-float bobs it gently; .sys-inner flips
+   it. */
+.sys-strip {
+  background: #f0f0ee; padding: 56px 24px 44px; text-align: center; overflow: hidden;
+}
+.sys-stage {
+  --sys-w: 300px; --sys-h: 420px; --sys-fan: 136px;
+  position: relative; margin: 0 auto;
+  width: calc(var(--sys-w) + var(--sys-fan) * 2 + 24px);
+  max-width: 100%; height: calc(var(--sys-h) + 72px);
+}
+.sys-card {
+  --tx: 0px; --ty: 0px; --rot: 0deg; --sc: 1;
+  position: absolute; top: 24px; left: 50%;
+  width: var(--sys-w); height: var(--sys-h); margin-left: calc(var(--sys-w) / -2);
+  transform: translate(var(--tx), var(--ty)) rotate(var(--rot)) scale(var(--sc));
+  transition: transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none; user-select: none;
+}
+.sys-card[data-slot="0"] { z-index: 3; }
+.sys-card[data-slot="1"] { z-index: 2; --tx: calc(var(--sys-fan) * -1); --ty: 12px; --rot: -6deg; --sc: 0.95; }
+.sys-card[data-slot="2"] { z-index: 1; --tx: var(--sys-fan); --ty: 20px; --rot: 6deg; --sc: 0.91; }
+/* Only the front card reacts to hover (a little lift); the ones behind
+   stay put. */
+.sys-card[data-slot="0"]:hover { --ty: -6px; }
+.sys-card:focus-visible .sys-face { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+.sys-float {
+  width: 100%; height: 100%; perspective: 1200px;
+  animation: sys-bob 6s ease-in-out infinite alternate;
+}
+.sys-card:nth-child(2) .sys-float { animation-duration: 7.2s; animation-delay: -2.4s; }
+.sys-card:nth-child(3) .sys-float { animation-duration: 6.6s; animation-delay: -4.1s; }
+@keyframes sys-bob {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-9px); }
+}
+.sys-inner {
+  position: relative; width: 100%; height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.85s cubic-bezier(0.45, 0.05, 0.2, 1);
+}
+.sys-card.is-flipped .sys-inner { transform: rotateY(180deg); }
+
+.sys-face {
+  position: absolute; inset: 0; box-sizing: border-box; padding: 28px 26px 26px;
+  border-radius: 18px; overflow: hidden; text-align: left;
+  backface-visibility: hidden; -webkit-backface-visibility: hidden;
+}
+/* Front: black. Back: white. */
+.sys-front {
+  background: #232322; color: #fff;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.26), inset 0 0 0 1px rgba(255, 255, 255, 0.14);
+}
+.sys-back {
+  transform: rotateY(180deg); background: #fff; color: var(--v2-black);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18), inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+/* A short bar in the accent color (teal in Snappy, orange in Zen) tops
+   each face. */
+.sys-face::before {
+  content: ''; display: block; width: 36px; height: 5px; margin-bottom: 22px;
+  border-radius: 3px; background: var(--accent);
+}
+/* The cards behind sit in shadow: a dark veil over each face that fades
+   away when the card comes forward (and back when it goes behind). */
+.sys-face::after {
+  content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: rgba(0, 0, 0, 0.5); opacity: 0; transition: opacity 0.6s ease;
+}
+.sys-card[data-slot="1"] .sys-face::after,
+.sys-card[data-slot="2"] .sys-face::after { opacity: 1; }
+
+.sys-title { margin: 0; }
+.sys-front .sys-title { font-weight: 800; font-size: 34px; line-height: 1.04; letter-spacing: -0.035em; }
+.sys-front .sys-line {
+  margin: 20px 0 0; font-weight: 600; font-size: 17px; line-height: 1.4;
+  letter-spacing: -0.01em; color: rgba(255, 255, 255, 0.85);
+}
+.sys-back .sys-title {
+  font-weight: 700; font-size: 12px; line-height: 1.3; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--gray-mid);
+}
+.sys-back .sys-rule { display: none; }
+.sys-back .sys-note {
+  margin: 16px 0 0; font-weight: 700; font-size: 18px; line-height: 1.4; letter-spacing: -0.015em;
+}
+.sys-flip-icon {
+  position: absolute; right: 20px; bottom: 20px; width: 20px; height: 20px; opacity: 0.5;
+  transition: opacity 0.2s ease, transform 0.5s ease;
+}
+.sys-card[data-slot="0"]:hover .sys-flip-icon { opacity: 0.95; transform: rotate(90deg); }
+
+@media (max-width: 640px) {
+  .sys-strip { padding: 40px 16px 32px; }
+  .sys-stage { --sys-w: min(66vw, 270px); --sys-h: calc(var(--sys-w) * 1.4); --sys-fan: 34px; }
+  .sys-face { padding: 22px 20px 20px; }
+  .sys-face::before { margin-bottom: 16px; }
+  .sys-front .sys-title { font-size: 27px; }
+  .sys-front .sys-line { font-size: 15px; margin-top: 16px; }
+  .sys-back .sys-note { font-size: 14px; margin-top: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sys-float { animation: none; }
+  .sys-card, .sys-inner { transition-duration: 0.01s; }
+}

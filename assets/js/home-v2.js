@@ -2,6 +2,12 @@
 // mouse users click-and-drag horizontally; touch/trackpad already scrolls
 // natively and is left alone (we only hook mouse pointer events).
 document.addEventListener('DOMContentLoaded', () => {
+  // Work-in-progress System snapshots row: hidden on the live site,
+  // shown when previewing locally (see the note on it in index.html).
+  if (['localhost', '127.0.0.1'].includes(location.hostname)) {
+    document.getElementById('systemSnapshots')?.removeAttribute('hidden');
+  }
+
   // One controller per card row (there are two now: project snapshots and
   // system snapshots). Each owns its own drag, scroll and open/close
   // state; `rowControllers` only exists so that opening a card in one row
@@ -678,6 +684,36 @@ document.addEventListener('DOMContentLoaded', () => {
     }, FADE_MS);
   }
 
+  // The mood label ("[snappy]" / "[zen]") in the nav gets a softer swap
+  // than the body copy: the old word fades and lifts away, then the new
+  // one fades in rising from just below, on a longer ease-out so it
+  // settles rather than snapping. A timer handle on the element lets a
+  // quick second click cancel a swap that's still in flight.
+  function swapLabel(el, text, animate) {
+    if (!el) return;
+    clearTimeout(el._swapTimer);
+    if (!animate || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      el.style.transition = 'none';
+      el.style.opacity = '1'; el.style.transform = 'none';
+      el.textContent = text;
+      return;
+    }
+    const OUT = 240;
+    const IN = 420;
+    el.style.transition = `opacity ${OUT}ms ease-in, transform ${OUT}ms ease-in`;
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(-5px)';
+    el._swapTimer = setTimeout(() => {
+      el.textContent = text;
+      el.style.transition = 'none';
+      el.style.transform = 'translateY(6px)';
+      void el.offsetWidth; // commit the start position before animating in
+      el.style.transition = `opacity ${IN}ms ease-out, transform ${IN}ms cubic-bezier(0.22, 1, 0.36, 1)`;
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0)';
+    }, OUT);
+  }
+
   // Same cross-fade, but split across the teaser's two spans: the last
   // word lives in .v2-card-desc-tail together with the trailing arrow
   // (see that rule in home-v2.css for why), so the two have to fade and
@@ -704,7 +740,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function applyMood(mood, animate) {
     if (!MOODS[mood]) return;
     body.dataset.mood = mood;
-    setTextSmooth(cycleBtn, `[${mood}]`, animate);
+    swapLabel(cycleBtn, `[${mood}]`, animate);
     cycleBtn.setAttribute('aria-label', `Cycle mood, currently ${mood}`);
     graphics.forEach((g) => {
       g.classList.toggle('is-active', g.dataset.circle === mood);

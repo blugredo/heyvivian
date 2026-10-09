@@ -208,6 +208,16 @@ footer.site-footer {
   padding: 16px 48px;
 }
 .footer-bottom-row span { font-size: 12px; color: var(--gray-mid); }
+/* Copyright on the left edge of the page's content column, in line with
+   the logo above (same 1200px box and 24px inset as the nav). */
+.footer-bottom-row.is-left {
+  justify-content: flex-start; max-width: 1200px; margin: 0 auto;
+  padding-left: 24px; padding-right: 24px; box-sizing: border-box;
+}
+@media (max-width: 640px) {
+  /* footer.site-footer already carries the 24px side padding here. */
+  .footer-bottom-row.is-left { padding-left: 0; padding-right: 0; }
+}
 .footer-links {
   display: flex; justify-content: center; gap: 28px;
   padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px solid #eeeeea;
@@ -469,3 +479,29 @@ blockquote.cs-quote cite {
   .cs-results { padding: 48px 24px; }
   .wrap, .wrap-wide { padding: 0 24px; }
 }
+
+/* ---------------- ABOUT: MOVING HIGHLIGHT ----------------
+   One phrase per paragraph is wrapped in span.hl; about-highlight.js
+   keeps the one in the paragraph at the reading line switched on. It
+   sweeps in left to right like a highlighter pen and wipes out the same
+   way when the next one takes over. The color is the current accent
+   (teal in Snappy, orange in Zen) at a low opacity. Slice (the default
+   box-decoration-break) makes a phrase that wraps onto several lines
+   fill line after line, rather than every line at once. */
+.about-text .hl {
+  --hl: rgba(74, 187, 187, 0.3);
+  background-image: linear-gradient(var(--hl), var(--hl));
+  background-repeat: no-repeat;
+  /* Off: collapsed against the right end, so shrinking wipes the left
+     side away first. On: anchored left, so growing sweeps from the left.
+     Only the size is transitioned, so the anchor flips unseen. */
+  background-position: 100% 0; background-size: 0% 100%;
+  padding: 0.04em 0.14em; margin: 0 -0.14em; border-radius: 3px;
+  transition: background-size 0.9s cubic-bezier(0.65, 0, 0.35, 1);
+}
+body[data-mood="zen"] .about-text .hl { --hl: rgba(224, 138, 60, 0.3); }
+@supports (color: color-mix(in srgb, red 30%, transparent)) {
+  .about-text .hl, body[data-mood="zen"] .about-text .hl { --hl: color-mix(in srgb, var(--accent) 30%, transparent); }
+}
+.about-text .hl.is-on { background-position: 0 0; background-size: 100% 100%; }
+@media (prefers-reduced-motion: reduce) { .about-text .hl { transition: none; } }
