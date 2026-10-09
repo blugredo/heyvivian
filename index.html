@@ -140,7 +140,7 @@
     <div class="v2-card paylink on-light is-locked is-static">
       <div class="v2-card-main">
         <p class="v2-card-title">home and navigation revamp</p>
-        <p class="v2-card-desc">Leading a global home screen and web navigation update to better serve business customers. <span class="v2-card-tag">[current experiment]</span></p>
+        <p class="v2-card-desc">Leading a global home screen and web navigation update to better serve business customers. <span class="v2-card-tag">[in progress]</span></p>
         <div class="v2-card-shot"><img src="/assets/images/remitly-imgs/home-locked.png" alt="Home and navigation revamp, locked"></div>
       </div>
     </div>
@@ -233,18 +233,14 @@
 </section>
 </div>
 
-<!-- ---------- Row 2: the systems behind the work ----------
-     Same card component and visual language as Row 1. These three have
-     no screenshot (there's no shareable artefact, and internal tooling
-     is off limits), hence .no-shot, and no stat panel yet — those are
-     BLOCKED on Vivian, so the panels carry the mechanism description
-     only. Card colors are drawn from the existing Row 1 palette as a
-     placeholder. -->
-<!-- System snapshots: still a work in progress. Ships hidden; home-v2.js
-     un-hides it on localhost only, so it shows in the working copy and
-     never on the live site. When it's ready to go live, delete `hidden`
-     below and the localhost snippet in home-v2.js. -->
-<div class="d-snapshots-band d-work d-systems" id="systemSnapshots" hidden>
+<!-- ---------- System snapshots: the systems behind the work ----------
+     Three floating cards in a fanned stack (system-stack.js): black on
+     the front, white on the back. No stat panels yet (BLOCKED on Vivian),
+     so the backs carry the mechanism description only. Never show
+     internal roadmaps, screenshots of internal tools, or the vacation
+     calendar. To hide the section again, add the `hidden` attribute to
+     the div below. -->
+<div class="d-snapshots-band d-work d-systems" id="systemSnapshots">
 <div class="d-snapshots-title">
   <p><strong>System snapshots</strong> <em data-snappy="Patterns deserve systems" data-zen="Once for the problem, and once for the pattern that keeps making it.">Patterns deserve systems</em></p>
 </div>
