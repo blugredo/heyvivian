@@ -459,35 +459,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // instead of widening — no horizontal scroll math applies, so that's
     // skipped entirely.
     if (isMobileAccordion) {
-      const startHeight = card.getBoundingClientRect().height;
-      card.classList.add('is-open'); // lays out title/desc/divider/stats so the space they take up (and thus where the image should slide to) can be measured below
-      const shot = card.querySelector('.v2-card-shot');
-      // With a screenshot, the card ends flush with the image's own
-      // bottom (no gap below it, matching the card's top-only rounding).
-      // Without one (the system snapshots), it ends a padding's worth
-      // below the last line of the panel instead.
-      // With a screenshot, the card ends flush with the image's own
-      // bottom (no gap below it, matching the card's top-only rounding).
-      // Without one, it ends a padding's worth below the last line of
-      // the panel, but never shorter than it was at rest — the system
-      // cards' panels are shorter than the card itself, and a card that
-      // got smaller when you expanded it would read backwards. Those
-      // just reveal the panel in the space they already had.
-      const targetHeight = shot
-        ? syncShotFullOpenOffset(card) + shot.getBoundingClientRect().height
-        : Math.max(collapsedHeight(card), expandedContentBottom(card) + 24);
-      card.style.height = `${startHeight}px`; // pin back to the pre-open height for a frame, so the animation below has a real start point instead of jumping straight to target
-      // Once it's done, measure again with everything settled and snap the
-      // card's bottom to the image's bottom, so no strip of card color is
-      // ever left under the screenshot (or the image cut short).
-      animateAccordionHeight(card, targetHeight, true, () => {
-        if (!shot || !card.classList.contains('is-open')) return;
-        const settled = syncShotFullOpenOffset(card) + shot.getBoundingClientRect().height;
-        if (Math.abs(settled - card.getBoundingClientRect().height) > 1) {
-          card.style.transition = 'height 200ms ease';
-          card.style.height = `${settled}px`;
-        }
-      });
+      // The card keeps the height it already has (the peeked state's):
+      // opening only lays out the title, line, divider and stats, and
+      // slides the screenshot down beneath them. The screenshot is cut
+      // off by the card's bottom edge, exactly as it is on the first tap;
+      // the card's background never grows with it.
+      const fixedHeight = card.getBoundingClientRect().height;
+      card.classList.add('is-open');
+      syncShotFullOpenOffset(card); // slide the screenshot to just below the stats
+      card.style.height = `${fixedHeight}px`; // the open layout would otherwise be height:auto
       card.setAttribute('aria-expanded', 'true');
       return;
     }

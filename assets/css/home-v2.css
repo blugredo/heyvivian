@@ -726,3 +726,24 @@ html.site-locked:not(.dive-unlocked) .v2-card-link:not(.is-public) { display: no
   .v2-card.remitly .v2-stat-num { min-width: 136px; }
   .v2-card.remitly .v2-stat-label { flex: 1 1 auto; min-width: 0; }
 }
+
+/* ---------- PHONES: REMITLY STATS IN A FIXED-HEIGHT CARD ----------
+   An opened card no longer grows (the screenshot is cut off by its
+   bottom edge, like on the first tap), so Remitly's four labeled stats
+   have to fit in the card's own height. A tighter rhythm here, for that
+   card only; the other cards' stats are shorter and fit as they are. */
+@media (max-width: 640px) {
+  .v2-card.remitly.v-accordion.is-open .v2-stat { margin-top: 7px; gap: 8px; }
+  .v2-card.remitly.v-accordion.is-open .v2-stat:first-of-type { margin-top: 14px; }
+  .v2-card.remitly.v-accordion.is-open .v2-stat-num { font-size: 21px; }
+  .v2-card.remitly.v-accordion.is-open .v2-stat-label { font-size: 12px; line-height: 1.3; }
+  .v2-card.remitly .v2-stat-project { font-size: 9.5px; margin-top: 2px; }
+}
+
+/* Same idea for every card: a slightly tighter stat rhythm so the stats
+   and the "dive deeper" link sit comfortably inside the fixed card height
+   on the narrowest phones. */
+@media (max-width: 640px) {
+  .v2-card.v-accordion.is-open .v2-stat { margin-top: 9px; }
+  .v2-card.v-accordion.is-open .v2-stat:first-of-type { margin-top: 16px; }
+}

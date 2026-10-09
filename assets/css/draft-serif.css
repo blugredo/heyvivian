@@ -444,11 +444,15 @@ body[data-mood="zen"] .d-mode-copy[data-mode="zen"] { display: inline; }
   --tx: 0px; --ty: 0px; --rot: 0deg; --sc: 1;
   position: absolute; top: 24px; left: 50%;
   width: var(--sys-w); height: var(--sys-h); margin-left: calc(var(--sys-w) / -2);
-  transform: translate(var(--tx), var(--ty)) rotate(var(--rot)) scale(var(--sc));
+  /* --dx / --drot are set by system-stack.js while the front card is
+     being dragged; they're unset (0) otherwise. */
+  transform: translate(calc(var(--tx) + var(--dx, 0px)), var(--ty)) rotate(calc(var(--rot) + var(--drot, 0deg))) scale(var(--sc));
   transition: transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  touch-action: pan-y; /* vertical swipes still scroll the page */
   cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent;
   -webkit-user-select: none; user-select: none;
 }
+.sys-card.is-dragging { transition: none; cursor: grabbing; }
 .sys-card[data-slot="0"] { z-index: 3; }
 .sys-card[data-slot="1"] { z-index: 2; --tx: calc(var(--sys-fan) * -1); --ty: 12px; --rot: -6deg; --sc: 0.95; }
 .sys-card[data-slot="2"] { z-index: 1; --tx: var(--sys-fan); --ty: 20px; --rot: 6deg; --sc: 0.91; }
