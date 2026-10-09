@@ -769,4 +769,9 @@ html.site-locked:not(.dive-unlocked) .v2-card-link:not(.is-public) { display: no
 @media (max-width: 640px) {
   .v2-card.v-accordion .v2-card-title { padding-left: 23px; padding-right: 23px; }
   .v2-card.remitly.v-accordion.is-open .v2-stat-num { min-width: 90px; }
+  /* The other stat cards get the same treatment: one number column wide
+     enough for the longest number, so every label starts at the same x. */
+  .v2-card.streak.v-accordion.is-open .v2-stat-num,
+  .v2-card.duocon.v-accordion.is-open .v2-stat-num,
+  .v2-card.newsfeed.v-accordion.is-open .v2-stat-num { min-width: 96px; }
 }
