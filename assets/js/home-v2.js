@@ -333,7 +333,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // conflicting motions reading as a jump rather than one continuous
     // one. Skipping it here means a tap on that card only ever drives
     // the one (now-animated) open/close motion.
-    if (card && card.classList.contains('v-accordion') && window.innerWidth <= 640) return null;
+    if (card && (card.classList.contains('v-accordion') || card.classList.contains('is-static')) && window.innerWidth <= 640) return null;
     return card;
   }
   row.addEventListener('touchstart', (e) => {
@@ -357,19 +357,17 @@ document.addEventListener('DOMContentLoaded', () => {
   function peekCard(card) {
     syncShotOpenOffset(card);
     card.classList.add('is-peeked');
-    alignCardLeft(card);
+    centerCard(card);
   }
-  // Slides the row so this card's left edge lines up with the section
-  // heading's left edge (the row's own left padding is that same inset)
-  // — a card sitting partly off-screen to the right otherwise stays
-  // that way once it expands, since its width never changes and so no
-  // scroll adjustment happens on its own. Clamped by the browser to the
-  // row's real scroll range, so the last card just gets as close as it can.
-  function alignCardLeft(card) {
+  // Slides the row so the tapped card sits in the middle of the screen
+  // (clamped to the row's real scroll range, so the first and last cards
+  // get as close to centered as the row allows). A card sitting partly
+  // off-screen otherwise stays that way once it's selected.
+  function centerCard(card) {
     const rowRect = row.getBoundingClientRect();
-    const cardLeft = row.scrollLeft + (card.getBoundingClientRect().left - rowRect.left);
-    const inset = parseFloat(getComputedStyle(row).paddingLeft) || 0;
-    const target = Math.min(Math.max(0, cardLeft - inset), Math.max(0, row.scrollWidth - row.clientWidth));
+    const cardRect = card.getBoundingClientRect();
+    const cardCenter = row.scrollLeft + (cardRect.left - rowRect.left) + cardRect.width / 2;
+    const target = Math.min(Math.max(0, cardCenter - row.clientWidth / 2), Math.max(0, row.scrollWidth - row.clientWidth));
     animateScrollLeft(row, target, LIQUID_MS);
   }
   function unpeekCard(card) {
@@ -531,8 +529,18 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.target.closest('a')) return;
     const closeBtn = e.target.closest('.v2-card-close');
     const card = e.target.closest('.v2-card');
-    // .is-static cards (no detail to show yet, or locked) never open.
-    if (!card || card.classList.contains('is-static')) return;
+    if (!card) return;
+    // .is-static cards (no detail to show yet, or locked) never open. On a
+    // phone, where there's no hover, a tap toggles the one level they have:
+    // the first tap slides the screenshot down to show the line, the next
+    // tap puts it back to how it started.
+    if (card.classList.contains('is-static')) {
+      if (window.innerWidth <= 640) {
+        if (card.classList.contains('is-peeked')) unpeekCard(card);
+        else peekCard(card);
+      }
+      return;
+    }
 
     if (isMobileAccordionCard(card)) {
       // A plain three-tap cycle — rest -> peeked -> open -> rest — and

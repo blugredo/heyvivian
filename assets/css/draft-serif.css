@@ -508,16 +508,14 @@ body[data-mood="zen"] .d-mode-copy[data-mode="zen"] { display: inline; }
 .sys-card[data-slot="2"] .sys-face::after { opacity: 1; }
 
 .sys-title { margin: 0; }
-.sys-front .sys-title { font-weight: 800; font-size: 34px; line-height: 1.04; letter-spacing: -0.035em; }
+/* The front is one line, set big and bold: it's the whole front. */
 .sys-front .sys-line {
-  margin: 20px 0 0; font-weight: 600; font-size: 17px; line-height: 1.4;
-  letter-spacing: -0.01em; color: rgba(255, 255, 255, 0.85);
+  margin: 0; font-weight: 800; font-size: 31px; line-height: 1.12; letter-spacing: -0.032em;
 }
 .sys-back .sys-title {
   font-weight: 700; font-size: 12px; line-height: 1.3; letter-spacing: 0.14em;
   text-transform: uppercase; color: var(--gray-mid);
 }
-.sys-back .sys-rule { display: none; }
 .sys-back .sys-note {
   margin: 16px 0 0; font-weight: 700; font-size: 18px; line-height: 1.4; letter-spacing: -0.015em;
 }
@@ -532,8 +530,7 @@ body[data-mood="zen"] .d-mode-copy[data-mode="zen"] { display: inline; }
   .sys-stage { --sys-w: min(66vw, 270px); --sys-h: calc(var(--sys-w) * 1.4); --sys-fan: 34px; }
   .sys-face { padding: 22px 20px 20px; }
   .sys-face::before { margin-bottom: 16px; }
-  .sys-front .sys-title { font-size: 27px; }
-  .sys-front .sys-line { font-size: 15px; margin-top: 16px; }
+  .sys-front .sys-line { font-size: 25px; }
   .sys-back .sys-note { font-size: 14px; margin-top: 12px; }
 }
 @media (prefers-reduced-motion: reduce) {

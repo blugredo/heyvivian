@@ -19,7 +19,7 @@
   function paint() {
     order.forEach((card, slot) => {
       card.dataset.slot = String(slot);
-      const title = text(card, '.sys-front .sys-title');
+      const title = text(card, '.sys-back .sys-title');
       const line = card.dataset.line.replace(/&rsquo;/g, '’');
       const note = card.dataset.note;
       // role="button" hides a card's inner text from screen readers, so the

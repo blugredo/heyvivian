@@ -584,16 +584,23 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
      conflicting-motion problem the touch-drag skip in home-v2.js's
      cardAtTouch fixes, just via :hover instead of .is-touched. This
      card's own reveal is entirely click/is-open driven. */
-  .v2-card.v-accordion:hover .v2-card-desc { opacity: 0.4; }
-  .v2-card.v-accordion:hover .v2-card-shot { transform: none; }
+  .v2-card.v-accordion:hover .v2-card-desc,
+  .v2-card.is-static:hover .v2-card-desc { opacity: 0.4; }
+  .v2-card.v-accordion:hover .v2-card-shot,
+  .v2-card.is-static:hover .v2-card-shot { transform: none; }
   /* "First level" — a tap's worth of reveal (text readable, image nudged
      down over it) short of the full stats expand, using the same
      translateY slide/opacity brighten every other card gets from
      :hover. Two more taps from here (either the arrow, or dragging the
      image down — see home-v2.js) open the stats; is-open's own rules
      below take over from these once that happens. */
-  .v2-card.v-accordion.is-peeked .v2-card-desc { opacity: 1; }
-  .v2-card.v-accordion.is-peeked .v2-card-shot { transform: translateY(var(--shot-open-y, 120px)); }
+  .v2-card.v-accordion.is-peeked .v2-card-desc,
+  .v2-card.is-static.is-peeked .v2-card-desc { opacity: 1; }
+  .v2-card.v-accordion.is-peeked .v2-card-shot,
+  .v2-card.is-static.is-peeked .v2-card-shot { transform: translateY(var(--shot-open-y, 120px)); }
+  /* Same slide timing as the accordion cards, for the ones that only
+     ever peek (locked cards and the like). */
+  .v2-card.is-static .v2-card-shot { transition: transform 600ms cubic-bezier(0.65, 0, 0.35, 1); }
   /* Same chevron icon as every other card, just rotated: pointing down
      at rest (this card expands downward, not sideways) and flipped to
      point up once open. */
@@ -618,9 +625,13 @@ body.home-v2 { font-family: 'Inclusive Sans', -apple-system, BlinkMacSystemFont,
   .v2-card.v-accordion.is-open .v2-card-main,
   .v2-card.v-accordion.is-open .v2-card-expand { display: contents; }
 
-  .v2-card.v-accordion.is-open .v2-card-title { order: 1; }
+  /* The line sits at top:60px (absolute) at rest and when peeked; once
+     open it flows after the title instead. Giving the title a 60px box
+     (and the line no extra top padding) puts the first line at exactly
+     the same y in both states, so it doesn't hop when the card opens. */
+  .v2-card.v-accordion.is-open .v2-card-title { order: 1; box-sizing: border-box; min-height: 60px; }
   .v2-card.v-accordion.is-open .v2-card-desc {
-    order: 2; position: static; opacity: 1; padding: 8px 23px 0;
+    order: 2; position: static; opacity: 1; padding: 0 23px;
   }
   /* The arrow itself is the expand/collapse affordance now — the
      separate × button (needed for the side-panel's own centered-content
@@ -746,4 +757,16 @@ html.site-locked:not(.dive-unlocked) .v2-card-link:not(.is-public) { display: no
 @media (max-width: 640px) {
   .v2-card.v-accordion.is-open .v2-stat { margin-top: 9px; }
   .v2-card.v-accordion.is-open .v2-stat:first-of-type { margin-top: 16px; }
+}
+
+/* ---------- PHONES: ONE LEFT MARGIN INSIDE A CARD ----------
+   The title carried 21px of side padding while the line, divider,
+   stats and link all use 23px, so the title sat 2px off the rest. Now
+   everything in an accordion card starts at the same 23px. And Remitly's
+   stat numbers share a column as wide as the longest ("25,000+"), so
+   their labels all start at the same x too, instead of each right after
+   its own number. */
+@media (max-width: 640px) {
+  .v2-card.v-accordion .v2-card-title { padding-left: 23px; padding-right: 23px; }
+  .v2-card.remitly.v-accordion.is-open .v2-stat-num { min-width: 90px; }
 }
